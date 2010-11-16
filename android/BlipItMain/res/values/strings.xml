@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BlipIt!</string>
+    <string name="blip_title">Hello, Blips!</string>
+    <string name="blip_snippet">Welcome to BlipIt !!!</string>
+</resources>
