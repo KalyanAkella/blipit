@@ -23,8 +23,17 @@ class MainHandler(webapp.RequestHandler):
         self.response.out.write('Hello world!')
 
 
+class TitleHandler(webapp.RequestHandler):
+    def get(self):
+        self.response.out.write('Blip It')
+
+class SnippetHandler(webapp.RequestHandler):
+    def get(self):
+        self.response.out.write('Snippet')
+
+
 def main():
-    application = webapp.WSGIApplication([('/', MainHandler)],
+    application = webapp.WSGIApplication([('/', MainHandler),('/title', TitleHandler),('/snippet', SnippetHandler)],
                                          debug=True)
     util.run_wsgi_app(application)
 
