@@ -8,7 +8,6 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
-import com.thoughtworks.blipit.api.TransportLayer;
 import com.thoughtworks.blipit.overlays.BlipItOverlay;
 
 import java.util.List;
