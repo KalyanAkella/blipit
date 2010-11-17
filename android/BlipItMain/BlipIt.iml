@@ -13,16 +13,8 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../android-sdk/platforms/android-8/android.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../android-sdk/add-ons/addon_google_apis_google_inc_8/libs/maps.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../android-sdk/platforms/android-8/android.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../../android-sdk/add-ons/addon_google_apis_google_inc_8/libs/maps.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
