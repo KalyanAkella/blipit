@@ -1,0 +1,13 @@
+#ignore thumbnails created by mac and windows
+Thumbs.db
+*.DS_Store
+*.swp
+*.out
+
+#Java project
+*.class
+
+# Android
+gen
+local.properties
+bin
