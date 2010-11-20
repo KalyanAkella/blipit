@@ -7,7 +7,11 @@ Thumbs.db
 #Java project
 *.class
 
-# Android
+#Android
 gen
 local.properties
 bin
+
+#Intellij Idea files
+*.iml
+.idea
