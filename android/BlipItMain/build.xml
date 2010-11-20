@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="BlipIt" default="help">
+<project name="BlipItMain" default="help">
 
-<!-- The local.properties file is created and updated by the 'android'
-     tool.
-     It contains the path to the SDK. It should *NOT* be checked into
-     Version Control Systems. -->
-    <property file="local.properties" />
+    <!-- The local.properties file is created and updated by the 'android'
+ tool.
+ It contains the path to the SDK. It should *NOT* be checked into
+ Version Control Systems. -->
+    <property file="local.properties"/>
 
     <!-- The build.properties file can be created by you and is never touched
          by the 'android' tool. This is the place to change some of the
@@ -24,39 +24,47 @@
          application and should be checked into Version Control Systems.
 
          -->
-    <property file="build.properties" />
+    <property file="build.properties"/>
 
     <!-- The default.properties file is created and updated by the 'android'
          tool, as well as ADT.
          This file is an integral part of the build system for your
          application and should be checked into Version Control Systems. -->
-    <property file="default.properties" />
+    <property file="default.properties"/>
 
     <!-- Custom Android task to deal with the project target, and import the
          proper rules.
          This requires ant 1.6.0 or above. -->
     <path id="android.antlibs">
-        <pathelement path="${sdk.dir}/tools/lib/anttasks.jar" />
-        <pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
-        <pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
+        <pathelement path="${sdk.dir}/tools/lib/anttasks.jar"/>
+        <pathelement path="${sdk.dir}/tools/lib/sdklib.jar"/>
+        <pathelement path="${sdk.dir}/tools/lib/androidprefs.jar"/>
     </path>
 
     <taskdef name="setup"
-        classname="com.android.ant.SetupTask"
-        classpathref="android.antlibs" />
+             classname="com.android.ant.SetupTask"
+             classpathref="android.antlibs"/>
 
-<!-- extension targets. Uncomment the ones where you want to do custom work
-     in between standard targets -->
+    <!-- extension targets. Uncomment the ones where you want to do custom work
+in between standard targets -->
     <target name="-pre-build">
         <echo>Creating main.xml from main_template.xml and poking the Google Maps API Key...</echo>
-        <delete file="res/layout/main.xml" quiet="true" />
-        <copy file="main_template.xml" tofile="res/layout/main.xml" />
-        <replace file="res/layout/main.xml" token="@MAPS_API_KEY@" value="${maps.api.key}" />
+        <delete file="res/layout/main.xml" quiet="true"/>
+        <copy file="main_template.xml" tofile="res/layout/main.xml"/>
+        <replace file="res/layout/main.xml" token="@MAPS_API_KEY@" value="${maps.api.key}"/>
     </target>
-    <!--
-        <target name="-pre-compile">
-        </target>
 
+    <!-- Compile BlipIt specific shared libs -->
+    <target name="-pre-compile">
+        <ant antfile="../../appengine/BlipItServer/build.xml" target="war" dir="../../appengine/BlipItServer"/>
+        <copy todir="${external.libs.dir}" flatten="true">
+            <fileset dir="../../appengine/BlipItShared/dist" >
+                <include name="**/*.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <!--
         [This is typically used for code obfuscation.
          Compiled code location: ${out.classes.absolute.dir}
          If this is not done in place, override ${out.dex.input.absolute.dir}]
@@ -83,6 +91,6 @@
                below to <setup import="false" />. 
              - customize to your needs.
     -->
-    <setup />
+    <setup/>
 
 </project>

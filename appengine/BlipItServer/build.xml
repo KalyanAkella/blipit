@@ -2,7 +2,7 @@
 
     <property file="local.properties"/>
 
-    <property name="appengine.sdk" location="${sdk.dir}"/>
+    <property name="appengine.sdk" location="${appengine.sdk.dir}"/>
 
     <fail message="Please define the appengine.sdk property to point to your SDK directory">
         <condition>
@@ -51,7 +51,7 @@
         <fileset dir="${war.dir}/WEB-INF/lib">
             <include name="**/*.jar"/>
         </fileset>
-        <fileset dir="${sdk.dir}/lib">
+        <fileset dir="${appengine.sdk}/lib">
             <include name="shared/**/*.jar"/>
         </fileset>
     </path>
@@ -62,7 +62,7 @@
 
     <target name="copyjars" depends="buildshared" description="Copies the App Engine JARs to the WAR.">
         <copy todir="${war.dir}/WEB-INF/lib" flatten="true">
-            <fileset dir="${sdk.dir}/lib/user">
+            <fileset dir="${appengine.sdk}/lib/user">
                 <include name="**/*.jar"/>
             </fileset>
             <fileset dir="../BlipItShared/dist" >

@@ -13,14 +13,28 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.thoughtworks.blipit.overlays.BlipItOverlay;
+import com.thoughtworks.contract.BlipItRequest;
+import com.thoughtworks.contract.BlipItResponse;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 public class BlipItActivity extends MapActivity {
-    
+
     private LocationManager locationManager;
     private MapView mapView;
     private OverlayItem blip;
+    private static final String BLIPIT_SERVICE_URI = "http://localhost:8080/blipit";
 
 
     /**
@@ -43,11 +57,45 @@ public class BlipItActivity extends MapActivity {
 
     private void addBlip(BlipItOverlay blipItOverlay, MapController mapController) {
         String title = this.getResources().getString(R.string.blip_title);
-        String snippet = this.getResources().getString(R.string.blip_snippet);
-        GeoPoint geoPoint = new GeoPoint(19240000, -99120000);
+        String snippet;
+        try {
+            snippet = getSnippet();
+        } catch (IOException e) {
+            snippet = "Error from server - IOE";
+        } catch (ClassNotFoundException e) {
+            snippet = "Error from server - CNFE";
+        }
+        GeoPoint geoPoint = new GeoPoint(12966667, 77566667);
         blip = new OverlayItem(geoPoint, title, snippet);
         blipItOverlay.addBlip(blip);
         mapController.animateTo(geoPoint);
+    }
+
+    private String getSnippet() throws IOException, ClassNotFoundException {
+        HttpClient httpClient = new DefaultHttpClient();
+
+        BlipItRequest blipItRequest = new BlipItRequest();
+        blipItRequest.setMessage(this.getResources().getString(R.string.blip_snippet));
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+        objectOutputStream.writeObject(blipItRequest);
+
+        ByteArrayEntity byteArrayEntity = new ByteArrayEntity(byteArrayOutputStream.toByteArray());
+        byteArrayEntity.setContentType("binary/octet-stream");
+        byteArrayEntity.setChunked(true);
+
+        HttpPost httpPost = new HttpPost(BLIPIT_SERVICE_URI);
+        httpPost.setEntity(byteArrayEntity);
+
+        HttpResponse httpResponse = httpClient.execute(httpPost);
+        HttpEntity httpEntity = httpResponse.getEntity();
+        InputStream inputStream = httpEntity.getContent();
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        BlipItResponse blipItResponse = (BlipItResponse) objectInputStream.readObject();
+        httpEntity.consumeContent();
+        httpClient.getConnectionManager().shutdown();
+        return blipItResponse.getMessage();
     }
 
     @Override
@@ -55,7 +103,7 @@ public class BlipItActivity extends MapActivity {
         return false;
     }
 
-    LocationListener locationListener = new LocationListener(){
+    LocationListener locationListener = new LocationListener() {
 
         public void onLocationChanged(Location location) {
             int latitude = (int) (location.getLatitude() * 1E6);
