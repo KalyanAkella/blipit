@@ -34,8 +34,7 @@ public class BlipItActivity extends MapActivity {
     private LocationManager locationManager;
     private MapView mapView;
     private OverlayItem blip;
-    private static final String BLIPIT_SERVICE_URI = "http://localhost:8080/blipit";
-
+    private static final String BLIPIT_SERVER_URI = "http://10.0.2.2:8080/blipit";
 
     /**
      * Called when the activity is first created.
@@ -85,7 +84,7 @@ public class BlipItActivity extends MapActivity {
         byteArrayEntity.setContentType("binary/octet-stream");
         byteArrayEntity.setChunked(true);
 
-        HttpPost httpPost = new HttpPost(BLIPIT_SERVICE_URI);
+        HttpPost httpPost = new HttpPost(BLIPIT_SERVER_URI);
         httpPost.setEntity(byteArrayEntity);
 
         HttpResponse httpResponse = httpClient.execute(httpPost);

@@ -89,6 +89,16 @@
         <dev_appserver war="${war.dir}" port="${http.port}"/>
     </target>
 
+    <target name="runserver-tests" depends="war" description="Run the dev_appserver in the background">
+        <echo message="Launching appengine dev server in background..."/>
+        <exec executable="${appengine.sdk}/bin/dev_appserver.sh" spawn="true">
+            <arg value="--port=${http.port}"/>
+            <arg value="--address=localhost"/>
+            <arg value="${war.dir}"/>
+        </exec>
+        <sleep seconds="10"/>
+    </target>
+
     <target name="dev_appserver" depends="runserver"/>
 
     <target name="debug" depends="war" description="Launches dev_appserver with remote debugging enabled">
