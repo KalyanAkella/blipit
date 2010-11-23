@@ -91,12 +91,23 @@
 
     <target name="runserver-tests" depends="war" description="Run the dev_appserver in the background">
         <echo message="Launching appengine dev server in background..."/>
+        <condition property="online">
+            <socket server="localhost" port="${http.port}"/>
+        </condition>
+        <antcall target="runserver-tests-safe"/>
+    </target>
+
+    <target name="runserver-tests-safe" unless="online">
         <exec executable="${appengine.sdk}/bin/dev_appserver.sh" spawn="true">
             <arg value="--port=${http.port}"/>
             <arg value="--address=localhost"/>
             <arg value="${war.dir}"/>
         </exec>
-        <sleep seconds="10"/>
+        <waitfor maxwait="10" maxwaitunit="second">
+            <and>
+                <socket server="localhost" port="${http.port}"/>
+            </and>
+        </waitfor>
     </target>
 
     <target name="dev_appserver" depends="runserver"/>
