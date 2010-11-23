@@ -13,28 +13,15 @@ import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.thoughtworks.blipit.overlays.BlipItOverlay;
+import com.thoughtworks.blipit.utils.HttpHelper;
 import com.thoughtworks.contract.BlipItRequest;
 import com.thoughtworks.contract.BlipItResponse;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.List;
 
 public class BlipItActivity extends MapActivity {
 
-    private LocationManager locationManager;
     private MapView mapView;
-    private OverlayItem blip;
-    private static final String BLIPIT_SERVER_URI = "http://10.0.2.2:8080/blipit";
 
     /**
      * Called when the activity is first created.
@@ -50,51 +37,29 @@ public class BlipItActivity extends MapActivity {
         addBlip(blipItOverlay, mapView.getController());
         List<Overlay> mapOverlays = mapView.getOverlays();
         mapOverlays.add(blipItOverlay);
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
     }
 
     private void addBlip(BlipItOverlay blipItOverlay, MapController mapController) {
         String title = this.getResources().getString(R.string.blip_title);
-        String snippet;
-        try {
-            snippet = getSnippet();
-        } catch (IOException e) {
-            snippet = "Error from server - IOE";
-        } catch (ClassNotFoundException e) {
-            snippet = "Error from server - CNFE";
-        }
         GeoPoint geoPoint = new GeoPoint(12966667, 77566667);
-        blip = new OverlayItem(geoPoint, title, snippet);
+        OverlayItem blip = new OverlayItem(geoPoint, title, getSnippet());
         blipItOverlay.addBlip(blip);
         mapController.animateTo(geoPoint);
     }
 
-    private String getSnippet() throws IOException, ClassNotFoundException {
-        HttpClient httpClient = new DefaultHttpClient();
-
-        BlipItRequest blipItRequest = new BlipItRequest();
-        blipItRequest.setMessage(this.getResources().getString(R.string.blip_snippet));
-
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-        objectOutputStream.writeObject(blipItRequest);
-
-        ByteArrayEntity byteArrayEntity = new ByteArrayEntity(byteArrayOutputStream.toByteArray());
-        byteArrayEntity.setContentType("binary/octet-stream");
-        byteArrayEntity.setChunked(true);
-
-        HttpPost httpPost = new HttpPost(BLIPIT_SERVER_URI);
-        httpPost.setEntity(byteArrayEntity);
-
-        HttpResponse httpResponse = httpClient.execute(httpPost);
-        HttpEntity httpEntity = httpResponse.getEntity();
-        InputStream inputStream = httpEntity.getContent();
-        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-        BlipItResponse blipItResponse = (BlipItResponse) objectInputStream.readObject();
-        httpEntity.consumeContent();
-        httpClient.getConnectionManager().shutdown();
-        return blipItResponse.getMessage();
+    private String getSnippet() {
+        String message;
+        try {
+            BlipItRequest blipItRequest = new BlipItRequest();
+            blipItRequest.setMessage(this.getResources().getString(R.string.blip_snippet));
+            BlipItResponse blipItResponse = HttpHelper.getResponse(blipItRequest);
+            message = blipItResponse.getMessage();
+        } catch (Exception e) {
+            message = e.getMessage();
+        }
+        return message;
     }
 
     @Override
