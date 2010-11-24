@@ -1,4 +1,4 @@
-package com.thoughtworks.blipit;
+package com.thoughtworks.blipit.activities;
 
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
@@ -20,7 +20,7 @@ import java.util.List;
  * <p/>
  * To run this test, you can type:
  * adb shell am instrument -w \
- * -e class com.thoughtworks.blipit.BlipItActivityTest \
+ * -e class com.thoughtworks.blipit.activities.BlipItActivityTest \
  * com.thoughtworks.blipit.tests/android.test.InstrumentationTestRunner
  */
 public class BlipItActivityTest extends ActivityInstrumentationTestCase2<BlipItActivity> {
@@ -31,7 +31,7 @@ public class BlipItActivityTest extends ActivityInstrumentationTestCase2<BlipItA
     private String expectedSnippet;
 
     public BlipItActivityTest() {
-        super("com.thoughtworks.blipit", BlipItActivity.class);
+        super("com.thoughtworks.blipit.activities", BlipItActivity.class);
     }
 
     @Override
