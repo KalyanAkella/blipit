@@ -1,14 +1,12 @@
 package com.thoughtworks.blipit.activities;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Messenger;
-import android.os.SystemClock;
+import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -38,11 +36,6 @@ public class BlipItActivity extends MapActivity {
         setContentView(R.layout.main);
         initMapView();
         initLocationListener();
-
-        PendingIntent pendingIntent = PendingIntent.getService(this, 0, new Intent(this, BlipNotificationService.class), 0);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        long firstTime = SystemClock.elapsedRealtime();
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstTime, 30 * 1000, pendingIntent);
 
         blipNotificationServiceConnection = new BlipNotificationServiceConnection(this);
         bindService(new Intent(this, BlipNotificationService.class), blipNotificationServiceConnection, BIND_AUTO_CREATE);
@@ -104,6 +97,6 @@ public class BlipItActivity extends MapActivity {
     }
 
     public void updateBlips(Bundle data) {
-        // TODO: repaint the Maps overlays with the updated blips
+        Toast.makeText(this, R.string.blip_notification_received, Toast.LENGTH_SHORT).show();
     }
 }
