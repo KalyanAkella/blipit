@@ -26,7 +26,7 @@ import java.util.List;
 public class BlipItActivity extends MapActivity {
 
     private MapView mapView;
-    private BlipNotificationServiceConnection blipNotificationServiceConnection;
+    private BlipNotificationServiceHandler blipNotificationServiceHandler;
     private Messenger blipItNotificationService;
     private Messenger blipNotificationHandler;
 
@@ -36,11 +36,13 @@ public class BlipItActivity extends MapActivity {
         setContentView(R.layout.main);
         initMapView();
         initLocationListener();
+        initBlipNotifications();
+    }
 
-        blipNotificationServiceConnection = new BlipNotificationServiceConnection(this);
-        bindService(new Intent(this, BlipNotificationService.class), blipNotificationServiceConnection, BIND_AUTO_CREATE);
-
-        blipNotificationHandler = new Messenger(new BlipNotificationHandler(this));
+    private void initBlipNotifications() {
+        blipNotificationServiceHandler = new BlipNotificationServiceHandler(this);
+        bindService(new Intent(this, BlipNotificationService.class), blipNotificationServiceHandler, BIND_AUTO_CREATE);
+        blipNotificationHandler = new Messenger(blipNotificationServiceHandler);
     }
 
     public void setBlipItNotificationService(Messenger blipItNotificationService) {

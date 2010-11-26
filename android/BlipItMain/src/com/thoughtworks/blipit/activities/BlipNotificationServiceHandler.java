@@ -2,16 +2,17 @@ package com.thoughtworks.blipit.activities;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import com.thoughtworks.blipit.services.BlipNotificationService;
 
-public class BlipNotificationServiceConnection implements ServiceConnection {
+public class BlipNotificationServiceHandler extends Handler implements ServiceConnection {
     private BlipItActivity blipItActivity;
 
-    public BlipNotificationServiceConnection(BlipItActivity blipItActivity) {
+    public BlipNotificationServiceHandler(BlipItActivity blipItActivity) {
         this.blipItActivity = blipItActivity;
     }
 
@@ -35,5 +36,16 @@ public class BlipNotificationServiceConnection implements ServiceConnection {
         // This is called when the connection with the service has been
         // unexpectedly disconnected -- that is, its process crashed.
         blipItActivity.setBlipItNotificationService(null);
+    }
+
+    @Override
+    public void handleMessage(Message msg) {
+        switch (msg.what) {
+            case BlipNotificationService.MSG_BLIPS_UPDATED:
+                blipItActivity.updateBlips(msg.getData());
+                break;
+            default:
+                super.handleMessage(msg);
+        }
     }
 }
