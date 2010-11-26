@@ -6,6 +6,9 @@ Thumbs.db
 
 #Java project
 *.class
+war
+dist
+out
 
 #Android
 gen
