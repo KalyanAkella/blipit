@@ -18,3 +18,7 @@ bin
 #Intellij Idea files
 *.iml
 .idea
+
+BlipIt
+android/BlipItMain/libs/
+android/BlipItMain/res/layout/main.xml
