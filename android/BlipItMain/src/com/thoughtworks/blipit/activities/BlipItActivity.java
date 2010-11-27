@@ -26,7 +26,7 @@ import java.util.List;
 public class BlipItActivity extends MapActivity {
 
     private MapView mapView;
-    private BlipNotificationServiceHandler blipNotificationServiceHandler;
+    private BlipNotificationClientHandler blipNotificationClientHandler;
     private Messenger blipItNotificationService;
     private Messenger blipNotificationHandler;
 
@@ -40,9 +40,9 @@ public class BlipItActivity extends MapActivity {
     }
 
     private void initBlipNotifications() {
-        blipNotificationServiceHandler = new BlipNotificationServiceHandler(this);
-        bindService(new Intent(this, BlipNotificationService.class), blipNotificationServiceHandler, BIND_AUTO_CREATE);
-        blipNotificationHandler = new Messenger(blipNotificationServiceHandler);
+        blipNotificationClientHandler = new BlipNotificationClientHandler(this);
+        bindService(new Intent(this, BlipNotificationService.class), blipNotificationClientHandler, BIND_AUTO_CREATE);
+        blipNotificationHandler = new Messenger(blipNotificationClientHandler);
     }
 
     public void setBlipItNotificationService(Messenger blipItNotificationService) {

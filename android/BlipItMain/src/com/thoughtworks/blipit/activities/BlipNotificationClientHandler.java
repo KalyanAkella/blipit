@@ -9,10 +9,10 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import com.thoughtworks.blipit.services.BlipNotificationService;
 
-public class BlipNotificationServiceHandler extends Handler implements ServiceConnection {
+public class BlipNotificationClientHandler extends Handler implements ServiceConnection {
     private BlipItActivity blipItActivity;
 
-    public BlipNotificationServiceHandler(BlipItActivity blipItActivity) {
+    public BlipNotificationClientHandler(BlipItActivity blipItActivity) {
         this.blipItActivity = blipItActivity;
     }
 
