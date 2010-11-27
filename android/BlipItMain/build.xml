@@ -61,6 +61,9 @@ in between standard targets -->
             <fileset dir="../../appengine/BlipItShared/dist">
                 <include name="**/*.jar"/>
             </fileset>
+            <fileset dir="../../shared/lib/android" >
+                <include name="**/*.jar"/>
+            </fileset>
         </copy>
     </target>
 

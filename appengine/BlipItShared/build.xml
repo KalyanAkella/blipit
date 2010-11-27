@@ -2,6 +2,13 @@
 
     <property file="local.properties"/>
 
+    <path id="shared.classpath">
+        <pathelement path="build/classes"/>
+        <fileset dir="../../shared/lib/appengine" >
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
     <target name="clean">
         <delete dir="build"/>
         <delete dir="dist"/>
@@ -13,7 +20,7 @@
     </target>
 
     <target name="compile" depends="init">
-        <javac srcdir="src" destdir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes" classpathref="shared.classpath"/>
     </target>
 
     <target name="jar" depends="compile">

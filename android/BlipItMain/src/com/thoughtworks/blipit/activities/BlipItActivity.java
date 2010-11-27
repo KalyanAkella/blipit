@@ -16,8 +16,9 @@ import com.google.android.maps.OverlayItem;
 import com.thoughtworks.blipit.R;
 import com.thoughtworks.blipit.overlays.BlipItOverlay;
 import com.thoughtworks.blipit.services.BlipNotificationService;
-import com.thoughtworks.blipit.utils.HttpHelper;
+import com.thoughtworks.blipit.utils.BlipItServiceHelper;
 import com.thoughtworks.contract.BlipItRequest;
+import com.thoughtworks.contract.BlipItResource;
 import com.thoughtworks.contract.BlipItResponse;
 
 import java.util.List;
@@ -29,6 +30,7 @@ public class BlipItActivity extends MapActivity {
     private BlipNotificationClientHandler blipNotificationClientHandler;
     private Messenger blipItNotificationService;
     private Messenger blipNotificationHandler;
+    private BlipItResource blipItResource;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class BlipItActivity extends MapActivity {
         blipNotificationClientHandler = new BlipNotificationClientHandler(this);
         bindService(new Intent(this, BlipNotificationService.class), blipNotificationClientHandler, BIND_AUTO_CREATE);
         blipNotificationHandler = new Messenger(blipNotificationClientHandler);
+        blipItResource = new BlipItServiceHelper().getBlipItResource();
     }
 
     public void setBlipItNotificationService(Messenger blipItNotificationService) {
@@ -77,7 +80,7 @@ public class BlipItActivity extends MapActivity {
         try {
             BlipItRequest blipItRequest = new BlipItRequest();
             blipItRequest.setMessage(this.getResources().getString(R.string.blip_snippet));
-            BlipItResponse blipItResponse = HttpHelper.getResponse(blipItRequest);
+            BlipItResponse blipItResponse = new BlipItServiceHelper().getBlipItResource().echo(blipItRequest);
             message = blipItResponse.getMessage();
         } catch (Exception e) {
             message = e.getMessage();
