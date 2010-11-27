@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.thoughtworks.blipit.R;
+import com.thoughtworks.blipit.utils.BlipItUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,15 +21,9 @@ import java.util.List;
 public class BlipNotificationService extends IntentService {
     private final List<Messenger> clients;
     private final Messenger clientMessenger;
-    private GeoPoint currentUserLocation;
-
-    public static final int MSG_REGISTER_CLIENT = 1;
-    // TODO: handle unregister in the lifecycle methods of BlipItActivity
-    public static final int MSG_UNREGISTER_CLIENT = 2;
-    public static final int MSG_USER_LOCATION_UPDATED = 3;
-    public static final int MSG_BLIPS_UPDATED = 4;
     private PendingIntent pendingIntent;
     private AlarmManager alarmManager;
+    private GeoPoint currentUserLocation;
 
     public BlipNotificationService() {
         super("BlipNotificationServiceThread");
@@ -83,7 +78,7 @@ public class BlipNotificationService extends IntentService {
         // 5. Remove any client on RemoteException
         for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {
             Messenger client = iterator.next();
-            Message message = Message.obtain(null, BlipNotificationService.MSG_BLIPS_UPDATED);
+            Message message = Message.obtain(null, BlipItUtils.MSG_BLIPS_UPDATED);
             try {
                 client.send(message);
             } catch (RemoteException e) {

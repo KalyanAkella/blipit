@@ -7,7 +7,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import com.thoughtworks.blipit.services.BlipNotificationService;
+import com.thoughtworks.blipit.utils.BlipItUtils;
 
 public class BlipNotificationClientHandler extends Handler implements ServiceConnection {
     private BlipItActivity blipItActivity;
@@ -19,7 +19,7 @@ public class BlipNotificationClientHandler extends Handler implements ServiceCon
     public void onServiceConnected(ComponentName componentName, IBinder service) {
         Messenger blipItNotificationService = new Messenger(service);
         try {
-            Message message = Message.obtain(null, BlipNotificationService.MSG_REGISTER_CLIENT);
+            Message message = Message.obtain(null, BlipItUtils.MSG_REGISTER_CLIENT);
             message.replyTo = blipItActivity.getBlipNotificationHandler();
             blipItNotificationService.send(message);
             blipItActivity.setBlipItNotificationService(blipItNotificationService);
@@ -41,7 +41,7 @@ public class BlipNotificationClientHandler extends Handler implements ServiceCon
     @Override
     public void handleMessage(Message msg) {
         switch (msg.what) {
-            case BlipNotificationService.MSG_BLIPS_UPDATED:
+            case BlipItUtils.MSG_BLIPS_UPDATED:
                 blipItActivity.updateBlips(msg.getData());
                 break;
             default:
