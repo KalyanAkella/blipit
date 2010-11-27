@@ -37,6 +37,7 @@
         <copy todir="${war.dir}/WEB-INF">
             <fileset dir="src/META-INF">
                 <include name="*.xml"/>
+                <include name="*.properties"/>
             </fileset>
         </copy>
         <enhance_war war="${war.dir}"/>
