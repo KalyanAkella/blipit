@@ -27,6 +27,8 @@ public class BlipNotificationService extends IntentService {
     public static final int MSG_UNREGISTER_CLIENT = 2;
     public static final int MSG_USER_LOCATION_UPDATED = 3;
     public static final int MSG_BLIPS_UPDATED = 4;
+    private PendingIntent pendingIntent;
+    private AlarmManager alarmManager;
 
     public BlipNotificationService() {
         super("BlipNotificationServiceThread");
@@ -47,14 +49,15 @@ public class BlipNotificationService extends IntentService {
     }
 
     private void scheduleNotificationService() {
-        PendingIntent pendingIntent = PendingIntent.getService(this, 0, new Intent(this, BlipNotificationService.class), 0);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        pendingIntent = PendingIntent.getService(this, 0, new Intent(this, BlipNotificationService.class), 0);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         long firstTime = SystemClock.elapsedRealtime();
         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstTime, 5 * 1000, pendingIntent);
     }
 
     @Override
     public void onDestroy() {
+        alarmManager.cancel(pendingIntent);
         Toast.makeText(this, R.string.blip_notification_service_stopped, Toast.LENGTH_SHORT).show();
     }
 
