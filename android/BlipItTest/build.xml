@@ -45,9 +45,14 @@
         classname="com.android.ant.SetupTask"
         classpathref="android.antlibs" />
 
+    <target name="clean">
+        <delete dir="build" quiet="true" />
+        <delete dir="dist" quiet="true" />
+    </target>
+    
 <!-- extension targets. Uncomment the ones where you want to do custom work
      in between standard targets -->
-    <target name="-pre-build">
+    <target name="-pre-build" depends="clean">
         <ant antfile="../../appengine/BlipItServer/build.xml" target="runserver-tests" dir="../../appengine/BlipItServer"/>
     </target>
     <!--

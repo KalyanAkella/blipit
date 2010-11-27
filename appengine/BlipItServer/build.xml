@@ -74,7 +74,7 @@
         </copy>
     </target>
 
-    <target name="compile" depends="copyjars" description="Compile the application servlet code">
+    <target name="compile" depends="clean, copyjars" description="Compile the application servlet code">
         <mkdir dir="${war.dir}/WEB-INF/classes"/>
         <copy todir="${war.dir}/WEB-INF/classes">
             <fileset dir="src">
@@ -85,7 +85,9 @@
     </target>
 
     <target name="clean" description="Force a clean slate to rebuild">
-        <delete dir="${war.dir}"/>
+        <delete dir="${war.dir}" quiet="true" />
+        <delete dir="build" quiet="true" />
+        <delete dir="dist" quiet="true" />
     </target>
 
     <target name="runserver" depends="war" description="Run the dev_appserver">

@@ -10,8 +10,8 @@
     </path>
 
     <target name="clean">
-        <delete dir="build"/>
-        <delete dir="dist"/>
+        <delete dir="build" quiet="true" />
+        <delete dir="dist" quiet="true" />
     </target>
 
     <target name="init" depends="clean">
