@@ -1,6 +1,6 @@
 package com.thoughtworks.blipit;
 
-import com.thoughtworks.blipit.domain.Add;
+import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.blipit.persistance.Persist;
 import com.thoughtworks.contract.BlipItRequest;
 import com.thoughtworks.contract.BlipItResource;
@@ -26,23 +26,23 @@ public class BlipItServerResource extends ServerResource implements BlipItResour
         BlipItResponse blipItResponse = new BlipItResponse();
         blipItResponse.setMessage(blipItRequest.getMessage());
         log.info("Blip Response sent. Message: " + blipItResponse.getMessage());
-//        PersistAndRetrieveAdd();
+//        PersistAndRetrieveAlert();
         return blipItResponse;
     }
 
-    private void PersistAndRetrieveAdd() {
+    private void PersistAndRetrieveAlert() {
         PersistenceManager manager = null;
         try {
             manager = Persist.getPersistenceManager();
-            Add add = new Add("Wildcraft", "10% off on trekking bags :)");
-            manager.makePersistent(add);
-            Add retrievedAdd = manager.getObjectById(Add.class, add.getKey());
-            if (add.getSource().equals(retrievedAdd.getSource()) && add.getDescription().equalsIgnoreCase(retrievedAdd.getDescription()))
-                log.info("Add persisted and retrieved successfully");
+            Alert alert = new Alert("Wildcraft", "10% off on trekking bags :)");
+            manager.makePersistent(alert);
+            Alert retrievedAlert = manager.getObjectById(Alert.class, alert.getKey());
+            if (alert.getSource().equals(retrievedAlert.getSource()) && alert.getDescription().equalsIgnoreCase(retrievedAlert.getDescription()))
+                log.info("Alert persisted and retrieved successfully");
             else
-                log.severe("Something went wrong with persistence. Retrieved add is :" + retrievedAdd.getSource() + " " + retrievedAdd.getDescription());
+                log.severe("Something went wrong with persistence. Retrieved alert is :" + retrievedAlert.getSource() + " " + retrievedAlert.getDescription());
         } catch (Exception e) {
-            log.severe("Persistance of Add failed" + "\r\n" + e);
+            log.severe("Persistance of Alert failed" + "\r\n" + e);
         } finally {
             if(manager != null)
                 manager.close();

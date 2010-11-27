@@ -9,7 +9,7 @@ import javax.jdo.annotations.PrimaryKey;
 
 
 @PersistenceCapable
-public class Add {
+public class Alert {
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
@@ -20,7 +20,7 @@ public class Add {
     @Persistent
     private String description;
 
-    public Add(String source, String description) {
+    public Alert(String source, String description) {
         this.source = source;
         this.description = description;
     }
