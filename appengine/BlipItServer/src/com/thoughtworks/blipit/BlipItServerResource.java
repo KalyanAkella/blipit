@@ -1,5 +1,6 @@
 package com.thoughtworks.blipit;
 
+import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.blipit.persistance.Persist;
 import com.thoughtworks.contract.BlipItRequest;
@@ -34,17 +35,18 @@ public class BlipItServerResource extends ServerResource implements BlipItResour
         PersistenceManager manager = null;
         try {
             manager = Persist.getPersistenceManager();
-            Alert alert = new Alert("Wildcraft", "10% off on trekking bags :)");
+            GeoPt point = new GeoPt(89, 179);
+            Alert alert = new Alert("Wildcraft", "10% off on trekking bags :)", point);
             manager.makePersistent(alert);
             Alert retrievedAlert = manager.getObjectById(Alert.class, alert.getKey());
-            if (alert.getSource().equals(retrievedAlert.getSource()) && alert.getDescription().equalsIgnoreCase(retrievedAlert.getDescription()))
+            if (alert.isSameAs(retrievedAlert))
                 log.info("Alert persisted and retrieved successfully");
             else
                 log.severe("Something went wrong with persistence. Retrieved alert is :" + retrievedAlert.getSource() + " " + retrievedAlert.getDescription());
         } catch (Exception e) {
             log.severe("Persistance of Alert failed" + "\r\n" + e);
         } finally {
-            if(manager != null)
+            if (manager != null)
                 manager.close();
         }
     }

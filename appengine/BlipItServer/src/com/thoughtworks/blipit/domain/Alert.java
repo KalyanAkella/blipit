@@ -1,7 +1,7 @@
 package com.thoughtworks.blipit.domain;
 
+import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
-
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -20,9 +20,13 @@ public class Alert {
     @Persistent
     private String description;
 
-    public Alert(String source, String description) {
+    @Persistent
+    private GeoPt geoPoint;
+
+    public Alert(String source, String description, GeoPt geoPoint) {
         this.source = source;
         this.description = description;
+        this.geoPoint = geoPoint;
     }
 
     public Key getKey() {
@@ -35,5 +39,15 @@ public class Alert {
 
     public String getDescription() {
         return description;
+    }
+
+    public GeoPt getGeoPoint() {
+        return geoPoint;
+    }
+
+    public boolean isSameAs(Alert alert) {
+        return this.getSource().equals(alert.getSource()) &&
+                this.getDescription().equalsIgnoreCase(alert.getDescription()) &&
+                this.getGeoPoint().compareTo(alert.getGeoPoint()) == 0;
     }
 }
