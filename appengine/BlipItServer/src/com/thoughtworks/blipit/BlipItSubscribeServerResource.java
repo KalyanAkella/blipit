@@ -4,7 +4,7 @@ import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.blipit.persistance.Persist;
 import com.thoughtworks.contract.BlipItRequest;
-import com.thoughtworks.contract.BlipItResource;
+import com.thoughtworks.contract.BlipItSubscribeResource;
 import com.thoughtworks.contract.BlipItResponse;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
@@ -13,8 +13,8 @@ import org.restlet.resource.ServerResource;
 import javax.jdo.PersistenceManager;
 import java.util.logging.Logger;
 
-public class BlipItServerResource extends ServerResource implements BlipItResource {
-    private static final Logger log = Logger.getLogger(BlipItServerResource.class.getName());
+public class BlipItSubscribeServerResource extends ServerResource implements BlipItSubscribeResource {
+    private static final Logger log = Logger.getLogger(BlipItSubscribeServerResource.class.getName());
 
     @Get
     public String showMessage() {

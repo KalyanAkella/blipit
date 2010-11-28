@@ -3,7 +3,7 @@ package com.thoughtworks.contract;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
-public interface BlipItResource {
+public interface BlipItSubscribeResource {
     @Get
     public String showMessage();
 

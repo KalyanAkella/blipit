@@ -21,7 +21,7 @@ import com.thoughtworks.blipit.services.BlipNotificationService;
 import com.thoughtworks.blipit.utils.BlipItServiceHelper;
 import com.thoughtworks.blipit.utils.BlipItUtils;
 import com.thoughtworks.contract.BlipItRequest;
-import com.thoughtworks.contract.BlipItResource;
+import com.thoughtworks.contract.BlipItSubscribeResource;
 import com.thoughtworks.contract.BlipItResponse;
 
 // TODO: Handle other lifecycle events to correctly interact with BlipItNotificationService
@@ -32,7 +32,7 @@ public class BlipItActivity extends MapActivity implements LocationListener {
     private BlipNotificationClientHandler blipNotificationClientHandler;
     private Messenger blipItNotificationService;
     private Messenger blipNotificationHandler;
-    private BlipItResource blipItResource;
+    private BlipItSubscribeResource blipItResource;
     private GeoPoint userLocation;
 
     @Override

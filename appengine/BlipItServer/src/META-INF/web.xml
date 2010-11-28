@@ -10,11 +10,11 @@
         <servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
         <init-param>
             <param-name>org.restlet.application</param-name>
-            <param-value>com.thoughtworks.blipit.BlipItMain</param-value>
+            <param-value>com.thoughtworks.blipit.BlipItService</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
         <servlet-name>blipit</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/blipit/*</url-pattern>
     </servlet-mapping>
 </web-app>
