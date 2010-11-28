@@ -43,7 +43,15 @@
         <enhance_war war="${war.dir}"/>
     </target>
 
-    <target name="enhance" depends="compile" description="Enhance the classes after compilation">
+    <target name="copyjsps" description="Copies all JSPs to the application war directory">
+        <copy todir="${war.dir}">
+            <fileset dir="src/jsp">
+                <include name="*.jsp"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="enhance" depends="compile, copyjsps" description="Enhance the classes after compilation">
         <enhance_war war="${war.dir}"/>
     </target>
 
@@ -80,6 +88,7 @@
         <copy todir="${war.dir}/WEB-INF/classes">
             <fileset dir="src">
                 <exclude name="**/*.java"/>
+                <exclude name="**/*.jsp"/>
             </fileset>
         </copy>
         <javac srcdir="src" destdir="${war.dir}/WEB-INF/classes" classpathref="project.classpath" debug="on"/>
