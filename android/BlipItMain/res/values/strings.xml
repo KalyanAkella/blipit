@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BlipIt!</string>
-    <string name="blip_title">Hello, Blips!</string>
-    <string name="blip_snippet">Welcome to BlipIt !!!</string>
+    <string name="blip_title">Welcome to BlipIt !!!</string>
+    <string name="blip_snippet">You are here</string>
     <string name="blip_notification_service_started">Blip Notifications enabled</string>
     <string name="blip_notification_service_stopped">Blip Notifications disabled</string>
     <string name="blip_notification_received">Blip Notification received</string>

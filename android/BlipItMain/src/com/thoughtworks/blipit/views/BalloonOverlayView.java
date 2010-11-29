@@ -8,7 +8,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.google.android.maps.OverlayItem;
 import com.thoughtworks.blipit.R;
 
 /**
@@ -71,23 +70,23 @@ public class BalloonOverlayView extends FrameLayout {
     /**
      * Sets the view data from a given overlay item.
      *
-     * @param item - The overlay item containing the relevant view data
-     * (title and snippet).
+     * @param title
+     * @param snippet
      */
-    public void setData(OverlayItem item) {
+    public void setData(String title, String snippet) {
 
         layout.setVisibility(VISIBLE);
-        if (item.getTitle() != null) {
-            title.setVisibility(VISIBLE);
-            title.setText(item.getTitle());
+        if (title != null) {
+            this.title.setVisibility(VISIBLE);
+            this.title.setText(title);
         } else {
-            title.setVisibility(GONE);
+            this.title.setVisibility(GONE);
         }
-        if (item.getSnippet() != null) {
-            snippet.setVisibility(VISIBLE);
-            snippet.setText(item.getSnippet());
+        if (snippet != null) {
+            this.snippet.setVisibility(VISIBLE);
+            this.snippet.setText(snippet);
         } else {
-            snippet.setVisibility(GONE);
+            this.snippet.setVisibility(GONE);
         }
 
     }

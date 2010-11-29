@@ -9,7 +9,7 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
-import com.thoughtworks.blipit.overlays.BlipItOverlay;
+import com.thoughtworks.blipit.overlays.BlipOverlay;
 
 import java.util.List;
 
@@ -55,12 +55,12 @@ public class BlipItActivityTest extends ActivityInstrumentationTestCase2<BlipItA
 
     private OverlayItem getOverlayItem(int overlayIndex, int overlayItemIndex) {
         Overlay overlay = getOverlay(overlayIndex);
-        assertTrue(overlay instanceof BlipItOverlay);
+        assertTrue(overlay instanceof BlipOverlay);
         return getOverlayItem(overlay, overlayItemIndex);
     }
 
     private OverlayItem getOverlayItem(Overlay overlay, int itemIndex) {
-        BlipItOverlay blipItOverlay = (BlipItOverlay) overlay;
+        BlipOverlay blipItOverlay = (BlipOverlay) overlay;
         assertEquals(1, blipItOverlay.size());
         return blipItOverlay.getItem(itemIndex);
     }

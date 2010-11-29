@@ -15,7 +15,6 @@ import com.thoughtworks.blipit.R;
 import com.thoughtworks.blipit.views.BalloonOverlayView;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 /**
  * An abstract extension of ItemizedOverlay for displaying an information balloon
@@ -28,7 +27,7 @@ public abstract class BalloonItemizedOverlay<Item> extends ItemizedOverlay<Overl
     private BalloonOverlayView balloonView;
     private View clickRegion;
     private int viewOffset;
-    final MapController mc;
+    protected MapController mapController;
 
     /**
      * Create a new BalloonItemizedOverlay
@@ -40,7 +39,7 @@ public abstract class BalloonItemizedOverlay<Item> extends ItemizedOverlay<Overl
         super(defaultMarker);
         this.mapView = mapView;
         viewOffset = 0;
-        mc = mapView.getController();
+        mapController = mapView.getController();
     }
 
     /**
@@ -78,7 +77,8 @@ public abstract class BalloonItemizedOverlay<Item> extends ItemizedOverlay<Overl
         GeoPoint point;
 
         thisIndex = index;
-        point = createItem(index).getPoint();
+        OverlayItem overlayItem = createItem(index);
+        point = overlayItem.getPoint();
 
         if (balloonView == null) {
             balloonView = new BalloonOverlayView(mapView.getContext(), viewOffset);
@@ -90,12 +90,9 @@ public abstract class BalloonItemizedOverlay<Item> extends ItemizedOverlay<Overl
 
         balloonView.setVisibility(View.GONE);
 
-        List<Overlay> mapOverlays = mapView.getOverlays();
-        if (mapOverlays.size() > 1) {
-            hideOtherBalloons(mapOverlays);
-        }
+        hideOtherBalloons();
 
-        balloonView.setData(createItem(index));
+        balloonView.setData(overlayItem.getTitle(), overlayItem.getSnippet());
 
         MapView.LayoutParams params = new MapView.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, point,
@@ -112,7 +109,7 @@ public abstract class BalloonItemizedOverlay<Item> extends ItemizedOverlay<Overl
             mapView.addView(balloonView, params);
         }
 
-        mc.animateTo(point);
+        mapController.animateTo(point);
 
         return true;
     }
@@ -130,11 +127,10 @@ public abstract class BalloonItemizedOverlay<Item> extends ItemizedOverlay<Overl
      * Hides the balloon view for any other BalloonItemizedOverlay instances
      * that might be present on the MapView.
      *
-     * @param overlays - list of overlays (including this) on the MapView.
      */
-    private void hideOtherBalloons(List<Overlay> overlays) {
+    private void hideOtherBalloons() {
 
-        for (Overlay overlay : overlays) {
+        for (Overlay overlay : mapView.getOverlays()) {
             if (overlay instanceof BalloonItemizedOverlay<?> && overlay != this) {
                 ((BalloonItemizedOverlay<?>) overlay).hideBalloon();
             }
