@@ -72,6 +72,12 @@ public class BlipItActivity extends MapActivity {
         userLocationOverlay.disableCompass();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(blipNotificationClientHandler);
+    }
+
     public Messenger getBlipNotificationHandler() {
         return blipNotificationHandler;
     }
