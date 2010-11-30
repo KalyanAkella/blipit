@@ -31,8 +31,8 @@ public class BlipItActivity extends MapActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        initMapView();
         initBlipNotifications();
+        initMapView();
     }
 
     private void initBlipNotifications() {
@@ -88,7 +88,8 @@ public class BlipItActivity extends MapActivity {
 
     public void sendUserLocationUpdate(GeoPoint geoPoint) {
         try {
-            blipItNotificationService.send(BlipItUtils.getMessageWithGeoPoint(geoPoint, BlipItUtils.MSG_USER_LOCATION_UPDATED));
+            if (blipItNotificationService != null)
+                blipItNotificationService.send(BlipItUtils.getMessageWithGeoPoint(geoPoint, BlipItUtils.MSG_USER_LOCATION_UPDATED));
         } catch (RemoteException e) {
             Log.e(TAG, "An error occured while updating user location", e);
         }
