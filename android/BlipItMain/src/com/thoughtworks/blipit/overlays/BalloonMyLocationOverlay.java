@@ -17,6 +17,7 @@ public class BalloonMyLocationOverlay extends MyLocationOverlay {
     private MapView mapView;
     private BlipItActivity blipItActivity;
     private MapController mapController;
+    private Runnable firstFixRunnable;
 
     public BalloonMyLocationOverlay(BlipItActivity blipItActivity, MapView mapView) {
         super(blipItActivity, mapView);
@@ -25,11 +26,12 @@ public class BalloonMyLocationOverlay extends MyLocationOverlay {
         this.mapController = mapView.getController();
         enableCompass();
         enableMyLocation();
-        runOnFirstFix(new Runnable() {
+        firstFixRunnable = new Runnable() {
             public void run() {
                 mapController.animateTo(getMyLocation());
             }
-        });
+        };
+        runOnFirstFix(firstFixRunnable);
     }
 
     @Override
@@ -85,5 +87,6 @@ public class BalloonMyLocationOverlay extends MyLocationOverlay {
     public void onLocationChanged(Location location) {
         super.onLocationChanged(location);
         blipItActivity.sendUserLocationUpdate(BlipItUtils.asGeoPoint(location));
+        firstFixRunnable.run();
     }
 }
