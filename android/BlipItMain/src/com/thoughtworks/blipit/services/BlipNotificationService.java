@@ -64,9 +64,13 @@ public class BlipNotificationService extends IntentService {
         this.clients.remove(messenger);
     }
 
-    public void setCurrentUserLocation(GeoPoint currentUserLocation) {
+    public synchronized void setCurrentUserLocation(GeoPoint currentUserLocation) {
         this.currentUserLocation = currentUserLocation;
         Toast.makeText(this, R.string.user_location_updated, Toast.LENGTH_SHORT).show();
+    }
+
+    public synchronized GeoPoint getCurrentUserLocation() {
+        return currentUserLocation;
     }
 
     @Override
