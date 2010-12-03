@@ -18,11 +18,12 @@ public class BlipItSubscribeServerResource extends ServerResource implements Bli
     }
 
     @Post
-    public BlipItResponse echo(BlipItRequest blipItRequest) {
-        log.info("Blip Request received. Message: " + blipItRequest.getMessage());
-        BlipItResponse blipItResponse = new BlipItResponse();
-        blipItResponse.setMessage(blipItRequest.getMessage());
-        log.info("Blip Response sent. Message: " + blipItResponse.getMessage());
-        return blipItResponse;
+    public BlipItResponse getBlips(BlipItRequest blipItRequest) {
+//        log.info("Blip Request received. Message: " + blipItRequest.getChannelId());
+//        BlipItResponse blipItResponse = new BlipItResponse();
+//        blipItResponse.setMessage(blipItRequest.getChannelId());
+//        log.info("Blip Response sent. Message: " + blipItResponse.getMessage());
+//        return blipItResponse;
+        return new BlipItResponse();
     }
 }

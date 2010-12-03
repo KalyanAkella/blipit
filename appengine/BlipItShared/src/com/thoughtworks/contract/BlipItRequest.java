@@ -3,13 +3,22 @@ package com.thoughtworks.contract;
 import java.io.Serializable;
 
 public class BlipItRequest implements Serializable {
-    private String message;
+    private GeoLocation userLocation;
+    private UserPrefs userPrefs;
 
-    public String getMessage() {
-        return message;
+    public GeoLocation getUserLocation() {
+        return userLocation;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setUserLocation(GeoLocation userLocation) {
+        this.userLocation = userLocation;
+    }
+
+    public UserPrefs getUserPrefs() {
+        return userPrefs;
+    }
+
+    public void setUserPrefs(UserPrefs userPrefs) {
+        this.userPrefs = userPrefs;
     }
 }

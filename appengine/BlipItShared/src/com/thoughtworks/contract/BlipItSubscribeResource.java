@@ -8,5 +8,5 @@ public interface BlipItSubscribeResource {
     public String showMessage();
 
     @Post
-    public BlipItResponse echo(BlipItRequest blipItRequest);
+    public BlipItResponse getBlips(BlipItRequest blipItRequest);
 }
