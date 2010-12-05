@@ -57,11 +57,15 @@
 
     <path id="project.classpath">
         <pathelement path="${war.dir}/WEB-INF/classes"/>
+        <pathelement path="${war.dir}/WEB-INF/test-classes"/>
         <fileset dir="${war.dir}/WEB-INF/lib">
             <include name="**/*.jar"/>
         </fileset>
         <fileset dir="${appengine.sdk}/lib">
             <include name="shared/**/*.jar"/>
+        </fileset>
+        <fileset dir="../../shared/lib/appengine">
+            <include name="*.jar"/>
         </fileset>
     </path>
 
@@ -74,10 +78,10 @@
             <fileset dir="${appengine.sdk}/lib/user">
                 <include name="**/*.jar"/>
             </fileset>
-            <fileset dir="../BlipItShared/dist" >
+            <fileset dir="../BlipItShared/dist">
                 <include name="**/*.jar"/>
             </fileset>
-            <fileset dir="../../shared/lib/appengine" >
+            <fileset dir="../../shared/lib/appengine">
                 <include name="**/*.jar"/>
             </fileset>
         </copy>
@@ -94,10 +98,37 @@
         <javac srcdir="src" destdir="${war.dir}/WEB-INF/classes" classpathref="project.classpath" debug="on"/>
     </target>
 
+    <target name="test-compile" depends="compile" description="Compile the application unit test code">
+        <mkdir dir="${war.dir}/WEB-INF/test-classes"/>
+        <copy todir="${war.dir}/WEB-INF/test-classes">
+            <fileset dir="test">
+                <exclude name="**/*.java"/>
+                <exclude name="**/*.jsp"/>
+            </fileset>
+        </copy>
+        <javac srcdir="test" destdir="${war.dir}/WEB-INF/test-classes" classpathref="project.classpath" debug="on"/>
+    </target>
+
+    <target name="run-tests" depends="test-compile">
+        <property name="test.reports.dir" value="${war.dir}/WEB-INF/test-classes/reports"/>
+        <mkdir dir="${test.reports.dir}"/>
+        <junit printsummary="yes" failureProperty="testsFailed">
+            <classpath refid="project.classpath"/>
+            <formatter type="plain"/>
+            <batchtest todir="${test.reports.dir}">
+                <fileset dir="test">
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+        <echo message="Results written to : ${test.reports.dir}"/>
+        <fail message="One or more tests failed. See the reports for more details." if="testsFailed"/>
+    </target>
+
     <target name="clean" description="Force a clean slate to rebuild">
-        <delete dir="${war.dir}" quiet="true" />
-        <delete dir="build" quiet="true" />
-        <delete dir="dist" quiet="true" />
+        <delete dir="${war.dir}" quiet="true"/>
+        <delete dir="build" quiet="true"/>
+        <delete dir="dist" quiet="true"/>
     </target>
 
     <target name="runserver" depends="war" description="Run the dev_appserver">
