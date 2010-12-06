@@ -9,8 +9,8 @@ import org.restlet.resource.ServerResource;
 
 import java.util.logging.Logger;
 
-public class BlipItSubscribeServerResource extends ServerResource implements BlipItSubscribeResource {
-    private static final Logger log = Logger.getLogger(BlipItSubscribeServerResource.class.getName());
+public class BlipItSubscribeResourceImpl extends ServerResource implements BlipItSubscribeResource {
+    private static final Logger log = Logger.getLogger(BlipItSubscribeResourceImpl.class.getName());
 
     @Get
     public String showMessage() {

@@ -8,11 +8,11 @@ import static org.junit.Assert.assertThat;
 
 public class BlipItServiceTest {
     
-    private BlipItSubscribeServerResource blipItSubscribeServerResource;
+    private BlipItSubscribeResourceImpl blipItSubscribeServerResource;
 
     @Before
     public void setup() {
-        blipItSubscribeServerResource = new BlipItSubscribeServerResource();
+        blipItSubscribeServerResource = new BlipItSubscribeResourceImpl();
     }
     
     @Test

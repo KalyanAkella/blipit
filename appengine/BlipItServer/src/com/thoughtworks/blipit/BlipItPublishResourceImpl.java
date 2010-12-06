@@ -16,9 +16,8 @@ import javax.jdo.PersistenceManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// TODO: Implement saving an Alert here !
-public class BlipItPublishServerResource extends ServerResource implements BlipItPublishResource {
-    private static final Logger log = Logger.getLogger(BlipItPublishServerResource.class.getName());
+public class BlipItPublishResourceImpl extends ServerResource implements BlipItPublishResource {
+    private static final Logger log = Logger.getLogger(BlipItPublishResourceImpl.class.getName());
 
     @Post
     public Representation acceptAlert(Representation entity) {

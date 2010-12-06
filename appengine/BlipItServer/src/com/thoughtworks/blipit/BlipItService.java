@@ -9,8 +9,8 @@ public class BlipItService extends Application {
     @Override
     public Restlet createInboundRoot() {
         Router router = new Router(getContext());
-        router.attach("/subscribe", BlipItSubscribeServerResource.class);
-        router.attach("/publish", BlipItPublishServerResource.class);
+        router.attach("/subscribe", BlipItSubscribeResourceImpl.class);
+        router.attach("/publish", BlipItPublishResourceImpl.class);
         return router;
     }
 }
