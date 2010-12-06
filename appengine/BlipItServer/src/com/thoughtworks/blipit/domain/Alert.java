@@ -7,6 +7,7 @@ import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import java.util.List;
 
 @PersistenceCapable
 public class Alert {
@@ -23,10 +24,14 @@ public class Alert {
     @Persistent
     private GeoPt geoPoint;
 
-    public Alert(String source, String description, GeoPt geoPoint) {
+    @Persistent
+    private List<String> channels;
+
+    public Alert(String source, String description, GeoPt geoPoint, List<String> channels) {
         this.source = source;
         this.description = description;
         this.geoPoint = geoPoint;
+        this.channels = channels;
     }
 
     public Key getKey() {
@@ -43,6 +48,10 @@ public class Alert {
 
     public GeoPt getGeoPoint() {
         return geoPoint;
+    }
+
+    public List<String> getChannels() {
+        return channels;
     }
 
     public boolean isSameAs(Alert alert) {

@@ -2,7 +2,7 @@ package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.domain.Alert;
-import com.thoughtworks.blipit.persistance.Persist;
+import com.thoughtworks.blipit.persistance.DataStoreHelper;
 import com.thoughtworks.contract.BlipItPublishResource;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
@@ -12,9 +12,11 @@ import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
-import javax.jdo.PersistenceManager;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.thoughtworks.blipit.Utils.splitByComma;
 
 public class BlipItPublishResourceImpl extends ServerResource implements BlipItPublishResource {
     private static final Logger log = Logger.getLogger(BlipItPublishResourceImpl.class.getName());
@@ -24,13 +26,8 @@ public class BlipItPublishResourceImpl extends ServerResource implements BlipItP
         Representation result = null;
 
         try {
-            Form form = new Form(entity);
-            String alertTitle = form.getFirstValue("alert.title");
-            String alertDescription = form.getFirstValue("alert.desc");
-            Float alertLatitude = Float.valueOf(form.getFirstValue("alert.loc.lat"));
-            Float alertLongitude = Float.valueOf(form.getFirstValue("alert.loc.long"));
-            Alert alert = new Alert(alertTitle, alertDescription, new GeoPt(alertLatitude, alertLongitude));
-            alert = saveAlertInDataStore(alert);
+            Alert alert = getAlert(new Form(entity));
+            alert = DataStoreHelper.save(alert);
             setStatus(Status.SUCCESS_CREATED);
             result = new StringRepresentation("Alert creation successful", MediaType.TEXT_PLAIN);
             log.info("Alert with title, " + alert.getSource() + " saved successfully with ID: " + alert.getKey());
@@ -42,13 +39,13 @@ public class BlipItPublishResourceImpl extends ServerResource implements BlipItP
         return result;
     }
 
-    private Alert saveAlertInDataStore(Alert alert) {
-        PersistenceManager manager = null;
-        try {
-            manager = Persist.getPersistenceManager();
-            return manager.makePersistent(alert);
-        } finally {
-            if (manager != null) manager.close();
-        }
+    private Alert getAlert(Form form) {
+        String alertTitle = form.getFirstValue("alert.title");
+        String alertDescription = form.getFirstValue("alert.desc");
+        Float alertLatitude = Float.valueOf(form.getFirstValue("alert.loc.lat"));
+        Float alertLongitude = Float.valueOf(form.getFirstValue("alert.loc.long"));
+        List<String> channels = splitByComma(form.getFirstValue("alert.channels"));
+        return new Alert(alertTitle, alertDescription, new GeoPt(alertLatitude, alertLongitude), channels);
     }
+
 }

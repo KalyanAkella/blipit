@@ -19,6 +19,10 @@
         <label for="alert.loc.long">Longitude (in degrees):</label>
         <input type="text" id="alert.loc.long" name="alert.loc.long"/>
     </div>
+    <div>
+        <label for="alert.channels">Channels (comma separated):</label>
+        <input type="text" id="alert.channels" name="alert.channels"/>
+    </div>
     <div><input type="submit" value="Insert Alert"/></div>
 </form>
 </body>

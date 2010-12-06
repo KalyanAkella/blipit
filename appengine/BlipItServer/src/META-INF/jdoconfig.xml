@@ -12,7 +12,7 @@
         <property name="javax.jdo.option.RetainValues" value="true"/>
         <property name="datanucleus.appengine.autoCreateDatastoreTxns" value="true"/>
 
-        <property name="datanucleus.appengine.datastoreReadConsistency" value="STRONG" />
+        <property name="datanucleus.appengine.datastoreReadConsistency" value="EVENTUAL" />
         <property name="javax.jdo.option.DatastoreReadTimeoutMillis" value="5000" />
         <property name="javax.jdo.option.DatastoreWriteTimeoutMillis" value="10000" />
     </persistence-manager-factory>
