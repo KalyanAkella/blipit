@@ -2,6 +2,8 @@ package com.thoughtworks.blipit.domain;
 
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
+import com.thoughtworks.contract.Blip;
+import com.thoughtworks.contract.GeoLocation;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
@@ -58,5 +60,16 @@ public class Alert {
         return this.getSource().equals(alert.getSource()) &&
                 this.getDescription().equalsIgnoreCase(alert.getDescription()) &&
                 this.getGeoPoint().compareTo(alert.getGeoPoint()) == 0;
+    }
+
+    public Blip toBlip() {
+        Blip blip = new Blip();
+        blip.setTitle(source);
+        blip.setMessage(description);
+        GeoLocation geoLocation = new GeoLocation();
+        geoLocation.setLatitude(geoPoint.getLatitude());
+        geoLocation.setLongitude(geoPoint.getLongitude());
+        blip.setBlipLocation(geoLocation);
+        return blip;
     }
 }

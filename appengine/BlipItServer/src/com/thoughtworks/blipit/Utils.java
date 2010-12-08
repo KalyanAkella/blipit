@@ -1,8 +1,10 @@
 package com.thoughtworks.blipit;
 
+import com.thoughtworks.contract.BlipItError;
 import org.datanucleus.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Utils {
@@ -14,5 +16,20 @@ public class Utils {
             if (StringUtils.notEmpty(string)) listOfStrs.add(string);
         }
         return listOfStrs;
+    }
+
+    public static <T> boolean isEmpty(Collection<T> collection) {
+        return collection == null || collection.isEmpty();
+    }
+
+    public static <T> boolean isNotEmpty(Collection<T> collection) {
+        return !isEmpty(collection);
+    }
+
+    static BlipItError noBlipsFoundError() {
+        BlipItError blipItError = new BlipItError();
+        blipItError.setCode(101);
+        blipItError.setMessage("No blips found");
+        return blipItError;
     }
 }

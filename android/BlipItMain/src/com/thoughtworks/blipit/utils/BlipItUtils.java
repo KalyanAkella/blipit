@@ -4,10 +4,15 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Message;
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.OverlayItem;
+import com.thoughtworks.contract.Blip;
+
+import java.util.ArrayList;
 
 public class BlipItUtils {
     public static final String USER_LOCATION_LATITUDE = "USER_LOCATION_LATITUDE";
     public static final String USER_LOCATION_LONGITUDE = "USER_LOCATION_LONGITUDE";
+    public static final String BLIPS = "BLIPS";
     public static final int MSG_REGISTER_CLIENT = 1;
     // TODO: handle unregister in the lifecycle methods of BlipItActivity
     public static final int MSG_UNREGISTER_CLIENT = 2;
@@ -46,5 +51,24 @@ public class BlipItUtils {
         int latitude = (int) (location.getLatitude() * 1E6);
         int longitude = (int) (location.getLongitude() * 1E6);
         return new GeoPoint(latitude, longitude);
+    }
+
+    public static Message getMessageWithBlips(ArrayList<Blip> blips, int messageId) {
+        Message message = Message.obtain(null, messageId);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(BLIPS, blips);
+        message.setData(bundle);
+        return message;
+    }
+
+    public static GeoPoint getGeoPoint(Blip blip) {
+        int latitudeE6 = blip.getBlipLocation().getLatitudeE6();
+        int longitudeE6 = blip.getBlipLocation().getLongitudeE6();
+        return new GeoPoint(latitudeE6, longitudeE6);
+    }
+
+    public static OverlayItem getOverlayItem(Blip blip) {
+        GeoPoint geoPoint = getGeoPoint(blip);
+        return new OverlayItem(geoPoint, blip.getTitle(), blip.getMessage());
     }
 }

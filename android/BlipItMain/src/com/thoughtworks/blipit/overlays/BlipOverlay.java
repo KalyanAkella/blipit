@@ -1,9 +1,10 @@
 package com.thoughtworks.blipit.overlays;
 
 import android.graphics.drawable.Drawable;
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
+import com.thoughtworks.blipit.utils.BlipItUtils;
+import com.thoughtworks.contract.Blip;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +31,13 @@ public class BlipOverlay extends BalloonItemizedOverlay<OverlayItem> {
         populate();
     }
 
-    public void addBlip(GeoPoint blipLoc, String title, String desc, boolean animateToLoc) {
-        OverlayItem blip = new OverlayItem(blipLoc, title, desc);
-        addBlip(blip);
-        if (animateToLoc) mapController.animateTo(blipLoc);
+    public void addBlips(List<Blip> blips) {
+        if (blips == null || blips.isEmpty()) return;
+        this.blips.clear();
+        mapView.invalidate();
+        for (Blip blip : blips) {
+            addBlip(BlipItUtils.getOverlayItem(blip));
+        }
+        mapView.invalidate();
     }
 }

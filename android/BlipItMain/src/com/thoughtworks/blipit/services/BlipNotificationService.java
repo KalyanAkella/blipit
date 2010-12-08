@@ -12,11 +12,18 @@ import android.os.SystemClock;
 import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.thoughtworks.blipit.R;
+import com.thoughtworks.blipit.utils.BlipItServiceHelper;
 import com.thoughtworks.blipit.utils.BlipItUtils;
+import com.thoughtworks.contract.Blip;
+import com.thoughtworks.contract.BlipItRequest;
+import com.thoughtworks.contract.BlipItResponse;
+import com.thoughtworks.contract.BlipItSubscribeResource;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import static com.thoughtworks.blipit.utils.BlipItUtils.getMessageWithBlips;
 
 public class BlipNotificationService extends IntentService {
     private final List<Messenger> clients;
@@ -75,20 +82,24 @@ public class BlipNotificationService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        // 1. Make the webservice call
-        // 2. Map the response to a set of GeoPoints
-        // 3. Construct a bundle from these GeoPoints
-        // 4. Multicast a message with this bundle to all registered clients using MSG_BLIPS_UPDATED
-        // 5. Remove any client on RemoteException
-        for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {
-            Messenger client = iterator.next();
-            Message message = Message.obtain(null, BlipItUtils.MSG_BLIPS_UPDATED);
-            try {
-                client.send(message);
-            } catch (RemoteException e) {
-                // The client is dead.  Remove it from the list;
-                iterator.remove();
+        // TODO: Surround all this code in try/catch and log errors. Ensure that the worker thread never dies out of exception here !
+        BlipItSubscribeResource blipItSubscribeResource = new BlipItServiceHelper().getBlipItResource();
+        // TODO: Construct the correct request here with user prefs
+        BlipItRequest blipItRequest = new BlipItRequest();
+        BlipItResponse blipItResponse = blipItSubscribeResource.getBlips(blipItRequest);
+        // TODO: Log the server-side error here
+        if (blipItResponse.hasNoError()) {
+            Message message = getMessageWithBlips((ArrayList<Blip>) blipItResponse.getBlips(), BlipItUtils.MSG_BLIPS_UPDATED);
+            for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {
+                Messenger client = iterator.next();
+                try {
+                    client.send(message);
+                } catch (RemoteException e) {
+                    // The client is dead.  Remove it from the list;
+                    iterator.remove();
+                }
             }
         }
     }
+
 }

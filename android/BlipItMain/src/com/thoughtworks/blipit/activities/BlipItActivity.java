@@ -1,6 +1,7 @@
 package com.thoughtworks.blipit.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -9,14 +10,18 @@ import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.google.android.maps.OverlayItem;
 import com.thoughtworks.blipit.R;
 import com.thoughtworks.blipit.overlays.BalloonMyLocationOverlay;
+import com.thoughtworks.blipit.overlays.BlipOverlay;
 import com.thoughtworks.blipit.services.BlipNotificationService;
 import com.thoughtworks.blipit.utils.BlipItServiceHelper;
 import com.thoughtworks.blipit.utils.BlipItUtils;
+import com.thoughtworks.contract.Blip;
 import com.thoughtworks.contract.BlipItSubscribeResource;
 
-// TODO: Handle other lifecycle events to correctly interact with BlipItNotificationService
+import java.util.List;
+
 public class BlipItActivity extends MapActivity {
     private static final String TAG = "BlipItActivity";
 
@@ -26,13 +31,14 @@ public class BlipItActivity extends MapActivity {
     private Messenger blipNotificationHandler;
     private BlipItSubscribeResource blipItResource;
     private BalloonMyLocationOverlay userLocationOverlay;
+    private BlipOverlay blipOverlay;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         initBlipNotifications();
-        initMapView();
+        initMapsAndOverlays();
     }
 
     private void initBlipNotifications() {
@@ -46,11 +52,27 @@ public class BlipItActivity extends MapActivity {
         this.blipItNotificationService = blipItNotificationService;
     }
 
+    private void initMapsAndOverlays() {
+        initMapView();
+        initUserLocationOverlay();
+        initBlipOverlay();
+    }
+
+    private void initBlipOverlay() {
+        Drawable drawable = this.getResources().getDrawable(R.drawable.marker);
+        blipOverlay = new BlipOverlay(drawable, mapView);
+        blipOverlay.addBlip(new OverlayItem(new GeoPoint(0, 0), "title", "message"));
+        mapView.getOverlays().add(blipOverlay);
+    }
+
+    private void initUserLocationOverlay() {
+        userLocationOverlay = new BalloonMyLocationOverlay(this, mapView);
+        mapView.getOverlays().add(userLocationOverlay);
+    }
+
     private void initMapView() {
         mapView = (MapView) this.findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
-        userLocationOverlay = new BalloonMyLocationOverlay(this, mapView);
-        mapView.getOverlays().add(userLocationOverlay);
     }
 
     @Override
@@ -83,6 +105,7 @@ public class BlipItActivity extends MapActivity {
     }
 
     public void updateBlips(Bundle data) {
+        blipOverlay.addBlips((List<Blip>) data.get(BlipItUtils.BLIPS));
         Toast.makeText(this, R.string.blip_notification_received, Toast.LENGTH_SHORT).show();
     }
 
