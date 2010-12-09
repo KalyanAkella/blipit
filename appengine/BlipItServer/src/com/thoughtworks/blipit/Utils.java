@@ -26,10 +26,9 @@ public class Utils {
         return !isEmpty(collection);
     }
 
-    static BlipItError noBlipsFoundError() {
+    static BlipItError getBlipItError(String message) {
         BlipItError blipItError = new BlipItError();
-        blipItError.setCode(101);
-        blipItError.setMessage("No blips found");
+        blipItError.setMessage(message);
         return blipItError;
     }
 }

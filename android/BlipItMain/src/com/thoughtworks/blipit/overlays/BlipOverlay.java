@@ -32,9 +32,8 @@ public class BlipOverlay extends BalloonItemizedOverlay<OverlayItem> {
     }
 
     public void addBlips(List<Blip> blips) {
-        if (blips == null || blips.isEmpty()) return;
+        if (blips == null) return;
         this.blips.clear();
-        mapView.invalidate();
         for (Blip blip : blips) {
             addBlip(BlipItUtils.getOverlayItem(blip));
         }

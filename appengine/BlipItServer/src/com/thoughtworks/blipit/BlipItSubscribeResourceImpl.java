@@ -12,6 +12,7 @@ import org.restlet.resource.ServerResource;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BlipItSubscribeResourceImpl extends ServerResource implements BlipItSubscribeResource {
@@ -34,9 +35,10 @@ public class BlipItSubscribeResourceImpl extends ServerResource implements BlipI
                 for (Alert alert : alerts) {
                     blipItResponse.addBlips(alert.toBlip());
                 }
-            } else {
-                blipItResponse.setBlipItError(Utils.noBlipsFoundError());
             }
+        } catch(Exception e) {
+            log.log(Level.SEVERE, "Error occured while fetching alerts from data store", e);
+            blipItResponse.setBlipItError(Utils.getBlipItError(e.getMessage()));
         } finally {
             if (query != null) {
                 query.closeAll();
