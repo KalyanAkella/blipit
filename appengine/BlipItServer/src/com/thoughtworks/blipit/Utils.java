@@ -26,9 +26,13 @@ public class Utils {
         return !isEmpty(collection);
     }
 
-    static BlipItError getBlipItError(String message) {
+    public static BlipItError getBlipItError(String message) {
         BlipItError blipItError = new BlipItError();
         blipItError.setMessage(message);
         return blipItError;
+    }
+
+    public static interface Task<T> {
+        void perform(T arg);
     }
 }

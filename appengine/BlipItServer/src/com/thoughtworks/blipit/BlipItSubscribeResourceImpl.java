@@ -9,10 +9,6 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BlipItSubscribeResourceImpl extends ServerResource implements BlipItSubscribeResource {
@@ -25,26 +21,17 @@ public class BlipItSubscribeResourceImpl extends ServerResource implements BlipI
 
     @Post
     public BlipItResponse getBlips(BlipItRequest blipItRequest) {
-        BlipItResponse blipItResponse = new BlipItResponse();
-        Query query = null;
-        try {
-            PersistenceManager persistenceManager = DataStoreHelper.getPersistenceManager();
-            query = persistenceManager.newQuery(Alert.class);
-            List<Alert> alerts = (List<Alert>) query.execute();
-            if (Utils.isNotEmpty(alerts)) {
-                for (Alert alert : alerts) {
-                    blipItResponse.addBlips(alert.toBlip());
-                }
-            }
-        } catch(Exception e) {
-            log.log(Level.SEVERE, "Error occured while fetching alerts from data store", e);
-            blipItResponse.setBlipItError(Utils.getBlipItError(e.getMessage()));
-        } finally {
-            if (query != null) {
-                query.closeAll();
-            }
-        }
-
+        final BlipItResponse blipItResponse = new BlipItResponse();
+        DataStoreHelper.retrieveAllAndProcess(Alert.class,
+                new Utils.Task<Alert>() {
+                    public void perform(Alert arg) {
+                        blipItResponse.addBlips(arg.toBlip());
+                    }
+                }, new Utils.Task<Throwable>() {
+                    public void perform(Throwable arg) {
+                        blipItResponse.setBlipItError(Utils.getBlipItError(arg.getMessage()));
+                    }
+                });
         return blipItResponse;
     }
 }
