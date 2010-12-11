@@ -26,6 +26,8 @@ import android.os.Bundle;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -50,6 +52,7 @@ public class BlipItActivity extends MapActivity {
     private BlipItSubscribeResource blipItResource;
     private BalloonMyLocationOverlay userLocationOverlay;
     private BlipOverlay blipOverlay;
+    private static final int SETTINGS_ID = Menu.FIRST;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,6 +119,21 @@ public class BlipItActivity extends MapActivity {
     protected void onDestroy() {
         super.onDestroy();
         unbindService(blipNotificationClientHandler);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        menu.add(0, SETTINGS_ID, 0, R.string.menu_settings);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == SETTINGS_ID) {
+            Toast.makeText(this, R.string.settings_selected, Toast.LENGTH_SHORT).show();
+        }
+        return true;
     }
 
     public Messenger getBlipNotificationHandler() {

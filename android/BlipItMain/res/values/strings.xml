@@ -7,4 +7,6 @@
     <string name="blip_notification_service_stopped">Blip Notifications disabled</string>
     <string name="blip_notification_received">Blip Notification received</string>
     <string name="user_location_updated">User Location Updated</string>
+    <string name="menu_settings">Settings</string>
+    <string name="settings_selected">Settings coming soon</string>
 </resources>
