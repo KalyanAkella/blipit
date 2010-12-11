@@ -29,6 +29,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.util.Log;
 import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.thoughtworks.blipit.R;
@@ -102,23 +103,26 @@ public class BlipNotificationService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        // TODO: Surround all this code in try/catch and log errors. Ensure that the worker thread never dies out of exception here !
-        BlipItSubscribeResource blipItSubscribeResource = new BlipItServiceHelper().getBlipItResource();
-        // TODO: Construct the correct request here with user prefs
-        BlipItRequest blipItRequest = new BlipItRequest();
-        BlipItResponse blipItResponse = blipItSubscribeResource.getBlips(blipItRequest);
-        // TODO: Log the server-side error here
-        if (blipItResponse.hasNoError()) {
-            Message message = getMessageWithBlips((ArrayList<Blip>) blipItResponse.getBlips(), BlipItUtils.MSG_BLIPS_UPDATED);
-            for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {
-                Messenger client = iterator.next();
-                try {
-                    client.send(message);
-                } catch (RemoteException e) {
-                    // The client is dead.  Remove it from the list;
-                    iterator.remove();
+        try {
+            BlipItSubscribeResource blipItSubscribeResource = new BlipItServiceHelper().getBlipItResource();
+            // TODO: Construct the correct request here with user prefs
+            BlipItRequest blipItRequest = new BlipItRequest();
+            BlipItResponse blipItResponse = blipItSubscribeResource.getBlips(blipItRequest);
+            if (blipItResponse.hasNoError()) {
+                Message message = getMessageWithBlips((ArrayList<Blip>) blipItResponse.getBlips(), BlipItUtils.MSG_BLIPS_UPDATED);
+                for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {
+                    Messenger client = iterator.next();
+                    try {
+                        client.send(message);
+                    } catch (RemoteException e) {
+                        Log.e(BlipItUtils.APP_TAG, "An error occurred while sending blips to client", e);
+                        // The client is dead.  Remove it from the list;
+                        iterator.remove();
+                    }
                 }
             }
+        } catch (Exception e) {
+            Log.e(BlipItUtils.APP_TAG, "An error occurred while retrieving blips", e);
         }
     }
 

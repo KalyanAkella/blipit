@@ -43,8 +43,6 @@ import com.thoughtworks.contract.BlipItSubscribeResource;
 import java.util.List;
 
 public class BlipItActivity extends MapActivity {
-    private static final String TAG = "BlipItActivity";
-
     private MapView mapView;
     private BlipNotificationClientHandler blipNotificationClientHandler;
     private Messenger blipItNotificationService;
@@ -134,7 +132,7 @@ public class BlipItActivity extends MapActivity {
             if (blipItNotificationService != null)
                 blipItNotificationService.send(BlipItUtils.getMessageWithGeoPoint(geoPoint, BlipItUtils.MSG_USER_LOCATION_UPDATED));
         } catch (RemoteException e) {
-            Log.e(TAG, "An error occured while updating user location", e);
+            Log.e(BlipItUtils.APP_TAG, "An error occured while updating user location", e);
         }
     }
 }
