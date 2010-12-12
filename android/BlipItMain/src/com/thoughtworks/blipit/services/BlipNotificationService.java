@@ -30,9 +30,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.util.Log;
-import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
-import com.thoughtworks.blipit.R;
 import com.thoughtworks.blipit.utils.BlipItServiceHelper;
 import com.thoughtworks.blipit.utils.BlipItUtils;
 import com.thoughtworks.contract.Blip;
@@ -44,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.thoughtworks.blipit.utils.BlipItUtils.APP_TAG;
 import static com.thoughtworks.blipit.utils.BlipItUtils.getMessageWithBlips;
 
 public class BlipNotificationService extends IntentService {
@@ -68,7 +67,7 @@ public class BlipNotificationService extends IntentService {
     public void onCreate() {
         super.onCreate();
         scheduleNotificationService();
-        Toast.makeText(this, R.string.blip_notification_service_started, Toast.LENGTH_SHORT).show();
+        Log.i(APP_TAG, "Blip notification service started");
     }
 
     private void scheduleNotificationService() {
@@ -81,7 +80,7 @@ public class BlipNotificationService extends IntentService {
     @Override
     public void onDestroy() {
         alarmManager.cancel(pendingIntent);
-        Toast.makeText(this, R.string.blip_notification_service_stopped, Toast.LENGTH_SHORT).show();
+        Log.i(APP_TAG, "Blip notification service stopped");
     }
 
     public void addClient(Messenger messenger) {
@@ -94,7 +93,7 @@ public class BlipNotificationService extends IntentService {
 
     public synchronized void setCurrentUserLocation(GeoPoint currentUserLocation) {
         this.currentUserLocation = currentUserLocation;
-        Toast.makeText(this, R.string.user_location_updated, Toast.LENGTH_SHORT).show();
+        Log.i(APP_TAG, "User location updated");
     }
 
     public synchronized GeoPoint getCurrentUserLocation() {

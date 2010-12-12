@@ -28,7 +28,6 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -43,6 +42,8 @@ import com.thoughtworks.contract.Blip;
 import com.thoughtworks.contract.BlipItSubscribeResource;
 
 import java.util.List;
+
+import static com.thoughtworks.blipit.utils.BlipItUtils.APP_TAG;
 
 public class BlipItActivity extends MapActivity {
     private MapView mapView;
@@ -142,7 +143,7 @@ public class BlipItActivity extends MapActivity {
 
     public void updateBlips(Bundle data) {
         blipOverlay.addBlips((List<Blip>) data.get(BlipItUtils.BLIPS));
-        Toast.makeText(this, R.string.blip_notification_received, Toast.LENGTH_SHORT).show();
+        Log.i(APP_TAG, "Blip notification received");
     }
 
     public void sendUserLocationUpdate(GeoPoint geoPoint) {
@@ -150,7 +151,7 @@ public class BlipItActivity extends MapActivity {
             if (blipItNotificationService != null)
                 blipItNotificationService.send(BlipItUtils.getMessageWithGeoPoint(geoPoint, BlipItUtils.MSG_USER_LOCATION_UPDATED));
         } catch (RemoteException e) {
-            Log.e(BlipItUtils.APP_TAG, "An error occured while updating user location", e);
+            Log.e(APP_TAG, "An error occured while updating user location", e);
         }
     }
 }

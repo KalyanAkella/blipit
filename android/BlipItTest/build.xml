@@ -54,10 +54,10 @@
      in between standard targets -->
     <target name="-pre-build" depends="clean">
         <ant antfile="../../appengine/BlipItServer/build.xml" target="runserver-tests" dir="../../appengine/BlipItServer"/>
-        <antcall target="init-gps-fix"/>
+        <antcall target="gps"/>
     </target>
 
-    <target name="init-gps-fix">
+    <target name="gps">
         <echo message="Setting the initial GPS fix to latitude:${user.latitude} and longitude:${user.longitude}"/>
         <telnet server="localhost" port="5554">
             <write>geo fix ${user.longitude} ${user.latitude}</write>

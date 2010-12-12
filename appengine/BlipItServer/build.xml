@@ -168,7 +168,6 @@
         </dev_appserver>
     </target>
 
-
     <target name="update" depends="war" description="Uploads the application, including indexes">
         <appcfg action="update" war="${war.dir}"/>
     </target>
