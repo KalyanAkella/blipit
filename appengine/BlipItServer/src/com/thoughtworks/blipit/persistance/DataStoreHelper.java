@@ -20,18 +20,17 @@
 
 package com.thoughtworks.blipit.persistance;
 
+import com.thoughtworks.blipit.Utils;
+
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DataStoreHelper {
     private static final String PERSISTENCE_PROP_NAME = "transactions-optional";
     private static PersistenceManagerFactory factory = JDOHelper.getPersistenceManagerFactory(PERSISTENCE_PROP_NAME);
-    private static final Logger log = Logger.getLogger(DataStoreHelper.class.getName());
 
     private DataStoreHelper() {
     }
@@ -50,19 +49,20 @@ public class DataStoreHelper {
         }
     }
 
-    public static <T> List<T> retrieveAllAndProcess(Class<T> clazz) throws Exception {
+    public static <T> void retrieveAllAndProcess(Class<T> clazz, Utils.Handler<T> handler) {
         PersistenceManager persistenceManager = null;
         Query query = null;
         try {
             persistenceManager = getPersistenceManager();
             query = persistenceManager.newQuery(clazz);
             List<T> entities = (List<T>) query.execute();
-            persistenceManager.detachCopyAll(entities);
-            return entities;
-            
+            if (Utils.isNotEmpty(entities)) {
+                for (T element : entities) {
+                    handler.handle(element);
+                }
+            }
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Error occured while fetching elements of type " + clazz.getSimpleName() + " from data store", e);
-            throw e;
+            handler.onError(e);
         } finally {
             if (query != null) query.closeAll();
             if (persistenceManager != null) persistenceManager.close();

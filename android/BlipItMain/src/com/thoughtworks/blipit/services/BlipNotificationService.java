@@ -115,7 +115,6 @@ public class BlipNotificationService extends IntentService {
                         client.send(message);
                     } catch (RemoteException e) {
                         Log.e(BlipItUtils.APP_TAG, "An error occurred while sending blips to client", e);
-                        // The client is dead.  Remove it from the list;
                         iterator.remove();
                     }
                 }

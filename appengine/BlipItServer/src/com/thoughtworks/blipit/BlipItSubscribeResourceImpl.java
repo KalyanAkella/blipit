@@ -29,11 +29,16 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
-import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class BlipItSubscribeResourceImpl extends ServerResource implements BlipItSubscribeResource {
     private static final Logger log = Logger.getLogger(BlipItSubscribeResourceImpl.class.getName());
+    private AlertRepository alertRepository;
+
+    public BlipItSubscribeResourceImpl() {
+        alertRepository = new AlertRepository();
+    }
 
     @Get
     public String showMessage() {
@@ -43,14 +48,16 @@ public class BlipItSubscribeResourceImpl extends ServerResource implements BlipI
     @Post
     public BlipItResponse getBlips(BlipItRequest blipItRequest) {
         final BlipItResponse blipItResponse = new BlipItResponse();
-        try {
-            List<Alert> alerts = new AlertRepository().GetAlerts(blipItRequest.getUserLocation(), blipItRequest.getUserPrefs());
-            for (Alert alert : alerts){
+        alertRepository.filterAlerts(blipItRequest.getUserLocation(), blipItRequest.getUserPrefs(), new Utils.Handler<Alert>() {
+            public void handle(Alert alert) {
                 blipItResponse.addBlips(alert.toBlip());
             }
-        } catch (Exception e) {
-             blipItResponse.setBlipItError(Utils.getBlipItError(e.getMessage()));
-        }
+
+            public void onError(Throwable throwable) {
+                log.log(Level.SEVERE, "An error occurred while fetching alerts", throwable);
+                blipItResponse.setBlipItError(Utils.getBlipItError(throwable.getMessage()));
+            }
+        });
         return blipItResponse;
     }
 }

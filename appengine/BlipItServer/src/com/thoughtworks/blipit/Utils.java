@@ -52,7 +52,8 @@ public class Utils {
         return blipItError;
     }
 
-    public static interface Task<T> {
-        void perform(T arg);
+    public static interface Handler<T> {
+        void handle(T arg);
+        void onError(Throwable throwable);
     }
 }
