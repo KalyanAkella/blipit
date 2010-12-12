@@ -3,7 +3,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <EditTextPreference
-            android:key="default_radius"
+            android:key="radius_pref_key"
             android:defaultValue="@string/default_value_radius_preference"
             android:title="@string/title_radius_preference"
             android:summary="@string/summary_radius_preference"
