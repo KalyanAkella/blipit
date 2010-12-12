@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+            android:key="default_radius"
+            android:defaultValue="@string/default_value_radius_preference"
+            android:title="@string/title_radius_preference"
+            android:summary="@string/summary_radius_preference"
+            android:dialogTitle="@string/dialog_title_radius_preference" />
+
+    <ListPreference
+            android:key="channel_pref_key"
+            android:title="@string/title_channel_preference"
+            android:summary="@string/summary_channel_preference"
+            android:dialogTitle="@string/dialog_title_channel_preference" />
+
+</PreferenceScreen>

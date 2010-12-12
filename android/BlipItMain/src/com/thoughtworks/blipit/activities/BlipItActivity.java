@@ -131,7 +131,7 @@ public class BlipItActivity extends MapActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == SETTINGS_ID) {
-            Toast.makeText(this, R.string.settings_selected, Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, BlipItPrefActivity.class));
         }
         return true;
     }

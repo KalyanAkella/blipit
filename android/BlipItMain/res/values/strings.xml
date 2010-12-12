@@ -9,4 +9,12 @@
     <string name="user_location_updated">User Location Updated</string>
     <string name="menu_settings">Settings</string>
     <string name="settings_selected">Settings coming soon</string>
+    <string name="title_radius_preference">Enter radius</string>
+    <string name="summary_radius_preference">Maximum distance in KM from your current position within which blips should be displayed</string>
+    <string name="default_value_radius_preference">2</string>
+    <string name="dialog_title_radius_preference">Preferred radius in KM</string>
+    <string name="title_channel_preference">Enter channel preference</string>
+    <string name="summary_channel_preference">Channel considered while displaying blips</string>
+    <string name="dialog_title_channel_preference">Select the channel you are interested in</string>
+    <string name="blipit_prefs">BlipIt Settings</string>
 </resources>

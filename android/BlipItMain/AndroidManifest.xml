@@ -13,6 +13,13 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activities.BlipItPrefActivity" android:label="@string/blipit_prefs">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.SAMPLE_CODE" />
+            </intent-filter>
+        </activity>
+
         <service android:name=".services.BlipNotificationService" android:process=":remote" />
 
         <uses-library android:name="com.google.android.maps"/>

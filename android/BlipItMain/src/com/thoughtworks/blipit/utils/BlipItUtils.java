@@ -39,6 +39,7 @@ public class BlipItUtils {
     public static final int MSG_USER_LOCATION_UPDATED = 3;
     public static final int MSG_BLIPS_UPDATED = 4;
     public static final String APP_TAG = "BlipItActivity";
+    public static final String CHANNEL_PREF_KEY = "channel_pref_key";
 
     private BlipItUtils() {
     }
