@@ -56,7 +56,9 @@ public class DataStoreHelper {
         try {
             persistenceManager = getPersistenceManager();
             query = persistenceManager.newQuery(clazz);
-            return (List<T>) query.execute();
+            List<T> entities = (List<T>) query.execute();
+            persistenceManager.detachCopyAll(entities);
+            return entities;
             
         } catch (Exception e) {
             log.log(Level.SEVERE, "Error occured while fetching elements of type " + clazz.getSimpleName() + " from data store", e);
