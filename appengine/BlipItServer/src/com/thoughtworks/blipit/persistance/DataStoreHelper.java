@@ -20,8 +20,6 @@
 
 package com.thoughtworks.blipit.persistance;
 
-import com.thoughtworks.blipit.Utils;
-
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
@@ -52,21 +50,17 @@ public class DataStoreHelper {
         }
     }
 
-    public static <T> void retrieveAllAndProcess(Class<T> clazz, Utils.Task<T> forEachElement, Utils.Task<Throwable> onError) {
+    public static <T> List<T> retrieveAllAndProcess(Class<T> clazz) throws Exception {
         PersistenceManager persistenceManager = null;
         Query query = null;
         try {
             persistenceManager = getPersistenceManager();
             query = persistenceManager.newQuery(clazz);
-            List<T> elements = (List<T>) query.execute();
-            if (Utils.isNotEmpty(elements)) {
-                for (T element : elements) {
-                    forEachElement.perform(element);
-                }
-            }
+            return (List<T>) query.execute();
+            
         } catch (Exception e) {
             log.log(Level.SEVERE, "Error occured while fetching elements of type " + clazz.getSimpleName() + " from data store", e);
-            onError.perform(e);
+            throw e;
         } finally {
             if (query != null) query.closeAll();
             if (persistenceManager != null) persistenceManager.close();
