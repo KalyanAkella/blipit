@@ -9,7 +9,7 @@
             android:summary="@string/summary_radius_preference"
             android:dialogTitle="@string/dialog_title_radius_preference" />
 
-    <ListPreference
+    <com.thoughtworks.blipit.activities.ChannelPreference
             android:key="channel_pref_key"
             android:title="@string/title_channel_preference"
             android:summary="@string/summary_channel_preference"

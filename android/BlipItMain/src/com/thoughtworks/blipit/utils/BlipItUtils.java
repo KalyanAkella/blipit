@@ -28,6 +28,7 @@ import com.google.android.maps.OverlayItem;
 import com.thoughtworks.contract.Blip;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BlipItUtils {
     public static final String USER_LOCATION_LATITUDE = "USER_LOCATION_LATITUDE";
@@ -41,6 +42,8 @@ public class BlipItUtils {
     public static final String APP_TAG = "BlipItActivity";
     public static final String CHANNEL_PREF_KEY = "channel_pref_key";
     public static final String RADIUS_PREF_KEY = "radius_pref_key";
+    public static final String PREFERRED_CHANNELS_KEY = "Preferred_Channels";
+    public static final String CHANNEL_SPLITTER = "\\|";
 
     private BlipItUtils() {
     }
@@ -93,5 +96,14 @@ public class BlipItUtils {
     public static OverlayItem getOverlayItem(Blip blip) {
         GeoPoint geoPoint = getGeoPoint(blip);
         return new OverlayItem(geoPoint, blip.getTitle(), blip.getMessage());
+    }
+
+    public static String getChannelsAsString(List<String> channelList) {
+        StringBuilder buffer = new StringBuilder();
+        for (String channel : channelList) {
+            buffer.append(channel).append("|");
+        }
+        if (buffer.length() > 0) buffer.deleteCharAt(buffer.length() - 1);
+        return buffer.toString();
     }
 }
