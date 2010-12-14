@@ -46,13 +46,29 @@
         classpathref="android.antlibs" />
 
     <target name="clean">
+        <echo>Cleaning output directories...</echo>
         <delete dir="build" quiet="true" />
         <delete dir="dist" quiet="true" />
+        <delete dir="bin" quiet="true" />
     </target>
     
-<!-- extension targets. Uncomment the ones where you want to do custom work
+    <!-- Creates the output directories if they don't exist yet. -->
+    <target name="-dirs" depends="clean">
+        <echo>Creating output directories if needed...</echo>
+        <mkdir dir="${resource.absolute.dir}" />
+        <mkdir dir="${external.libs.absolute.dir}" />
+        <mkdir dir="${out.absolute.dir}" />
+        <if condition="${manifest.hasCode}">
+            <then>
+                <mkdir dir="${gen.absolute.dir}" />
+                <mkdir dir="${out.classes.absolute.dir}" />
+            </then>
+        </if>
+    </target>
+
+    <!-- extension targets. Uncomment the ones where you want to do custom work
      in between standard targets -->
-    <target name="-pre-build" depends="clean">
+    <target name="-pre-build">
         <ant antfile="../../appengine/BlipItServer/build.xml" target="runserver-tests" dir="../../appengine/BlipItServer"/>
         <antcall target="gps"/>
     </target>

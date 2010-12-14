@@ -4,8 +4,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.preference.EditTextPreference;
 import android.util.AttributeSet;
+import android.util.Log;
 
-import static com.thoughtworks.blipit.utils.BlipItUtils.*;
+import static com.thoughtworks.blipit.utils.BlipItUtils.APP_TAG;
+import static com.thoughtworks.blipit.utils.BlipItUtils.RADIUS_PREF_KEY;
+import static com.thoughtworks.blipit.utils.BlipItUtils.getRadius;
 
 public class RadiusPreference extends EditTextPreference {
     public RadiusPreference(Context context, AttributeSet attrs) {
@@ -15,7 +18,7 @@ public class RadiusPreference extends EditTextPreference {
     // TODO: Currently does nothing. But this may not be the right thing to do here !
     @Override
     protected void onSetInitialValue(boolean restoreValue, Object defaultValue) {
-        // do nothing
+        Log.w(APP_TAG, "onSetInitialValue called on RadiusPreference");
     }
 
     @Override
