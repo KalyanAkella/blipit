@@ -18,5 +18,5 @@
     <string name="dialog_title_channel_preference">Select the channel you are interested in</string>
     <string name="blipit_prefs">BlipIt Settings</string>
     <string name="radius_preference_success">Your radius preference has been saved.</string>
-    <string name="radius_preference_failure">Only numbers allowed. Default value of 2 KM will be considered.</string>
+    <string name="radius_preference_failure">Radius cannot be greater than 10 KM. Reverting to default value of 2 KM.</string>
 </resources>

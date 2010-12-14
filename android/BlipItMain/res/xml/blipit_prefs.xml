@@ -2,14 +2,15 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <EditTextPreference
+    <com.thoughtworks.blipit.preferences.RadiusPreference
             android:key="radius_pref_key"
             android:defaultValue="@string/default_value_radius_preference"
             android:title="@string/title_radius_preference"
             android:summary="@string/summary_radius_preference"
-            android:dialogTitle="@string/dialog_title_radius_preference" />
+            android:dialogTitle="@string/dialog_title_radius_preference"
+            android:inputType="numberDecimal"/>
 
-    <com.thoughtworks.blipit.activities.ChannelPreference
+    <com.thoughtworks.blipit.preferences.ChannelPreference
             android:key="channel_pref_key"
             android:title="@string/title_channel_preference"
             android:summary="@string/summary_channel_preference"

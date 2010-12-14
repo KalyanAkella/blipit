@@ -20,14 +20,17 @@
 
 package com.thoughtworks.blipit.utils;
 
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Message;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
 import com.thoughtworks.contract.Blip;
+import com.thoughtworks.contract.GeoLocation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BlipItUtils {
@@ -40,10 +43,10 @@ public class BlipItUtils {
     public static final int MSG_USER_LOCATION_UPDATED = 3;
     public static final int MSG_BLIPS_UPDATED = 4;
     public static final String APP_TAG = "BlipItActivity";
-    public static final String CHANNEL_PREF_KEY = "channel_pref_key";
     public static final String RADIUS_PREF_KEY = "radius_pref_key";
-    public static final String PREFERRED_CHANNELS_KEY = "Preferred_Channels";
+    public static final String CHANNEL_PREF_KEY = "channel_pref_key";
     public static final String CHANNEL_SPLITTER = "\\|";
+    public static final String CHANNEL_SEPARATOR = "|";
 
     private BlipItUtils() {
     }
@@ -101,9 +104,34 @@ public class BlipItUtils {
     public static String getChannelsAsString(List<String> channelList) {
         StringBuilder buffer = new StringBuilder();
         for (String channel : channelList) {
-            buffer.append(channel).append("|");
+            buffer.append(channel).append(CHANNEL_SEPARATOR);
         }
         if (buffer.length() > 0) buffer.deleteCharAt(buffer.length() - 1);
         return buffer.toString();
+    }
+
+    public static GeoLocation toGeoLocation(GeoPoint currentUserLocation) {
+        GeoLocation userLocation = new GeoLocation();
+        if (currentUserLocation != null) {
+            userLocation.setLatitude(currentUserLocation.getLatitudeE6() * 1E-6);
+            userLocation.setLongitude(currentUserLocation.getLongitudeE6() * 1E-6);
+        }
+        return userLocation;
+    }
+
+    public static List<String> toChannelList(String channelPrefStr) {
+        List<String> channels = new ArrayList<String>();
+        if (channelPrefStr != null) {
+            channels.addAll(Arrays.asList(channelPrefStr.split(CHANNEL_SPLITTER)));
+        }
+        return channels;
+    }
+
+    public static float getRadius(SharedPreferences sharedPreferences, String key) {
+        try {
+            return Float.valueOf(sharedPreferences.getString(key, "2"));
+        } catch (Exception e) {
+            return sharedPreferences.getFloat(key, 2f);
+        }
     }
 }

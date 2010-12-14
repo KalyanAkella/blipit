@@ -28,13 +28,10 @@ public class BlipItPrefActivity extends PreferenceActivity implements SharedPref
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (BlipItUtils.RADIUS_PREF_KEY.equals(key)) {
-            try {
-                String radiusStr = sharedPreferences.getString(key, "2");
-                Float.valueOf(radiusStr);
-                Toast.makeText(this, R.string.radius_preference_success, Toast.LENGTH_LONG).show();
-            } catch (Exception e) {
-                // TODO: Reset this preference to 2 KM
+            float radius = BlipItUtils.getRadius(sharedPreferences, key);
+            if (radius > 10f) {
                 Toast.makeText(this, R.string.radius_preference_failure, Toast.LENGTH_LONG).show();
+                sharedPreferences.edit().putFloat(key, 2f).commit();
             }
         }
     }

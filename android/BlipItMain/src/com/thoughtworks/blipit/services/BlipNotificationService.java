@@ -24,11 +24,13 @@ import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import com.google.android.maps.GeoPoint;
 import com.thoughtworks.blipit.utils.BlipItServiceHelper;
@@ -36,13 +38,14 @@ import com.thoughtworks.blipit.utils.BlipItUtils;
 import com.thoughtworks.contract.Blip;
 import com.thoughtworks.contract.BlipItRequest;
 import com.thoughtworks.contract.BlipItResponse;
-import com.thoughtworks.contract.BlipItSubscribeResource;
+import com.thoughtworks.contract.UserPrefs;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import static com.thoughtworks.blipit.utils.BlipItUtils.APP_TAG;
+import static com.thoughtworks.blipit.utils.BlipItUtils.RADIUS_PREF_KEY;
 import static com.thoughtworks.blipit.utils.BlipItUtils.getMessageWithBlips;
 
 public class BlipNotificationService extends IntentService {
@@ -103,10 +106,8 @@ public class BlipNotificationService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            BlipItSubscribeResource blipItSubscribeResource = new BlipItServiceHelper().getBlipItResource();
-            // TODO: Construct the correct request here with user prefs
-            BlipItRequest blipItRequest = new BlipItRequest();
-            BlipItResponse blipItResponse = blipItSubscribeResource.getBlips(blipItRequest);
+            BlipItRequest blipItRequest = constructRequest();
+            BlipItResponse blipItResponse = new BlipItServiceHelper().getBlipItResource().getBlips(blipItRequest);
             if (blipItResponse.hasNoError()) {
                 Message message = getMessageWithBlips((ArrayList<Blip>) blipItResponse.getBlips(), BlipItUtils.MSG_BLIPS_UPDATED);
                 for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {
@@ -122,6 +123,20 @@ public class BlipNotificationService extends IntentService {
         } catch (Exception e) {
             Log.e(BlipItUtils.APP_TAG, "An error occurred while retrieving blips", e);
         }
+    }
+
+    private BlipItRequest constructRequest() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        float radius = BlipItUtils.getRadius(sharedPreferences, RADIUS_PREF_KEY);
+        String channelPrefStr = sharedPreferences.getString(BlipItUtils.CHANNEL_PREF_KEY, null);
+        Log.i(APP_TAG, "Preferences: Radius -> " + radius + ", Channels -> " + channelPrefStr);
+        BlipItRequest blipItRequest = new BlipItRequest();
+        blipItRequest.setUserLocation(BlipItUtils.toGeoLocation(getCurrentUserLocation()));
+        UserPrefs userPrefs = new UserPrefs();
+        userPrefs.setRadius(radius);
+        userPrefs.setChannels(BlipItUtils.toChannelList(channelPrefStr));
+        blipItRequest.setUserPrefs(userPrefs);
+        return blipItRequest;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.thoughtworks.blipit.activities;
+package com.thoughtworks.blipit.preferences;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.thoughtworks.blipit.utils.BlipItUtils.CHANNEL_SPLITTER;
-import static com.thoughtworks.blipit.utils.BlipItUtils.PREFERRED_CHANNELS_KEY;
+import static com.thoughtworks.blipit.utils.BlipItUtils.CHANNEL_PREF_KEY;
 
 public class ChannelPreference extends DialogPreference {
     private ListView listView;
@@ -43,7 +43,7 @@ public class ChannelPreference extends DialogPreference {
 
     private void checkItemsFromPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences();
-        String preferredChannelStr = sharedPreferences.getString(PREFERRED_CHANNELS_KEY, null);
+        String preferredChannelStr = sharedPreferences.getString(CHANNEL_PREF_KEY, null);
         if (preferredChannelStr != null) {
             String[] channels = preferredChannelStr.split(CHANNEL_SPLITTER);
             for (String channel : channels) {
@@ -61,7 +61,7 @@ public class ChannelPreference extends DialogPreference {
         if (positiveResult) {
             List<String> channelListStr = getSelectedChannels();
             SharedPreferences sharedPreferences = getSharedPreferences();
-            sharedPreferences.edit().putString(PREFERRED_CHANNELS_KEY, BlipItUtils.getChannelsAsString(channelListStr)).commit();
+            sharedPreferences.edit().putString(CHANNEL_PREF_KEY, BlipItUtils.getChannelsAsString(channelListStr)).commit();
         }
     }
 
