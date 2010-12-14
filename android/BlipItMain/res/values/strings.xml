@@ -19,5 +19,4 @@
     <string name="blipit_prefs">BlipIt Settings</string>
     <string name="radius_preference_success">Your radius preference has been saved.</string>
     <string name="radius_preference_failure">Radius cannot be greater than 10 KM. Reverting to default value of 2 KM.</string>
-    <string name="settings">Settings</string>
 </resources>
