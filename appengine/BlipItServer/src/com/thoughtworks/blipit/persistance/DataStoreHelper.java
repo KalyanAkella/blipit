@@ -49,12 +49,13 @@ public class DataStoreHelper {
         }
     }
 
-    public static <T> void retrieveAllAndProcess(Class<T> clazz, Utils.Handler<T> handler) {
+    public static <T> void retrieveAllAndProcess(Class<T> clazz, Utils.QueryHandler queryHandler, Utils.Handler<T> handler) {
         PersistenceManager persistenceManager = null;
         Query query = null;
         try {
             persistenceManager = getPersistenceManager();
             query = persistenceManager.newQuery(clazz);
+            queryHandler.prepare(query);
             List<T> entities = (List<T>) query.execute();
             if (Utils.isNotEmpty(entities)) {
                 for (T element : entities) {

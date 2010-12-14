@@ -23,6 +23,7 @@ package com.thoughtworks.blipit;
 import com.thoughtworks.contract.BlipItError;
 import org.datanucleus.util.StringUtils;
 
+import javax.jdo.Query;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -55,5 +56,9 @@ public class Utils {
     public static interface Handler<T> {
         void handle(T arg);
         void onError(Throwable throwable);
+    }
+
+    public static interface QueryHandler {
+        void prepare(Query query);
     }
 }

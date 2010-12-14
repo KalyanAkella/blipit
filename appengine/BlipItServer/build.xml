@@ -69,6 +69,26 @@
         </fileset>
     </path>
 
+    <path id="test.classpath">
+        <pathelement path="${war.dir}/WEB-INF/classes"/>
+        <pathelement path="${war.dir}/WEB-INF/test-classes"/>
+        <fileset dir="${war.dir}/WEB-INF/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${appengine.sdk}/lib">
+            <include name="shared/**/*.jar"/>
+        </fileset>
+        <fileset dir="${appengine.sdk}/lib">
+            <include name="impl/*.jar"/>
+        </fileset>
+        <fileset dir="${appengine.sdk}/lib">
+            <include name="testing/*.jar"/>
+        </fileset>
+        <fileset dir="../../shared/lib/appengine">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
     <target name="buildshared" description="Builds the shared libraries">
         <ant antfile="../BlipItShared/build.xml" target="jar" dir="../BlipItShared"/>
     </target>
@@ -106,14 +126,14 @@
                 <exclude name="**/*.jsp"/>
             </fileset>
         </copy>
-        <javac srcdir="test" destdir="${war.dir}/WEB-INF/test-classes" classpathref="project.classpath" debug="on"/>
+        <javac srcdir="test" destdir="${war.dir}/WEB-INF/test-classes" classpathref="test.classpath" debug="on"/>
     </target>
 
     <target name="run-tests" depends="test-compile">
         <property name="test.reports.dir" value="${war.dir}/WEB-INF/test-classes/reports"/>
         <mkdir dir="${test.reports.dir}"/>
         <junit printsummary="yes" failureProperty="testsFailed">
-            <classpath refid="project.classpath"/>
+            <classpath refid="test.classpath"/>
             <formatter type="plain"/>
             <batchtest todir="${test.reports.dir}">
                 <fileset dir="test">
