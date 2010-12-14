@@ -27,6 +27,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -53,7 +54,6 @@ public class BlipItActivity extends MapActivity {
     private BlipItSubscribeResource blipItResource;
     private BalloonMyLocationOverlay userLocationOverlay;
     private BlipOverlay blipOverlay;
-    private static final int SETTINGS_ID = Menu.FIRST;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -124,14 +124,14 @@ public class BlipItActivity extends MapActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        menu.add(0, SETTINGS_ID, 0, R.string.menu_settings);
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == SETTINGS_ID) {
+        if (item.getItemId() == R.id.settings) {
             startActivity(new Intent(this, BlipItPrefActivity.class));
         }
         return true;
