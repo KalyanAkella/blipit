@@ -20,9 +20,10 @@
 
 package com.thoughtworks.contract;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class UserPrefs {
+public class UserPrefs implements Serializable {
     private double radius;
     private List<String> channels;
 
