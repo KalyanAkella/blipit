@@ -23,8 +23,11 @@ package com.thoughtworks.blipit.services;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -54,6 +57,7 @@ public class BlipNotificationService extends IntentService {
     private PendingIntent pendingIntent;
     private AlarmManager alarmManager;
     private GeoPoint currentUserLocation;
+    private String blipItServiceUrl;
 
     public BlipNotificationService() {
         super("BlipNotificationServiceThread");
@@ -69,8 +73,20 @@ public class BlipNotificationService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
+        readBlipItServiceUrl();
         scheduleNotificationService();
         Log.i(APP_TAG, "Blip notification service started");
+    }
+
+    private void readBlipItServiceUrl() {
+        try {
+            PackageManager packageManager = getPackageManager();
+            ComponentName componentName = new ComponentName(this, BlipNotificationService.class);
+            ServiceInfo serviceInfo = packageManager.getServiceInfo(componentName, PackageManager.GET_META_DATA);
+            blipItServiceUrl = serviceInfo.metaData.getString("blipit.service.url");
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.wtf(APP_TAG, "Unable to retrieve service metadata", e);
+        }
     }
 
     private void scheduleNotificationService() {
@@ -107,7 +123,7 @@ public class BlipNotificationService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         try {
             BlipItRequest blipItRequest = constructRequest();
-            BlipItResponse blipItResponse = new BlipItServiceHelper().getBlipItResource().getBlips(blipItRequest);
+            BlipItResponse blipItResponse = BlipItServiceHelper.getSubscribeResource(blipItServiceUrl).getBlips(blipItRequest);
             if (blipItResponse.hasNoError()) {
                 Message message = getMessageWithBlips((ArrayList<Blip>) blipItResponse.getBlips(), BlipItUtils.MSG_BLIPS_UPDATED);
                 for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {

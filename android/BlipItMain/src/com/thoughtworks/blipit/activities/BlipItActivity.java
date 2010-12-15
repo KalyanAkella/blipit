@@ -37,10 +37,8 @@ import com.thoughtworks.blipit.R;
 import com.thoughtworks.blipit.overlays.BalloonMyLocationOverlay;
 import com.thoughtworks.blipit.overlays.BlipOverlay;
 import com.thoughtworks.blipit.services.BlipNotificationService;
-import com.thoughtworks.blipit.utils.BlipItServiceHelper;
 import com.thoughtworks.blipit.utils.BlipItUtils;
 import com.thoughtworks.contract.Blip;
-import com.thoughtworks.contract.BlipItSubscribeResource;
 
 import java.util.List;
 
@@ -51,7 +49,6 @@ public class BlipItActivity extends MapActivity {
     private BlipNotificationClientHandler blipNotificationClientHandler;
     private Messenger blipItNotificationService;
     private Messenger blipNotificationHandler;
-    private BlipItSubscribeResource blipItResource;
     private BalloonMyLocationOverlay userLocationOverlay;
     private BlipOverlay blipOverlay;
 
@@ -67,7 +64,6 @@ public class BlipItActivity extends MapActivity {
         blipNotificationClientHandler = new BlipNotificationClientHandler(this);
         bindService(new Intent(this, BlipNotificationService.class), blipNotificationClientHandler, BIND_AUTO_CREATE);
         blipNotificationHandler = new Messenger(blipNotificationClientHandler);
-        blipItResource = new BlipItServiceHelper().getBlipItResource();
     }
 
     public void setBlipItNotificationService(Messenger blipItNotificationService) {
