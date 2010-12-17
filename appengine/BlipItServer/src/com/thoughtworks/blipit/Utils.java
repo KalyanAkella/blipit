@@ -60,5 +60,6 @@ public class Utils {
 
     public static interface QueryHandler {
         void prepare(Query query);
+        Object[] parameters();
     }
 }

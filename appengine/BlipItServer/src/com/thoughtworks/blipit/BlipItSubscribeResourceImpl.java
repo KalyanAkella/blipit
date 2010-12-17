@@ -48,16 +48,19 @@ public class BlipItSubscribeResourceImpl extends ServerResource implements BlipI
     @Post
     public BlipItResponse getBlips(BlipItRequest blipItRequest) {
         final BlipItResponse blipItResponse = new BlipItResponse();
-        alertRepository.filterAlerts(blipItRequest.getUserLocation(), blipItRequest.getUserPrefs(), new Utils.Handler<Alert>() {
-            public void handle(Alert alert) {
-                blipItResponse.addBlips(alert.toBlip());
-            }
-
-            public void onError(Throwable throwable) {
-                log.log(Level.SEVERE, "An error occurred while fetching alerts", throwable);
-                blipItResponse.setBlipItError(Utils.getBlipItError(throwable.getMessage()));
-            }
-        });
+        alertRepository.filterAlerts(
+                blipItRequest.getUserLocation(),
+                blipItRequest.getUserPrefs(),
+                new Utils.Handler<Alert>() {
+                    public void handle(Alert alert) {
+                        blipItResponse.addBlips(alert.toBlip());
+                    }
+                    public void onError(Throwable throwable) {
+                        log.log(Level.SEVERE, "An error occurred while fetching alerts", throwable);
+                        blipItResponse.setBlipItError(Utils.getBlipItError(throwable.getMessage()));
+                    }
+                }
+        );
         return blipItResponse;
     }
 }

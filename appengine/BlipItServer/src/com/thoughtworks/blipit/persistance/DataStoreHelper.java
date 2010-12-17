@@ -56,7 +56,7 @@ public class DataStoreHelper {
             persistenceManager = getPersistenceManager();
             query = persistenceManager.newQuery(clazz);
             queryHandler.prepare(query);
-            List<T> entities = (List<T>) query.execute();
+            List<T> entities = (List<T>) query.executeWithArray(queryHandler.parameters());
             if (Utils.isNotEmpty(entities)) {
                 for (T element : entities) {
                     handler.handle(element);
