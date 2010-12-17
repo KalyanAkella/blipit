@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PanicBlip</string>
+    <string name="welcome_msg">Welcome to PanicBlip! Just choose your problem &amp; we will report that for you !!</string>
+</resources>
