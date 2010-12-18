@@ -39,17 +39,20 @@ public class DataStoreHelper {
         return factory.getPersistenceManager();
     }
 
-    public static <T> T save(T instance) {
+    public static <T> void save(T instance, Utils.ResultHandler<T> handler) {
         PersistenceManager persistenceManager = null;
         try {
             persistenceManager = getPersistenceManager();
-            return persistenceManager.makePersistent(instance);
+            T entity = persistenceManager.makePersistent(instance);
+            handler.handle(entity);
+        } catch(Exception e) {
+            handler.onError(e);
         } finally {
             if (persistenceManager != null) persistenceManager.close();
         }
     }
 
-    public static <T> void retrieveAllAndProcess(Class<T> clazz, Utils.QueryHandler queryHandler, Utils.Handler<T> handler) {
+    public static <T> void retrieveAllAndProcess(Class<T> clazz, Utils.QueryHandler queryHandler, Utils.ResultHandler<T> handler) {
         PersistenceManager persistenceManager = null;
         Query query = null;
         try {

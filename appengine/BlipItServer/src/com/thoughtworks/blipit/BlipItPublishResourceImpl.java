@@ -23,7 +23,10 @@ package com.thoughtworks.blipit;
 import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.blipit.persistance.DataStoreHelper;
-import com.thoughtworks.contract.BlipItPublishResource;
+import com.thoughtworks.contract.GeoLocation;
+import com.thoughtworks.contract.publish.BlipItPublishResource;
+import com.thoughtworks.contract.publish.SaveBlipRequest;
+import com.thoughtworks.contract.publish.SaveBlipResponse;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -43,20 +46,45 @@ public class BlipItPublishResourceImpl extends ServerResource implements BlipItP
 
     @Post
     public Representation acceptAlert(Representation entity) {
-        Representation result = null;
+        final Representation[] result = {null};
+        Alert alert = getAlert(new Form(entity));
+        DataStoreHelper.save(alert, new Utils.ResultHandler<Alert>() {
+            public void handle(Alert arg) {
+                setStatus(Status.SUCCESS_CREATED);
+                result[0] = new StringRepresentation("Alert creation successful", MediaType.TEXT_PLAIN);
+                log.info("Alert with title, " + arg.getSource() + " saved successfully with ID: " + arg.getKey());
+            }
 
-        try {
-            Alert alert = getAlert(new Form(entity));
-            alert = DataStoreHelper.save(alert);
-            setStatus(Status.SUCCESS_CREATED);
-            result = new StringRepresentation("Alert creation successful", MediaType.TEXT_PLAIN);
-            log.info("Alert with title, " + alert.getSource() + " saved successfully with ID: " + alert.getKey());
-        } catch (Exception e) {
-            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-            result = new StringRepresentation("Alert creation failed with error: " + e, MediaType.TEXT_PLAIN);
-            log.log(Level.SEVERE, "Alert creation failed with error", e);
-        }
-        return result;
+            public void onError(Throwable throwable) {
+                setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                result[0] = new StringRepresentation("Alert creation failed with error: " + throwable, MediaType.TEXT_PLAIN);
+                log.log(Level.SEVERE, "Alert creation failed with error", throwable);
+            }
+        });
+        return result[0];
+    }
+
+    @Post
+    public SaveBlipResponse saveBlip(SaveBlipRequest saveBlipRequest) {
+        Alert alert = getAlert(saveBlipRequest);
+        final SaveBlipResponse saveBlipResponse = new SaveBlipResponse();
+        DataStoreHelper.save(alert, new Utils.ResultHandler<Alert>() {
+            public void handle(Alert arg) {
+                saveBlipResponse.setSuccess();
+                log.info("Alert with title, " + arg.getSource() + " saved successfully with ID: " + arg.getKey());
+            }
+
+            public void onError(Throwable throwable) {
+                saveBlipResponse.setFailure(Utils.getBlipItError(throwable.getMessage()));
+                log.log(Level.SEVERE, "Alert creation failed with error", throwable);
+            }
+        });
+        return saveBlipResponse;
+    }
+
+    private Alert getAlert(SaveBlipRequest saveBlipRequest) {
+        GeoLocation blipLocation = saveBlipRequest.getBlipLocation();
+        return new Alert("Test Title", "Test Desc", Utils.asGeoPoint(blipLocation), saveBlipRequest.getApplicableChannels());
     }
 
     private Alert getAlert(Form form) {

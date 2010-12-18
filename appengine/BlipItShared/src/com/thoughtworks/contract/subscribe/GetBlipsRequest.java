@@ -18,11 +18,13 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.contract;
+package com.thoughtworks.contract.subscribe;
+
+import com.thoughtworks.contract.GeoLocation;
 
 import java.io.Serializable;
 
-public class BlipItRequest implements Serializable {
+public class GetBlipsRequest implements Serializable {
     private GeoLocation userLocation;
     private UserPrefs userPrefs;
 

@@ -38,7 +38,7 @@ import com.thoughtworks.blipit.overlays.BalloonMyLocationOverlay;
 import com.thoughtworks.blipit.overlays.BlipOverlay;
 import com.thoughtworks.blipit.services.BlipNotificationService;
 import com.thoughtworks.blipit.utils.BlipItUtils;
-import com.thoughtworks.contract.Blip;
+import com.thoughtworks.contract.subscribe.Blip;
 
 import java.util.List;
 

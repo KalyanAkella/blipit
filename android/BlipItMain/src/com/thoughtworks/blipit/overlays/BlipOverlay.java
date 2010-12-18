@@ -24,7 +24,7 @@ import android.graphics.drawable.Drawable;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 import com.thoughtworks.blipit.utils.BlipItUtils;
-import com.thoughtworks.contract.Blip;
+import com.thoughtworks.contract.subscribe.Blip;
 
 import java.util.ArrayList;
 import java.util.List;

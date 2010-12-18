@@ -18,8 +18,17 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.contract;
+package com.thoughtworks.contract.subscribe;
 
-// TODO: Implement saving an Alert here !
-public interface BlipItPublishResource {
+import com.thoughtworks.contract.subscribe.GetBlipsRequest;
+import com.thoughtworks.contract.subscribe.GetBlipsResponse;
+import org.restlet.resource.Get;
+import org.restlet.resource.Post;
+
+public interface BlipItSubscribeResource {
+    @Get
+    public String showMessage();
+
+    @Post
+    public GetBlipsResponse getBlips(GetBlipsRequest blipItRequest);
 }

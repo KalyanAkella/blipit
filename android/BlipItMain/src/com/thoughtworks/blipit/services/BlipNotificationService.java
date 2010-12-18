@@ -38,10 +38,10 @@ import android.util.Log;
 import com.google.android.maps.GeoPoint;
 import com.thoughtworks.blipit.utils.BlipItServiceHelper;
 import com.thoughtworks.blipit.utils.BlipItUtils;
-import com.thoughtworks.contract.Blip;
-import com.thoughtworks.contract.BlipItRequest;
-import com.thoughtworks.contract.BlipItResponse;
-import com.thoughtworks.contract.UserPrefs;
+import com.thoughtworks.contract.subscribe.Blip;
+import com.thoughtworks.contract.subscribe.GetBlipsRequest;
+import com.thoughtworks.contract.subscribe.GetBlipsResponse;
+import com.thoughtworks.contract.subscribe.UserPrefs;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -122,8 +122,8 @@ public class BlipNotificationService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            BlipItRequest blipItRequest = constructRequest();
-            BlipItResponse blipItResponse = BlipItServiceHelper.getSubscribeResource(blipItServiceUrl).getBlips(blipItRequest);
+            GetBlipsRequest blipItRequest = constructRequest();
+            GetBlipsResponse blipItResponse = BlipItServiceHelper.getSubscribeResource(blipItServiceUrl).getBlips(blipItRequest);
             if (blipItResponse.hasNoError()) {
                 Message message = getMessageWithBlips((ArrayList<Blip>) blipItResponse.getBlips(), BlipItUtils.MSG_BLIPS_UPDATED);
                 for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {
@@ -141,12 +141,12 @@ public class BlipNotificationService extends IntentService {
         }
     }
 
-    private BlipItRequest constructRequest() {
+    private GetBlipsRequest constructRequest() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         float radius = BlipItUtils.getRadius(sharedPreferences, RADIUS_PREF_KEY);
         String channelPrefStr = sharedPreferences.getString(BlipItUtils.CHANNEL_PREF_KEY, null);
         Log.i(APP_TAG, "Preferences: Radius -> " + radius + ", Channels -> " + channelPrefStr);
-        BlipItRequest blipItRequest = new BlipItRequest();
+        GetBlipsRequest blipItRequest = new GetBlipsRequest();
         blipItRequest.setUserLocation(BlipItUtils.toGeoLocation(getCurrentUserLocation()));
         UserPrefs userPrefs = new UserPrefs();
         userPrefs.setRadius(radius);

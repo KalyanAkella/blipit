@@ -20,7 +20,9 @@
 
 package com.thoughtworks.blipit;
 
+import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.contract.BlipItError;
+import com.thoughtworks.contract.GeoLocation;
 import org.datanucleus.util.StringUtils;
 
 import javax.jdo.Query;
@@ -53,7 +55,11 @@ public class Utils {
         return blipItError;
     }
 
-    public static interface Handler<T> {
+    static GeoPt asGeoPoint(GeoLocation blipLocation) {
+        return new GeoPt(((float) blipLocation.getLatitude()), ((float) blipLocation.getLongitude()));
+    }
+
+    public static interface ResultHandler<T> {
         void handle(T arg);
         void onError(Throwable throwable);
     }

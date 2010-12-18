@@ -22,9 +22,9 @@ package com.thoughtworks.blipit;
 
 import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.blipit.persistance.AlertRepository;
-import com.thoughtworks.contract.BlipItRequest;
-import com.thoughtworks.contract.BlipItResponse;
-import com.thoughtworks.contract.BlipItSubscribeResource;
+import com.thoughtworks.contract.subscribe.GetBlipsRequest;
+import com.thoughtworks.contract.subscribe.GetBlipsResponse;
+import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
@@ -46,21 +46,18 @@ public class BlipItSubscribeResourceImpl extends ServerResource implements BlipI
     }
 
     @Post
-    public BlipItResponse getBlips(BlipItRequest blipItRequest) {
-        final BlipItResponse blipItResponse = new BlipItResponse();
-        alertRepository.filterAlerts(
-                blipItRequest.getUserLocation(),
-                blipItRequest.getUserPrefs(),
-                new Utils.Handler<Alert>() {
-                    public void handle(Alert alert) {
-                        blipItResponse.addBlips(alert.toBlip());
-                    }
-                    public void onError(Throwable throwable) {
-                        log.log(Level.SEVERE, "An error occurred while fetching alerts", throwable);
-                        blipItResponse.setBlipItError(Utils.getBlipItError(throwable.getMessage()));
-                    }
-                }
-        );
+    public GetBlipsResponse getBlips(GetBlipsRequest blipItRequest) {
+        final GetBlipsResponse blipItResponse = new GetBlipsResponse();
+        alertRepository.filterAlerts(blipItRequest.getUserLocation(), blipItRequest.getUserPrefs(), new Utils.ResultHandler<Alert>() {
+            public void handle(Alert alert) {
+                blipItResponse.addBlips(alert.toBlip());
+            }
+
+            public void onError(Throwable throwable) {
+                log.log(Level.SEVERE, "An error occurred while fetching alerts", throwable);
+                blipItResponse.setBlipItError(Utils.getBlipItError(throwable.getMessage()));
+            }
+        });
         return blipItResponse;
     }
 }

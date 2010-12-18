@@ -20,13 +20,13 @@
 
 package com.thoughtworks.blipit.utils;
 
-import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
+import com.thoughtworks.contract.publish.BlipItPublishResource;
 import org.restlet.resource.ClientResource;
 
-public class BlipItServiceHelper {
+public class PanicBlipServiceHelper {
 
-    public static BlipItSubscribeResource getSubscribeResource(String blipitServiceUri) {
+    public static BlipItPublishResource getPublishResource(String blipitServiceUri) {
         ClientResource clientResource = new ClientResource(blipitServiceUri);
-        return clientResource.wrap(BlipItSubscribeResource.class);
+        return clientResource.wrap(BlipItPublishResource.class);
     }
 }

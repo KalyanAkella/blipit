@@ -18,15 +18,15 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.contract;
+package com.thoughtworks.contract.publish;
 
-import org.restlet.resource.Get;
+import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 
-public interface BlipItSubscribeResource {
-    @Get
-    public String showMessage();
+public interface BlipItPublishResource {
+    @Post
+    Representation acceptAlert(Representation entity);
 
     @Post
-    public BlipItResponse getBlips(BlipItRequest blipItRequest);
+    SaveBlipResponse saveBlip(SaveBlipRequest saveBlipRequest);
 }

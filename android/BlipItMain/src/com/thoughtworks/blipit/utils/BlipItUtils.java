@@ -26,7 +26,7 @@ import android.os.Bundle;
 import android.os.Message;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
-import com.thoughtworks.contract.Blip;
+import com.thoughtworks.contract.subscribe.Blip;
 import com.thoughtworks.contract.GeoLocation;
 
 import java.util.ArrayList;

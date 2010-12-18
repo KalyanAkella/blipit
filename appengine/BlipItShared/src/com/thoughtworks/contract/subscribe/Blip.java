@@ -18,7 +18,9 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.contract;
+package com.thoughtworks.contract.subscribe;
+
+import com.thoughtworks.contract.GeoLocation;
 
 import java.io.Serializable;
 import java.util.Date;

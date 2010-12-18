@@ -18,28 +18,44 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.contract;
+package com.thoughtworks.contract.subscribe;
+
+import com.thoughtworks.contract.BlipItError;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class UserPrefs implements Serializable {
-    private double radius;
-    private List<String> channels;
+public class GetBlipsResponse implements Serializable {
+    private List<Blip> blips;
+    private BlipItError blipItError;
 
-    public List<String> getChannels() {
-        return channels;
+    public GetBlipsResponse() {
+        blips = new ArrayList<Blip>();
     }
 
-    public void setChannels(List<String> channels) {
-        this.channels = channels;
+    public List<Blip> getBlips() {
+        return blips;
     }
 
-    public double getRadius() {
-        return radius;
+    public void addBlips(Blip... blips) {
+        this.blips.addAll(Arrays.asList(blips));
     }
 
-    public void setRadius(double radius) {
-        this.radius = radius;
+    public BlipItError getBlipItError() {
+        return blipItError;
+    }
+
+    public void setBlipItError(BlipItError blipItError) {
+        this.blipItError = blipItError;
+    }
+
+    public boolean hasError() {
+        return blipItError != null;
+    }
+
+    public boolean hasNoError() {
+        return !hasError();
     }
 }

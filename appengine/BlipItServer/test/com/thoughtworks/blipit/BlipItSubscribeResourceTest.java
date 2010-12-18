@@ -20,7 +20,7 @@
 
 package com.thoughtworks.blipit;
 
-import com.thoughtworks.contract.BlipItSubscribeResource;
+import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
 import org.junit.Before;
 import org.junit.Test;
 

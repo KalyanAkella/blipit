@@ -22,7 +22,7 @@ package com.thoughtworks.blipit.domain;
 
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
-import com.thoughtworks.contract.Blip;
+import com.thoughtworks.contract.subscribe.Blip;
 import com.thoughtworks.contract.GeoLocation;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
