@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 public class PanicBlipActivity extends Activity implements View.OnClickListener {
 
-    // TODO: Externalize this url
+    // TODO: Read this url from settings.xml either through prefs or resource.getString API
     private static final String BLIPIT_SERVICE_URL = "http://10.0.2.2:8080/blipit/subscribe";
     private static final String APP_TAG = "PanicBlipActivity";
 

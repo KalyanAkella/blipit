@@ -66,6 +66,13 @@
         </if>
     </target>
 
+    <target name="-pre-build">
+        <echo>Creating settings.xml from settings_template.xml and poking the Google Maps API Key...</echo>
+        <delete file="res/values/settings.xml" quiet="true"/>
+        <copy file="settings_template.xml" tofile="res/values/settings.xml"/>
+        <replace file="res/values/settings.xml" token="@BLIPIT_SERVICE_URL@" value="${blipit.service.url}"/>
+    </target>
+
     <target name="-pre-compile">
         <ant antfile="../../appengine/BlipItShared/build.xml" target="jar" dir="../../appengine/BlipItShared"/>
         <copy todir="${external.libs.dir}" flatten="true">

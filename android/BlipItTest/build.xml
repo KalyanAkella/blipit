@@ -75,7 +75,7 @@
 
     <target name="gps">
         <echo message="Setting the initial GPS fix to latitude:${user.latitude} and longitude:${user.longitude}"/>
-        <telnet server="localhost" port="5554">
+        <telnet server="localhost" port="${emulator.port}">
             <write>geo fix ${user.longitude} ${user.latitude}</write>
         </telnet>
     </target>
