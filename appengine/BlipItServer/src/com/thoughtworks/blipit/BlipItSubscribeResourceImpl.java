@@ -25,6 +25,7 @@ import com.thoughtworks.blipit.persistance.AlertRepository;
 import com.thoughtworks.contract.subscribe.GetBlipsRequest;
 import com.thoughtworks.contract.subscribe.GetBlipsResponse;
 import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
+import com.thoughtworks.contract.subscribe.UserPrefs;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
@@ -48,7 +49,9 @@ public class BlipItSubscribeResourceImpl extends ServerResource implements BlipI
     @Post
     public GetBlipsResponse getBlips(GetBlipsRequest blipItRequest) {
         final GetBlipsResponse blipItResponse = new GetBlipsResponse();
-        alertRepository.filterAlerts(blipItRequest.getUserLocation(), blipItRequest.getUserPrefs(), new Utils.ResultHandler<Alert>() {
+        UserPrefs userPrefs = blipItRequest.getUserPrefs();
+        if (userPrefs == null || userPrefs.getChannels() == null || userPrefs.getChannels().isEmpty()) return blipItResponse;
+        alertRepository.filterAlerts(blipItRequest.getUserLocation(), userPrefs, new Utils.ResultHandler<Alert>() {
             public void handle(Alert alert) {
                 blipItResponse.addBlips(alert.toBlip());
             }

@@ -4,13 +4,19 @@
       android:versionCode="1"
       android:versionName="1.0">
     <application android:label="@string/app_name" android:icon="@drawable/icon">
-        <activity android:name="PanicBlipActivity"
+        <activity android:name=".activities.PanicBlipActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".services.PanicNotificationService" android:process=":panicRemote" >
+            <meta-data android:name="blipit.service.url" android:value="@string/blipit_service_url" />
+            <meta-data android:name="time.between.loc.updates.in.millis" android:value="@string/time_between_loc_updates_in_millis" />
+        </service>
+
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />

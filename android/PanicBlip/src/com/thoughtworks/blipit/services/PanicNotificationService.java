@@ -1,0 +1,131 @@
+package com.thoughtworks.blipit.services;
+
+import android.app.IntentService;
+import android.app.PendingIntent;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Messenger;
+import android.util.Log;
+import android.widget.Toast;
+import com.thoughtworks.blipit.utils.PanicBlipServiceHelper;
+import com.thoughtworks.blipit.utils.PanicBlipUtils;
+import com.thoughtworks.contract.publish.BlipItPublishResource;
+import com.thoughtworks.contract.publish.SaveBlipRequest;
+import com.thoughtworks.contract.publish.SaveBlipResponse;
+
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static com.thoughtworks.blipit.utils.PanicBlipUtils.APP_TAG;
+
+public class PanicNotificationService extends IntentService {
+    private String blipItServiceUrl;
+    private ConcurrentLinkedQueue<ArrayList<String>> panicQueue;
+    private Messenger panicMessenger;
+    private int minTimeForLocUpdates;
+    private LocationManager locationManager;
+    private PendingIntent pendingIntentForLocUpdates;
+
+    public PanicNotificationService() {
+        super("PanicNotificationServiceThread");
+        panicQueue = new ConcurrentLinkedQueue<ArrayList<String>>();
+        panicMessenger = new Messenger(new PanicNotificationServiceHandler(this));
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        readServiceMetadata();
+        initLocationManager();
+        Log.i(APP_TAG, "Panic notification service started");
+    }
+
+    @Override
+    public void onDestroy() {
+        locationManager.removeUpdates(pendingIntentForLocUpdates);
+        panicQueue.clear();
+        Log.i(APP_TAG, "Panic notification service stopped");
+    }
+
+    private void initLocationManager() {
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        pendingIntentForLocUpdates = PendingIntent.getService(this, 0, new Intent(this, PanicNotificationService.class), 0);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeForLocUpdates, 0, pendingIntentForLocUpdates);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTimeForLocUpdates, 0, pendingIntentForLocUpdates);
+    }
+
+    private void readServiceMetadata() {
+        try {
+            PackageManager packageManager = getPackageManager();
+            ComponentName componentName = new ComponentName(this, PanicNotificationService.class);
+            ServiceInfo serviceInfo = packageManager.getServiceInfo(componentName, PackageManager.GET_META_DATA);
+            Bundle metaData = serviceInfo.metaData;
+            blipItServiceUrl = metaData.getString("blipit.service.url");
+            minTimeForLocUpdates = Integer.valueOf(metaData.getString("time.between.loc.updates.in.millis"));
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.wtf(APP_TAG, "Unable to retrieve service metadata", e);
+        } catch (NumberFormatException e) {
+            minTimeForLocUpdates = 0;
+            Log.e(APP_TAG, "Unable to read value of min time between loc updates", e);
+        }
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return panicMessenger.getBinder();
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        if (panicQueue.isEmpty()) return;
+        Bundle bundle = intent.getExtras();
+        if (bundle.containsKey(LocationManager.KEY_LOCATION_CHANGED)) {
+            // TODO: Determine if this is a good enough location reading
+            Location newLocation = (Location) bundle.get(LocationManager.KEY_LOCATION_CHANGED);
+            for (ArrayList<String> issueList : panicQueue) {
+                reportIssue(newLocation, issueList);
+            }
+        }
+    }
+
+    public void reportIssue(ArrayList<String> issueList) {
+        Location lastKnownLocation = getLastKnownLocation();
+        if (lastKnownLocation == null) {
+            Toast.makeText(this, "Your issue will be reported as soon as we detect your current location", Toast.LENGTH_LONG).show();
+        } else {
+            reportIssue(lastKnownLocation, issueList);
+        }
+    }
+
+    private Location getLastKnownLocation() {
+        Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (lastKnownLocation == null)
+            lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if (lastKnownLocation == null)
+            lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+        return lastKnownLocation;
+    }
+
+    private void reportIssue(Location newLocation, ArrayList<String> issueList) {
+        SaveBlipRequest saveBlipRequest = PanicBlipUtils.getSaveBlipRequest(newLocation, issueList);
+        BlipItPublishResource publishResource = PanicBlipServiceHelper.getPublishResource(blipItServiceUrl);
+        SaveBlipResponse saveBlipResponse = publishResource.saveBlip(saveBlipRequest);
+        if (saveBlipResponse.isFailure()) {
+            Toast.makeText(this, saveBlipResponse.getBlipItError().getMessage(), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(this, "Issue reported successfully", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void reportAndRegisterPanic(ArrayList<String> issues) {
+        reportIssue(issues);
+        panicQueue.add(issues);
+    }
+}

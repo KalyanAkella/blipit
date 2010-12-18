@@ -38,7 +38,7 @@ public class ChannelPreference extends DialogPreference {
 
     // TODO: Make a web service call to retrieve the various channels available
     private List<String> getChannels() {
-        return Arrays.asList("Food", "Retail", "Transport", "Gaming", "Movies");
+        return Arrays.asList("Food", "Retail", "Transport", "Gaming", "Movies", "Fire", "Accident");
     }
 
     private void checkItemsFromPreferences() {

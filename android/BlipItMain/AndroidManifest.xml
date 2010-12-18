@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".services.BlipNotificationService" android:process=":remote" >
+        <service android:name=".services.BlipNotificationService" android:process=":blipitRemote" >
             <meta-data android:name="blipit.service.url" android:value="@string/blipit_service_url" />
         </service>
 
