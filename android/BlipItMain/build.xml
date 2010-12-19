@@ -74,6 +74,7 @@ in between standard targets -->
         <copy file="settings_template.xml" tofile="res/values/settings.xml"/>
         <replace file="res/values/settings.xml" token="@MAPS_API_KEY@" value="${maps.api.key}"/>
         <replace file="res/values/settings.xml" token="@BLIPIT_SERVICE_URL@" value="${blipit.service.url}"/>
+        <replace file="res/values/settings.xml" token="@TIME_BETWEEN_LOC_UPDATES_IN_MILLIS@" value="${time.between.loc.updates.in.millis}"/>
     </target>
 
     <!-- Compile BlipIt specific shared libs -->

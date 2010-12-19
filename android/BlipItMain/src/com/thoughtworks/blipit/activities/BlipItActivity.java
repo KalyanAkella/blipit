@@ -20,7 +20,10 @@
 
 package com.thoughtworks.blipit.activities;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Messenger;
@@ -51,6 +54,7 @@ public class BlipItActivity extends MapActivity {
     private Messenger blipNotificationHandler;
     private BalloonMyLocationOverlay userLocationOverlay;
     private BlipOverlay blipOverlay;
+    private int minTimeForLocUpdates;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,20 +75,35 @@ public class BlipItActivity extends MapActivity {
     }
 
     private void initMapsAndOverlays() {
+        readMinTimeForLocUpdates();
         initMapView();
         initUserLocationOverlay();
         initBlipOverlay();
     }
 
+    private void readMinTimeForLocUpdates() {
+        try {
+            PackageManager packageManager = getPackageManager();
+            ComponentName componentName = new ComponentName(this, BlipItActivity.class);
+            ActivityInfo activityInfo = packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA);
+            minTimeForLocUpdates = Integer.valueOf(activityInfo.metaData.getString("time.between.loc.updates.in.millis"));
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.wtf(APP_TAG, "Unable to retrieve activity metadata", e);
+        } catch (NumberFormatException e) {
+            minTimeForLocUpdates = 0;
+            Log.e(APP_TAG, "Unable to read value of min time between loc updates", e);
+        }
+    }
+
     private void initBlipOverlay() {
         Drawable drawable = this.getResources().getDrawable(R.drawable.marker);
         blipOverlay = new BlipOverlay(drawable, mapView);
-        blipOverlay.addBlip(new OverlayItem(new GeoPoint(0, 0), "title", "message"));
+        blipOverlay.addBlip(new OverlayItem(new GeoPoint(-84779572, -168505110), "title", "message"));
         mapView.getOverlays().add(blipOverlay);
     }
 
     private void initUserLocationOverlay() {
-        userLocationOverlay = new BalloonMyLocationOverlay(this, mapView);
+        userLocationOverlay = new BalloonMyLocationOverlay(this, mapView, minTimeForLocUpdates);
         mapView.getOverlays().add(userLocationOverlay);
     }
 

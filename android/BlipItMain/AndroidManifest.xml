@@ -11,6 +11,7 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <meta-data android:name="time.between.loc.updates.in.millis" android:value="@string/time_between_loc_updates_in_millis" />
         </activity>
 
         <activity android:name=".activities.BlipItPrefActivity" android:label="@string/blipit_prefs">

@@ -20,7 +20,9 @@
 
 package com.thoughtworks.blipit.overlays;
 
+import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.view.View;
 import android.view.ViewGroup;
 import com.google.android.maps.GeoPoint;
@@ -39,19 +41,25 @@ public class BalloonMyLocationOverlay extends MyLocationOverlay {
     private MapController mapController;
     private Runnable firstFixRunnable;
 
-    public BalloonMyLocationOverlay(BlipItActivity blipItActivity, MapView mapView) {
+    public BalloonMyLocationOverlay(BlipItActivity blipItActivity, MapView mapView, int minTimeForLocUpdates) {
         super(blipItActivity, mapView);
         this.mapView = mapView;
         this.blipItActivity = blipItActivity;
         this.mapController = mapView.getController();
         enableCompass();
-        enableMyLocation();
+        enableMyLocation(minTimeForLocUpdates);
         firstFixRunnable = new Runnable() {
             public void run() {
                 mapController.animateTo(getMyLocation());
             }
         };
         runOnFirstFix(firstFixRunnable);
+    }
+
+    private void enableMyLocation(int minTimeForLocUpdates) {
+        LocationManager locationManager = (LocationManager) blipItActivity.getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeForLocUpdates, 0, this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTimeForLocUpdates, 0, this);
     }
 
     @Override
