@@ -18,7 +18,7 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.blipit.activities;
+package com.thoughtworks.blipit.panicblip.activities;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -32,11 +32,9 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import com.thoughtworks.blipit.R;
-import com.thoughtworks.blipit.services.PanicNotificationService;
-import com.thoughtworks.blipit.utils.PanicBlipUtils;
-
-import static com.thoughtworks.blipit.utils.PanicBlipUtils.getMessageWithIssues;
+import com.thoughtworks.blipit.panicblip.R;
+import com.thoughtworks.blipit.panicblip.services.PanicNotificationService;
+import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
 
 public class PanicBlipActivity extends Activity implements View.OnClickListener, ServiceConnection {
     private Messenger panicNotificationService;
@@ -91,7 +89,7 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
             Toast.makeText(this, "Unable to report issue", Toast.LENGTH_LONG).show();
         else {
             try {
-                panicNotificationService.send(getMessageWithIssues(PanicBlipUtils.REPORT_ISSUE, "Fire", "Accident"));
+                panicNotificationService.send(PanicBlipUtils.getMessageWithIssues(PanicBlipUtils.REPORT_ISSUE, "Fire", "Accident"));
                 Toast.makeText(this, "Issue will be reported shortly", Toast.LENGTH_LONG).show();
             } catch (RemoteException e) {
                 Log.e(PanicBlipUtils.APP_TAG, "Unable to report issue", e);

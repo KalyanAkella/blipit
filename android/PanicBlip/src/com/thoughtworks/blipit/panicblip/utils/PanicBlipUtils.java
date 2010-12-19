@@ -18,7 +18,7 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.blipit.utils;
+package com.thoughtworks.blipit.panicblip.utils;
 
 import android.location.Location;
 import android.os.Bundle;

@@ -18,12 +18,12 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.blipit.services;
+package com.thoughtworks.blipit.panicblip.services;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import com.thoughtworks.blipit.utils.PanicBlipUtils;
+import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
 
 import java.util.ArrayList;
 

@@ -18,7 +18,7 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.blipit.services;
+package com.thoughtworks.blipit.panicblip.services;
 
 import android.app.IntentService;
 import android.app.PendingIntent;
@@ -34,8 +34,8 @@ import android.os.IBinder;
 import android.os.Messenger;
 import android.util.Log;
 import android.widget.Toast;
-import com.thoughtworks.blipit.utils.PanicBlipServiceHelper;
-import com.thoughtworks.blipit.utils.PanicBlipUtils;
+import com.thoughtworks.blipit.panicblip.utils.PanicBlipServiceHelper;
+import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
 import com.thoughtworks.contract.publish.BlipItPublishResource;
 import com.thoughtworks.contract.BlipItResponse;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
@@ -43,7 +43,7 @@ import com.thoughtworks.contract.publish.SaveBlipRequest;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static com.thoughtworks.blipit.utils.PanicBlipUtils.APP_TAG;
+import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.APP_TAG;
 
 public class PanicNotificationService extends IntentService {
     private String blipItServiceUrl;

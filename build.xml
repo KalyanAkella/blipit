@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="BlipIt">
+	<target name="install.main">
+		<ant antfile="build.xml" target="install" dir="android/BlipItMain"/>
+	</target>
+	<target name="install.pb">
+		<ant antfile="build.xml" target="install" dir="android/PanicBlip"/>
+	</target>
+	<target name="build.main">
+		<ant antfile="build.xml" target="debug" dir="android/BlipItMain"/>
+	</target>
+	<target name="build.pb">
+		<ant antfile="build.xml" target="debug" dir="android/PanicBlip"/>
+	</target>
+	<target name="run.server">
+		<ant antfile="build.xml" target="runserver" dir="appengine/BlipItServer"/>
+	</target>
+	<target name="debug.server">
+		<ant antfile="build.xml" target="debug" dir="appengine/BlipItServer"/>
+	</target>
+	<target name="run.tests">
+		<ant antfile="build.xml" target="run-tests" dir="android/BlipItTest"/>
+	</target>
+	<target name="gps">
+		<ant antfile="build.xml" target="gps" dir="android/BlipItTest"/>
+	</target>
+</project>
+
