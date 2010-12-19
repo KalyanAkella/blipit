@@ -3,4 +3,5 @@
     <string name="app_name">PanicBlip</string>
     <string name="welcome_msg">Welcome to PanicBlip! Just choose your problem &amp; we will report that for you !!</string>
     <string name="report_issue">Report Issue</string>
+    <string name="clear_all_issues">Clear All</string>
 </resources>

@@ -14,5 +14,9 @@
             android:text="@string/report_issue">
         <requestFocus/>
     </Button>
+    <Button android:id="@+id/clear_all_issues_btn"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="@string/clear_all_issues">
+    </Button>
 </LinearLayout>
 

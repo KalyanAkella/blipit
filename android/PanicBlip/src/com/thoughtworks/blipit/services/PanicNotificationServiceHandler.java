@@ -40,6 +40,8 @@ public class PanicNotificationServiceHandler extends Handler {
             Bundle bundle = msg.getData();
             ArrayList<String> issues = bundle.getStringArrayList(PanicBlipUtils.PANIC_BLIP);
             panicNotificationService.reportAndRegisterPanic(issues);
+        } else if (msg.what == PanicBlipUtils.CLEAR_ALL_ISSUES) {
+            panicNotificationService.clearAllIssues();
         }
     }
 }

@@ -99,7 +99,14 @@ public class PanicNotificationService extends IntentService {
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.i(APP_TAG, "onBind: Panic queue empty: " + panicQueue.isEmpty());
         return panicMessenger.getBinder();
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(APP_TAG, "onUnBind: Panic queue empty: " + panicQueue.isEmpty());
+        return !panicQueue.isEmpty();
     }
 
     @Override
@@ -147,5 +154,11 @@ public class PanicNotificationService extends IntentService {
     public void reportAndRegisterPanic(ArrayList<String> issues) {
         reportIssue(issues);
         panicQueue.add(issues);
+    }
+
+    public void clearAllIssues() {
+        // TODO: Contact BlipItService and remove the alerts from app-engine here !!!
+        panicQueue.clear();
+        Log.i(APP_TAG, "Cleared all issues");
     }
 }

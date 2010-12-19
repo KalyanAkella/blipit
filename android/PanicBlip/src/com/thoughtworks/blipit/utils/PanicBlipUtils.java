@@ -33,6 +33,7 @@ public class PanicBlipUtils {
     public static final int REPORT_ISSUE = 0;
     public static final String APP_TAG = "PanicBlipActivity";
     public static final String PANIC_BLIP = "PANIC_BLIP";
+    public static final int CLEAR_ALL_ISSUES = 1;
 
     public static GeoLocation getGeoLocation(Location lastKnownLocation) {
         GeoLocation geoLocation = new GeoLocation();

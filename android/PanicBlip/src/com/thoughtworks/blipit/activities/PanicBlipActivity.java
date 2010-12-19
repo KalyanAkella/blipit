@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
@@ -45,7 +46,7 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         initPanicNotificationService();
-        initPanicButton();
+        initPanicButtons();
     }
 
     @Override
@@ -54,8 +55,9 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
         unbindService(this);
     }
 
-    private void initPanicButton() {
+    private void initPanicButtons() {
         findViewById(R.id.report_issue_btn).setOnClickListener(this);
+        findViewById(R.id.clear_all_issues_btn).setOnClickListener(this);
     }
 
     private void initPanicNotificationService() {
@@ -63,6 +65,28 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
     }
 
     public void onClick(View view) {
+        if (view.getId() == R.id.report_issue_btn) {
+            reportIssue();
+        } else if (view.getId() == R.id.clear_all_issues_btn) {
+            clearAllIssues();
+        }
+    }
+
+    private void clearAllIssues() {
+        if (panicNotificationService == null) {
+            Toast.makeText(this, "Unable to clear all issues", Toast.LENGTH_LONG).show();
+        } else {
+            try {
+                panicNotificationService.send(Message.obtain(null, PanicBlipUtils.CLEAR_ALL_ISSUES));
+                Toast.makeText(this, "All issues cleared", Toast.LENGTH_LONG).show();
+            } catch (RemoteException e) {
+                Log.e(PanicBlipUtils.APP_TAG, "Unable to clear all issues", e);
+                Toast.makeText(this, "Unable to clear all issues", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void reportIssue() {
         if (panicNotificationService == null)
             Toast.makeText(this, "Unable to report issue", Toast.LENGTH_LONG).show();
         else {
