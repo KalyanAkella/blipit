@@ -35,7 +35,6 @@ import android.view.MenuItem;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
-import com.google.android.maps.OverlayItem;
 import com.thoughtworks.blipit.R;
 import com.thoughtworks.blipit.overlays.BalloonMyLocationOverlay;
 import com.thoughtworks.blipit.overlays.BlipOverlay;
@@ -98,7 +97,6 @@ public class BlipItActivity extends MapActivity {
     private void initBlipOverlay() {
         Drawable drawable = this.getResources().getDrawable(R.drawable.marker);
         blipOverlay = new BlipOverlay(drawable, mapView);
-        blipOverlay.addBlip(new OverlayItem(new GeoPoint(-84779572, -168505110), "title", "message"));
         mapView.getOverlays().add(blipOverlay);
     }
 

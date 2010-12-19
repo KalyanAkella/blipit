@@ -34,6 +34,7 @@ public class BlipOverlay extends BalloonItemizedOverlay<OverlayItem> {
 
     public BlipOverlay(Drawable drawable, MapView mapView) {
         super(boundCenter(drawable), mapView);
+        populate();
     }
 
     @Override
