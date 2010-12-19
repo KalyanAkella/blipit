@@ -20,6 +20,8 @@
 
 package com.thoughtworks.blipit.persistance;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.Utils;
 
 import javax.jdo.JDOHelper;
@@ -44,8 +46,23 @@ public class DataStoreHelper {
         try {
             persistenceManager = getPersistenceManager();
             T entity = persistenceManager.makePersistent(instance);
-            handler.handle(entity);
+            handler.onSuccess(entity);
         } catch(Exception e) {
+            handler.onError(e);
+        } finally {
+            if (persistenceManager != null) persistenceManager.close();
+        }
+    }
+
+    public static <T> void delete(Class<T> clazz, String keyString, Utils.ResultHandler<T> handler) {
+        PersistenceManager persistenceManager = null;
+        try {
+            persistenceManager = getPersistenceManager();
+            Key key = KeyFactory.stringToKey(keyString);
+            T entity = persistenceManager.getObjectById(clazz, key);
+            persistenceManager.deletePersistent(entity);
+            handler.onSuccess(entity);
+        } catch (Exception e) {
             handler.onError(e);
         } finally {
             if (persistenceManager != null) persistenceManager.close();
@@ -62,7 +79,7 @@ public class DataStoreHelper {
             List<T> entities = (List<T>) query.executeWithArray(queryHandler.parameters());
             if (Utils.isNotEmpty(entities)) {
                 for (T element : entities) {
-                    handler.handle(element);
+                    handler.onSuccess(element);
                 }
             }
         } catch (Exception e) {

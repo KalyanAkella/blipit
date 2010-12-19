@@ -52,13 +52,14 @@ public class BlipItSubscribeResourceImpl extends ServerResource implements BlipI
         UserPrefs userPrefs = blipItRequest.getUserPrefs();
         if (userPrefs == null || userPrefs.getChannels() == null || userPrefs.getChannels().isEmpty()) return blipItResponse;
         alertRepository.filterAlerts(blipItRequest.getUserLocation(), userPrefs, new Utils.ResultHandler<Alert>() {
-            public void handle(Alert alert) {
+            public void onSuccess(Alert alert) {
+                blipItResponse.setSuccess();
                 blipItResponse.addBlips(alert.toBlip());
             }
 
             public void onError(Throwable throwable) {
                 log.log(Level.SEVERE, "An error occurred while fetching alerts", throwable);
-                blipItResponse.setBlipItError(Utils.getBlipItError(throwable.getMessage()));
+                blipItResponse.setFailure(Utils.getBlipItError(throwable.getMessage()));
             }
         });
         return blipItResponse;

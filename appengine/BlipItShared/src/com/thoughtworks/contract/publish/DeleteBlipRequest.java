@@ -1,8 +1,8 @@
 package com.thoughtworks.contract.publish;
 
-import com.thoughtworks.contract.BlipItResponse;
+import java.io.Serializable;
 
-public class SaveBlipResponse extends BlipItResponse {
+public class DeleteBlipRequest implements Serializable {
     private String blipId;
 
     public String getBlipId() {

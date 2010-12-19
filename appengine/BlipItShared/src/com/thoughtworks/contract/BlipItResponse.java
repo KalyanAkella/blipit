@@ -18,26 +18,32 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.contract.subscribe;
+package com.thoughtworks.contract;
 
-import com.thoughtworks.contract.BlipItResponse;
+import java.io.Serializable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+public class BlipItResponse implements Serializable {
+    private BlipItError blipItError;
+    private boolean status;
 
-public class GetBlipsResponse extends BlipItResponse {
-    private List<Blip> blips;
-
-    public GetBlipsResponse() {
-        blips = new ArrayList<Blip>();
+    public BlipItError getBlipItError() {
+        return blipItError;
     }
 
-    public List<Blip> getBlips() {
-        return blips;
+    public boolean isFailure() {
+        return !status;
     }
 
-    public void addBlips(Blip... blips) {
-        this.blips.addAll(Arrays.asList(blips));
+    public boolean isSuccess() {
+        return status;
+    }
+
+    public void setSuccess() {
+        this.status = true;
+    }
+
+    public void setFailure(BlipItError blipItError) {
+        this.status = false;
+        this.blipItError = blipItError;
     }
 }

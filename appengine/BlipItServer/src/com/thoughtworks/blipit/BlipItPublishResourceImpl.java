@@ -21,10 +21,13 @@
 package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.GeoPt;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.blipit.persistance.DataStoreHelper;
+import com.thoughtworks.contract.BlipItResponse;
 import com.thoughtworks.contract.GeoLocation;
 import com.thoughtworks.contract.publish.BlipItPublishResource;
+import com.thoughtworks.contract.publish.DeleteBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipResponse;
 import org.restlet.data.Form;
@@ -49,7 +52,7 @@ public class BlipItPublishResourceImpl extends ServerResource implements BlipItP
         final Representation[] result = {null};
         Alert alert = getAlert(new Form(entity));
         DataStoreHelper.save(alert, new Utils.ResultHandler<Alert>() {
-            public void handle(Alert arg) {
+            public void onSuccess(Alert arg) {
                 setStatus(Status.SUCCESS_CREATED);
                 result[0] = new StringRepresentation("Alert creation successful", MediaType.TEXT_PLAIN);
                 log.info("Alert with title, " + arg.getSource() + " saved successfully with ID: " + arg.getKey());
@@ -69,8 +72,9 @@ public class BlipItPublishResourceImpl extends ServerResource implements BlipItP
         Alert alert = getAlert(saveBlipRequest);
         final SaveBlipResponse saveBlipResponse = new SaveBlipResponse();
         DataStoreHelper.save(alert, new Utils.ResultHandler<Alert>() {
-            public void handle(Alert arg) {
+            public void onSuccess(Alert arg) {
                 saveBlipResponse.setSuccess();
+                saveBlipResponse.setBlipId(KeyFactory.keyToString(arg.getKey()));
                 log.info("Alert with title, " + arg.getSource() + " saved successfully with ID: " + arg.getKey());
             }
 
@@ -82,9 +86,28 @@ public class BlipItPublishResourceImpl extends ServerResource implements BlipItP
         return saveBlipResponse;
     }
 
+    @Post
+    public BlipItResponse deleteBlip(DeleteBlipRequest deleteBlipRequest) {
+        String blipId = deleteBlipRequest.getBlipId();
+        final BlipItResponse blipItResponse = new BlipItResponse();
+        DataStoreHelper.delete(Alert.class, blipId, new Utils.ResultHandler<Alert>() {
+            public void onSuccess(Alert arg) {
+                blipItResponse.setSuccess();
+                log.info("Alert with title, " + arg.getSource() + " deleted successfully");
+            }
+
+            public void onError(Throwable throwable) {
+                blipItResponse.setFailure(Utils.getBlipItError(throwable.getMessage()));
+                log.log(Level.SEVERE, "Alert deletion failed with error", throwable);
+            }
+        });
+        return blipItResponse;
+    }
+
+    // TODO: Take the alert title & desc from PanicBlip
     private Alert getAlert(SaveBlipRequest saveBlipRequest) {
         GeoLocation blipLocation = saveBlipRequest.getBlipLocation();
-        return new Alert("Test Title", "Test Desc", Utils.asGeoPoint(blipLocation), saveBlipRequest.getApplicableChannels());
+        return new Alert("Panic Title", "Panic Desc", Utils.asGeoPoint(blipLocation), saveBlipRequest.getApplicableChannels());
     }
 
     private Alert getAlert(Form form) {

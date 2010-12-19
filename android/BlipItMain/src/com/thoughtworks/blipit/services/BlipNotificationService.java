@@ -124,7 +124,7 @@ public class BlipNotificationService extends IntentService {
         try {
             GetBlipsRequest blipItRequest = constructRequest();
             GetBlipsResponse blipItResponse = BlipItServiceHelper.getSubscribeResource(blipItServiceUrl).getBlips(blipItRequest);
-            if (blipItResponse.hasNoError()) {
+            if (blipItResponse.isSuccess()) {
                 Message message = getMessageWithBlips((ArrayList<Blip>) blipItResponse.getBlips(), BlipItUtils.MSG_BLIPS_UPDATED);
                 for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {
                     Messenger client = iterator.next();

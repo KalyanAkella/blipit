@@ -37,8 +37,8 @@ import android.widget.Toast;
 import com.thoughtworks.blipit.utils.PanicBlipServiceHelper;
 import com.thoughtworks.blipit.utils.PanicBlipUtils;
 import com.thoughtworks.contract.publish.BlipItPublishResource;
+import com.thoughtworks.contract.BlipItResponse;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
-import com.thoughtworks.contract.publish.SaveBlipResponse;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -143,7 +143,7 @@ public class PanicNotificationService extends IntentService {
     private void reportIssue(Location newLocation, ArrayList<String> issueList) {
         SaveBlipRequest saveBlipRequest = PanicBlipUtils.getSaveBlipRequest(newLocation, issueList);
         BlipItPublishResource publishResource = PanicBlipServiceHelper.getPublishResource(blipItServiceUrl);
-        SaveBlipResponse saveBlipResponse = publishResource.saveBlip(saveBlipRequest);
+        BlipItResponse saveBlipResponse = publishResource.saveBlip(saveBlipRequest);
         if (saveBlipResponse.isFailure()) {
             Toast.makeText(this, saveBlipResponse.getBlipItError().getMessage(), Toast.LENGTH_LONG).show();
         } else {

@@ -60,7 +60,7 @@ public class Utils {
     }
 
     public static interface ResultHandler<T> {
-        void handle(T arg);
+        void onSuccess(T arg);
         void onError(Throwable throwable);
     }
 

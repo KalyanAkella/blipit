@@ -20,6 +20,7 @@
 
 package com.thoughtworks.contract.publish;
 
+import com.thoughtworks.contract.BlipItResponse;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Post;
 
@@ -29,4 +30,7 @@ public interface BlipItPublishResource {
 
     @Post
     SaveBlipResponse saveBlip(SaveBlipRequest saveBlipRequest);
+
+    @Post
+    BlipItResponse deleteBlip(DeleteBlipRequest deleteBlipRequest);
 }
