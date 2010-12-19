@@ -141,13 +141,18 @@ public class PanicNotificationService extends IntentService {
     }
 
     private void reportIssue(Location newLocation, ArrayList<String> issueList) {
-        SaveBlipRequest saveBlipRequest = PanicBlipUtils.getSaveBlipRequest(newLocation, issueList);
-        BlipItPublishResource publishResource = PanicBlipServiceHelper.getPublishResource(blipItServiceUrl);
-        BlipItResponse saveBlipResponse = publishResource.saveBlip(saveBlipRequest);
-        if (saveBlipResponse.isFailure()) {
-            Toast.makeText(this, saveBlipResponse.getBlipItError().getMessage(), Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "Issue reported successfully", Toast.LENGTH_LONG).show();
+        try {
+            SaveBlipRequest saveBlipRequest = PanicBlipUtils.getSaveBlipRequest(newLocation, issueList);
+            BlipItPublishResource publishResource = PanicBlipServiceHelper.getPublishResource(blipItServiceUrl);
+            BlipItResponse saveBlipResponse = publishResource.saveBlip(saveBlipRequest);
+            if (saveBlipResponse.isFailure()) {
+                Toast.makeText(this, saveBlipResponse.getBlipItError().getMessage(), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Issue reported successfully", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "We are unable to report your issue at this time. Please try again.", Toast.LENGTH_LONG).show();
+            Log.e(APP_TAG, "Error occurred while saving report", e);
         }
     }
 
