@@ -23,11 +23,21 @@ package com.thoughtworks.contract.publish;
 import com.thoughtworks.contract.GeoLocation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SaveBlipRequest implements Serializable {
     private GeoLocation userLocation;
     private List<String> applicableChannels;
+    private Map<String, String> metaData;
+    private String blipId;
+
+    public SaveBlipRequest() {
+        metaData = new HashMap<String, String>();
+        applicableChannels = new ArrayList<String>();
+    }
 
     public GeoLocation getBlipLocation() {
         return userLocation;
@@ -43,5 +53,29 @@ public class SaveBlipRequest implements Serializable {
 
     public void setApplicableChannels(List<String> applicableChannels) {
         this.applicableChannels = applicableChannels;
+    }
+
+    public String getBlipId() {
+        return blipId;
+    }
+
+    public void setBlipId(String blipId) {
+        this.blipId = blipId;
+    }
+
+    public Map<String, String> getMetaData() {
+        return metaData;
+    }
+
+    public void addMetaData(String key, String value) {
+        metaData.put(key, value);
+    }
+
+    public boolean isEmpty() {
+        return applicableChannels == null || applicableChannels.isEmpty();
+    }
+
+    public void clear() {
+        applicableChannels.clear();
     }
 }

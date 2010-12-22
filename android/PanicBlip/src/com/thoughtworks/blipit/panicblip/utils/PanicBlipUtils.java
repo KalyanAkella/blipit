@@ -24,17 +24,15 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Message;
 import com.thoughtworks.contract.GeoLocation;
-import com.thoughtworks.contract.publish.SaveBlipRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PanicBlipUtils {
-    public static final int REPORT_ISSUE = 0;
+    public static final int REPORT_PANIC = 0;
     public static final String APP_TAG = "PanicBlipActivity";
     public static final String PANIC_BLIP = "PANIC_BLIP";
-    public static final int CLEAR_ALL_ISSUES = 1;
-    public static final String PANIC_SERVICE_STATUS_KEY = "PANIC_SERVICE_STARTED";
+    public static final int CLEAR_PANIC = 1;
     public static final int LOCATION_CHANGED = 2;
 
     public static GeoLocation getGeoLocation(Location lastKnownLocation) {
@@ -44,10 +42,10 @@ public class PanicBlipUtils {
         return geoLocation;
     }
 
-    public static Message getMessageWithIssues(int messageId, String... issues) {
+    public static Message getMessageWithPanicTopics(int messageId, String... topics) {
         Message message = Message.obtain(null, messageId);
         Bundle bundle = new Bundle();
-        bundle.putStringArrayList(PANIC_BLIP, asArrayList(issues));
+        bundle.putStringArrayList(PANIC_BLIP, asArrayList(topics));
         message.setData(bundle);
         return message;
     }
@@ -56,12 +54,5 @@ public class PanicBlipUtils {
         ArrayList<String> arrayList = new ArrayList<String>();
         arrayList.addAll(Arrays.asList(strs));
         return arrayList;
-    }
-
-    public static SaveBlipRequest getSaveBlipRequest(Location newLocation, ArrayList<String> topics) {
-        SaveBlipRequest saveBlipRequest = new SaveBlipRequest();
-        saveBlipRequest.setUserLocation(getGeoLocation(newLocation));
-        saveBlipRequest.setApplicableChannels(topics);
-        return saveBlipRequest;
     }
 }

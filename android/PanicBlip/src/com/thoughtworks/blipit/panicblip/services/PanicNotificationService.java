@@ -36,41 +36,53 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Process;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipServiceHelper;
-import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
 import com.thoughtworks.contract.BlipItResponse;
 import com.thoughtworks.contract.publish.BlipItPublishResource;
+import com.thoughtworks.contract.publish.DeleteBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
+import com.thoughtworks.contract.publish.SaveBlipResponse;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.List;
 
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.APP_TAG;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.LOCATION_CHANGED;
+import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getGeoLocation;
 
 public class PanicNotificationService extends Service {
     private String blipItServiceUrl;
-    private ConcurrentLinkedQueue<ArrayList<String>> panicQueue;
     private Messenger panicMessenger;
     private int minTimeForLocUpdates;
     private LocationManager locationManager;
     private PendingIntent pendingIntentForLocUpdates;
     private Looper panicNotificationServiceLooper;
     private PanicNotificationServiceHandler panicNotificationServiceHandler;
+    private SaveBlipRequest panicBlip;
 
     public PanicNotificationService() {
-        panicQueue = new ConcurrentLinkedQueue<ArrayList<String>>();
+        panicBlip = new SaveBlipRequest();
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
         readServiceMetadata();
+        readPhoneState();
         initHandlerThread();
         initLocationManager();
         Log.i(APP_TAG, "Panic notification service started");
+    }
+
+    private void readPhoneState() {
+        TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+        panicBlip.addMetaData("DEVICE_ID", telephonyManager.getDeviceId());
+        panicBlip.addMetaData("PHONE_NUMBER", telephonyManager.getLine1Number());
+        Log.i(APP_TAG, "DeviceID: " + panicBlip.getMetaData().get("DEVICE_ID"));
+        Log.i(APP_TAG, "PhoneNumber: " + panicBlip.getMetaData().get("PHONE_NUMBER"));
     }
 
     private void initHandlerThread() {
@@ -93,7 +105,7 @@ public class PanicNotificationService extends Service {
     @Override
     public void onDestroy() {
         locationManager.removeUpdates(pendingIntentForLocUpdates);
-        panicQueue.clear();
+        panicBlip.clear();
         panicNotificationServiceLooper.quit();
         Log.i(APP_TAG, "Panic notification service stopped");
     }
@@ -117,23 +129,21 @@ public class PanicNotificationService extends Service {
     }
 
     public void onLocationChanged(Intent intent) {
-        if (panicQueue.isEmpty()) return;
+        if (panicBlip.isEmpty()) return;
         Bundle bundle = intent.getExtras();
         if (bundle.containsKey(LocationManager.KEY_LOCATION_CHANGED)) {
             // TODO: Determine if this is a good enough location reading
             Location newLocation = (Location) bundle.get(LocationManager.KEY_LOCATION_CHANGED);
-            for (ArrayList<String> issueList : panicQueue) {
-                reportIssue(newLocation, issueList);
-            }
+            reportPanic(newLocation, panicBlip.getApplicableChannels());
         }
     }
 
-    public void reportIssue(ArrayList<String> topics) {
+    public void reportPanic(List<String> topics) {
         Location lastKnownLocation = getLastKnownLocation();
         if (lastKnownLocation == null) {
             Toast.makeText(this, "Your issue will be reported as soon as we detect your current location", Toast.LENGTH_LONG).show();
         } else {
-            reportIssue(lastKnownLocation, topics);
+            reportPanic(lastKnownLocation, topics);
         }
     }
 
@@ -146,15 +156,19 @@ public class PanicNotificationService extends Service {
         return lastKnownLocation;
     }
 
-    private void reportIssue(Location newLocation, ArrayList<String> topics) {
+    private void reportPanic(Location newLocation, List<String> topics) {
         try {
-            SaveBlipRequest saveBlipRequest = PanicBlipUtils.getSaveBlipRequest(newLocation, topics);
+            panicBlip.setUserLocation(getGeoLocation(newLocation));
+            panicBlip.setApplicableChannels(topics);
             BlipItPublishResource publishResource = PanicBlipServiceHelper.getPublishResource(blipItServiceUrl);
-            BlipItResponse saveBlipResponse = publishResource.saveBlip(saveBlipRequest);
+            SaveBlipResponse saveBlipResponse = publishResource.saveBlip(panicBlip);
             if (saveBlipResponse.isFailure()) {
-                Toast.makeText(this, saveBlipResponse.getBlipItError().getMessage(), Toast.LENGTH_LONG).show();
+                String errorMessage = saveBlipResponse.getBlipItError().getMessage();
+                Log.e(APP_TAG, "Unable to save panic blip. Error from server: " + errorMessage);
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(this, "Issue reported successfully", Toast.LENGTH_LONG).show();
+                panicBlip.setBlipId(saveBlipResponse.getBlipId());
             }
         } catch (Exception e) {
             Toast.makeText(this, "We are unable to report your issue at this time. Please try again.", Toast.LENGTH_LONG).show();
@@ -163,15 +177,26 @@ public class PanicNotificationService extends Service {
     }
 
     public void reportAndRegisterPanic(ArrayList<String> topics) {
-        reportIssue(topics);
-        panicQueue.add(topics);
+        reportPanic(topics);
     }
 
-    public void clearAllIssues() {
-        for (ArrayList<String> issueList : panicQueue) {
-            // TODO: call the back-end service to remove panic here !
+    public void clearPanic() {
+        try {
+            BlipItPublishResource blipItPublishResource = PanicBlipServiceHelper.getPublishResource(blipItServiceUrl);
+            DeleteBlipRequest deleteBlipRequest = new DeleteBlipRequest();
+            deleteBlipRequest.setBlipId(panicBlip.getBlipId());
+            BlipItResponse blipItResponse = blipItPublishResource.deleteBlip(deleteBlipRequest);
+            if (blipItResponse.isFailure()) {
+                String errorMessage = blipItResponse.getBlipItError().getMessage();
+                Log.e(APP_TAG, "Unable to clear panic blip. Error from server: " + errorMessage);
+                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "Issue cleared successfully", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "We are unable to clear your issue at this time. Please try again.", Toast.LENGTH_LONG).show();
+            Log.e(APP_TAG, "Error occurred while clearing the panic blip", e);
         }
-        panicQueue.clear();
         stopSelf();
     }
 
@@ -190,4 +215,5 @@ public class PanicNotificationService extends Service {
             Log.e(APP_TAG, "Unable to read value of min time between loc updates", e);
         }
     }
+
 }

@@ -36,13 +36,13 @@ import com.thoughtworks.blipit.panicblip.R;
 import com.thoughtworks.blipit.panicblip.services.PanicNotificationService;
 
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.APP_TAG;
-import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.CLEAR_ALL_ISSUES;
-import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.REPORT_ISSUE;
-import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getMessageWithIssues;
+import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.CLEAR_PANIC;
+import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.REPORT_PANIC;
+import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getMessageWithPanicTopics;
 
 public class PanicBlipActivity extends Activity implements View.OnClickListener, ServiceConnection {
     private Messenger panicNotificationService;
-    private boolean issueReportingPending;
+    private boolean panicReportingPending;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,20 +71,19 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
 
     public void onClick(View view) {
         if (view.getId() == R.id.report_issue_btn) {
-            reportIssue();
+            reportPanic();
         } else if (view.getId() == R.id.clear_all_issues_btn) {
-            clearAllIssues();
+            clearPanic();
         }
     }
 
-    // TODO: does clear all issues need restart of PNS if not already running !!!
-    private void clearAllIssues() {
+    // TODO: does clear panic need restart of PNS if not already running !!!
+    private void clearPanic() {
         if (panicNotificationService == null) {
             Toast.makeText(this, "Unable to clear all issues", Toast.LENGTH_LONG).show();
         } else {
             try {
-                panicNotificationService.send(Message.obtain(null, CLEAR_ALL_ISSUES));
-                Toast.makeText(this, "All issues cleared", Toast.LENGTH_LONG).show();
+                panicNotificationService.send(Message.obtain(null, CLEAR_PANIC));
             } catch (RemoteException e) {
                 Log.e(APP_TAG, "Unable to clear all issues", e);
                 Toast.makeText(this, "Unable to clear all issues", Toast.LENGTH_LONG).show();
@@ -92,18 +91,17 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
         }
     }
 
-    private void reportIssue() {
+    private void reportPanic() {
         if (panicNotificationService == null) {
             Log.i(APP_TAG, "PanicNotificationService not running. Starting it...");
-            issueReportingPending = true;
+            panicReportingPending = true;
             initPanicNotificationService();
-        } else _reportIssue();
+        } else _reportPanic();
     }
 
-    private void _reportIssue() {
+    private void _reportPanic() {
         try {
-            panicNotificationService.send(getMessageWithIssues(REPORT_ISSUE, "Fire", "Accident"));
-            Toast.makeText(this, "Issue will be reported shortly", Toast.LENGTH_LONG).show();
+            panicNotificationService.send(getMessageWithPanicTopics(REPORT_PANIC, "Fire", "Accident"));
         } catch (RemoteException e) {
             Log.e(APP_TAG, "Unable to report issue", e);
             Toast.makeText(this, "Unable to report your issue", Toast.LENGTH_LONG).show();
@@ -112,9 +110,9 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
 
     public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
         panicNotificationService = new Messenger(iBinder);
-        if (issueReportingPending) {
-            _reportIssue();
-            issueReportingPending = false;
+        if (panicReportingPending) {
+            _reportPanic();
+            panicReportingPending = false;
         }
     }
 

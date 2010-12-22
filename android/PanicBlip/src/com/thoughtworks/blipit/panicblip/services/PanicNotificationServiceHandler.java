@@ -39,12 +39,12 @@ public class PanicNotificationServiceHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
-        if (msg.what == PanicBlipUtils.REPORT_ISSUE) {
+        if (msg.what == PanicBlipUtils.REPORT_PANIC) {
             Bundle bundle = msg.getData();
             ArrayList<String> topics = bundle.getStringArrayList(PanicBlipUtils.PANIC_BLIP);
             panicNotificationService.reportAndRegisterPanic(topics);
-        } else if (msg.what == PanicBlipUtils.CLEAR_ALL_ISSUES) {
-            panicNotificationService.clearAllIssues();
+        } else if (msg.what == PanicBlipUtils.CLEAR_PANIC) {
+            panicNotificationService.clearPanic();
         } else if (msg.what == PanicBlipUtils.LOCATION_CHANGED) {
             panicNotificationService.onLocationChanged((Intent) msg.obj);
         }
