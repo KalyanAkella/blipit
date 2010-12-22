@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static com.thoughtworks.blipit.utils.BlipItUtils.APP_TAG;
+import static com.thoughtworks.blipit.utils.BlipItUtils.CHANNEL_PREF_KEY;
 import static com.thoughtworks.blipit.utils.BlipItUtils.RADIUS_PREF_KEY;
 import static com.thoughtworks.blipit.utils.BlipItUtils.getMessageWithBlips;
 
@@ -144,7 +145,7 @@ public class BlipNotificationService extends IntentService {
     private GetBlipsRequest constructRequest() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         float radius = BlipItUtils.getRadius(sharedPreferences, RADIUS_PREF_KEY);
-        String channelPrefStr = sharedPreferences.getString(BlipItUtils.CHANNEL_PREF_KEY, null);
+        String channelPrefStr = sharedPreferences.getString(CHANNEL_PREF_KEY, null);
         Log.i(APP_TAG, "Preferences: Radius -> " + radius + ", Channels -> " + channelPrefStr);
         GetBlipsRequest blipItRequest = new GetBlipsRequest();
         blipItRequest.setUserLocation(BlipItUtils.toGeoLocation(getCurrentUserLocation()));

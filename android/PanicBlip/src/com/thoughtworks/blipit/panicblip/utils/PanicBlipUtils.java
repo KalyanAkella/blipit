@@ -34,6 +34,8 @@ public class PanicBlipUtils {
     public static final String APP_TAG = "PanicBlipActivity";
     public static final String PANIC_BLIP = "PANIC_BLIP";
     public static final int CLEAR_ALL_ISSUES = 1;
+    public static final String PANIC_SERVICE_STATUS_KEY = "PANIC_SERVICE_STARTED";
+    public static final int LOCATION_CHANGED = 2;
 
     public static GeoLocation getGeoLocation(Location lastKnownLocation) {
         GeoLocation geoLocation = new GeoLocation();
@@ -56,10 +58,10 @@ public class PanicBlipUtils {
         return arrayList;
     }
 
-    public static SaveBlipRequest getSaveBlipRequest(Location newLocation, ArrayList<String> issueList) {
+    public static SaveBlipRequest getSaveBlipRequest(Location newLocation, ArrayList<String> topics) {
         SaveBlipRequest saveBlipRequest = new SaveBlipRequest();
         saveBlipRequest.setUserLocation(getGeoLocation(newLocation));
-        saveBlipRequest.setApplicableChannels(issueList);
+        saveBlipRequest.setApplicableChannels(topics);
         return saveBlipRequest;
     }
 }

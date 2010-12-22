@@ -20,8 +20,10 @@
 
 package com.thoughtworks.blipit.panicblip.services;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
 
@@ -30,7 +32,8 @@ import java.util.ArrayList;
 public class PanicNotificationServiceHandler extends Handler {
     private PanicNotificationService panicNotificationService;
 
-    public PanicNotificationServiceHandler(PanicNotificationService panicNotificationService) {
+    public PanicNotificationServiceHandler(PanicNotificationService panicNotificationService, Looper looper) {
+        super(looper);
         this.panicNotificationService = panicNotificationService;
     }
 
@@ -38,10 +41,12 @@ public class PanicNotificationServiceHandler extends Handler {
     public void handleMessage(Message msg) {
         if (msg.what == PanicBlipUtils.REPORT_ISSUE) {
             Bundle bundle = msg.getData();
-            ArrayList<String> issues = bundle.getStringArrayList(PanicBlipUtils.PANIC_BLIP);
-            panicNotificationService.reportAndRegisterPanic(issues);
+            ArrayList<String> topics = bundle.getStringArrayList(PanicBlipUtils.PANIC_BLIP);
+            panicNotificationService.reportAndRegisterPanic(topics);
         } else if (msg.what == PanicBlipUtils.CLEAR_ALL_ISSUES) {
             panicNotificationService.clearAllIssues();
+        } else if (msg.what == PanicBlipUtils.LOCATION_CHANGED) {
+            panicNotificationService.onLocationChanged((Intent) msg.obj);
         }
     }
 }
