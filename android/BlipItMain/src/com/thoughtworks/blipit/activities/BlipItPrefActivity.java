@@ -20,18 +20,92 @@
 
 package com.thoughtworks.blipit.activities;
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 import com.thoughtworks.blipit.R;
+import com.thoughtworks.blipit.utils.BlipItServiceHelper;
 import com.thoughtworks.blipit.utils.BlipItUtils;
+import com.thoughtworks.contract.common.ChannelCategory;
+import com.thoughtworks.contract.common.GetChannelsResponse;
 
-public class BlipItPrefActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class BlipItPrefActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener, DialogInterface.OnCancelListener {
+    private Thread channelsThread;
+    private String blipItServiceUrl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.blipit_prefs);
+        initBlipItServiceUrl();
+    }
+
+    private void initBlipItServiceUrl() {
+        try {
+            PackageManager packageManager = getPackageManager();
+            ComponentName componentName = new ComponentName(this, BlipItPrefActivity.class);
+            ActivityInfo activityInfo = packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA);
+            blipItServiceUrl = activityInfo.metaData.getString("blipit.service.url");
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.wtf(BlipItUtils.APP_TAG, "Unable to retrieve activity metadata for " + BlipItPrefActivity.class, e);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String allChannelsStr = sharedPreferences.getString(BlipItUtils.ALL_CHANNELS_KEY, null);
+        if (allChannelsStr == null || allChannelsStr.length() == 0) {
+            showDialog(0);
+            channelsThread = new Thread() {
+                @Override
+                public void run() {
+                    String channelObjectsAsString = "";
+                    try {
+                        GetChannelsResponse response = BlipItServiceHelper.getSubscribeResource(blipItServiceUrl).getAvailableChannels(ChannelCategory.AD);
+                        if (response.isSuccess()) {
+                            channelObjectsAsString = BlipItUtils.getChannelsAsString(response.getChannels());
+                        } else {
+                            showChannelsErrorToast();
+                            Log.e(BlipItUtils.APP_TAG, response.getBlipItError().getMessage());
+                        }
+                    } catch (Exception e) {
+                        showChannelsErrorToast();
+                        Log.e(BlipItUtils.APP_TAG, "An error occurred while retrieving channels", e);
+                    }
+                    sharedPreferences.edit().putString(BlipItUtils.ALL_CHANNELS_KEY, channelObjectsAsString).commit();
+                }
+            };
+            channelsThread.start();
+        }
+    }
+
+    private void showChannelsErrorToast() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(getApplicationContext(), "Unable to retrieve channels. Please try again", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Please wait while we fetch the topics...");
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(true);
+        progressDialog.setOnCancelListener(this);
+        return progressDialog;
     }
 
     @Override
@@ -53,6 +127,14 @@ public class BlipItPrefActivity extends PreferenceActivity implements SharedPref
                 Toast.makeText(this, R.string.radius_preference_failure, Toast.LENGTH_LONG).show();
                 sharedPreferences.edit().putFloat(key, 2f).commit();
             }
+        } else if (BlipItUtils.ALL_CHANNELS_KEY.equals(key)) {
+            dismissDialog(0);
+        }
+    }
+
+    public void onCancel(DialogInterface dialog) {
+        if (channelsThread != null) {
+            channelsThread.interrupt();
         }
     }
 }

@@ -20,8 +20,8 @@
 
 package com.thoughtworks.contract.subscribe;
 
-import com.thoughtworks.contract.subscribe.GetBlipsRequest;
-import com.thoughtworks.contract.subscribe.GetBlipsResponse;
+import com.thoughtworks.contract.common.ChannelCategory;
+import com.thoughtworks.contract.common.GetChannelsResponse;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
@@ -31,4 +31,7 @@ public interface BlipItSubscribeResource {
 
     @Post
     public GetBlipsResponse getBlips(GetBlipsRequest blipItRequest);
+
+    @Get
+    GetChannelsResponse getAvailableChannels(ChannelCategory channelCategory);
 }

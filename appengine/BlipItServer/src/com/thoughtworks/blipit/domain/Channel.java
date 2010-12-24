@@ -2,6 +2,7 @@ package com.thoughtworks.blipit.domain;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.thoughtworks.contract.common.ChannelCategory;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;

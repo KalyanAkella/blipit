@@ -20,18 +20,20 @@
 
 package com.thoughtworks.contract.subscribe;
 
+import com.thoughtworks.contract.common.Channel;
+
 import java.io.Serializable;
 import java.util.List;
 
 public class UserPrefs implements Serializable {
     private double radius;
-    private List<String> channels;
+    private List<Channel> channels;
 
-    public List<String> getChannels() {
+    public List<Channel> getChannels() {
         return channels;
     }
 
-    public void setChannels(List<String> channels) {
+    public void setChannels(List<Channel> channels) {
         this.channels = channels;
     }
 

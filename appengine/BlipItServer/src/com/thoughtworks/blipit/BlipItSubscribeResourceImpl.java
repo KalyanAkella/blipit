@@ -21,7 +21,8 @@
 package com.thoughtworks.blipit;
 
 import com.thoughtworks.blipit.domain.Alert;
-import com.thoughtworks.blipit.persistance.BlipItRepository;
+import com.thoughtworks.contract.common.ChannelCategory;
+import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
 import com.thoughtworks.contract.subscribe.GetBlipsRequest;
 import com.thoughtworks.contract.subscribe.GetBlipsResponse;
@@ -32,12 +33,11 @@ import org.restlet.resource.Post;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BlipItSubscribeResourceImpl extends BlipItCommonResourceImpl implements BlipItSubscribeResource {
+public class BlipItSubscribeResourceImpl extends BlipItCommonServerResource implements BlipItSubscribeResource {
     private static final Logger log = Logger.getLogger(BlipItSubscribeResourceImpl.class.getName());
-    private BlipItRepository blipItRepository;
 
     public BlipItSubscribeResourceImpl() {
-        blipItRepository = new BlipItRepository();
+        super();
     }
 
     @Get
@@ -63,4 +63,10 @@ public class BlipItSubscribeResourceImpl extends BlipItCommonResourceImpl implem
         });
         return blipItResponse;
     }
+
+    @Get
+    public GetChannelsResponse getAvailableChannels(ChannelCategory channelCategory) {
+        return getChannels(channelCategory);
+    }
+
 }

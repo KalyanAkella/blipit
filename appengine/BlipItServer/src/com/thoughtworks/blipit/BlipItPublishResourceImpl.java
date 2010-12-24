@@ -22,9 +22,11 @@ package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.domain.Alert;
+import com.thoughtworks.contract.common.ChannelCategory;
 import com.thoughtworks.blipit.persistance.DataStoreHelper;
 import com.thoughtworks.contract.BlipItResponse;
 import com.thoughtworks.contract.GeoLocation;
+import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.publish.BlipItPublishResource;
 import com.thoughtworks.contract.publish.DeleteBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
@@ -34,6 +36,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
 import java.util.List;
@@ -42,8 +45,12 @@ import java.util.logging.Logger;
 
 import static com.thoughtworks.blipit.Utils.splitByComma;
 
-public class BlipItPublishResourceImpl extends BlipItCommonResourceImpl implements BlipItPublishResource {
+public class BlipItPublishResourceImpl extends BlipItCommonServerResource implements BlipItPublishResource {
     private static final Logger log = Logger.getLogger(BlipItPublishResourceImpl.class.getName());
+
+    public BlipItPublishResourceImpl() {
+        super();
+    }
 
     @Post
     public Representation acceptAlert(Representation entity) {
@@ -118,4 +125,13 @@ public class BlipItPublishResourceImpl extends BlipItCommonResourceImpl implemen
         return new Alert(alertTitle, alertDescription, new GeoPt(alertLatitude, alertLongitude), channels);
     }
 
+    @Get
+    public GetChannelsResponse getPanicChannels() {
+        return getChannels(ChannelCategory.PANIC);
+    }
+
+    @Get
+    public GetChannelsResponse getFreeChannels() {
+        return getChannels(ChannelCategory.AD);
+    }
 }

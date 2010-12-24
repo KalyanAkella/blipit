@@ -74,19 +74,19 @@ public class BlipNotificationService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        readBlipItServiceUrl();
+        initBlipItServiceUrl();
         scheduleNotificationService();
         Log.i(APP_TAG, "Blip notification service started");
     }
 
-    private void readBlipItServiceUrl() {
+    private void initBlipItServiceUrl() {
         try {
             PackageManager packageManager = getPackageManager();
             ComponentName componentName = new ComponentName(this, BlipNotificationService.class);
             ServiceInfo serviceInfo = packageManager.getServiceInfo(componentName, PackageManager.GET_META_DATA);
             blipItServiceUrl = serviceInfo.metaData.getString("blipit.service.url");
         } catch (PackageManager.NameNotFoundException e) {
-            Log.wtf(APP_TAG, "Unable to retrieve service metadata", e);
+            Log.wtf(APP_TAG, "Unable to retrieve service metadata for " + BlipNotificationService.class, e);
         }
     }
 

@@ -26,11 +26,11 @@ import android.os.Bundle;
 import android.os.Message;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
-import com.thoughtworks.contract.subscribe.Blip;
 import com.thoughtworks.contract.GeoLocation;
+import com.thoughtworks.contract.common.Channel;
+import com.thoughtworks.contract.subscribe.Blip;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class BlipItUtils {
@@ -45,8 +45,10 @@ public class BlipItUtils {
     public static final String APP_TAG = "BlipItActivity";
     public static final String RADIUS_PREF_KEY = "radius_pref_key";
     public static final String CHANNEL_PREF_KEY = "channel_pref_key";
+    public static final String ALL_CHANNELS_KEY = "all_channels_key";
     public static final String CHANNEL_SPLITTER = "\\|";
     public static final String CHANNEL_SEPARATOR = "|";
+    private static final String ID_NAME_SEPARATOR = ":";
 
     private BlipItUtils() {
     }
@@ -60,11 +62,6 @@ public class BlipItUtils {
 
     public static boolean containsGeoPoint(Bundle bundle) {
         return bundle != null && bundle.containsKey(USER_LOCATION_LATITUDE) && bundle.containsKey(USER_LOCATION_LONGITUDE);
-    }
-
-    public static void saveGeoPointInBundle(Bundle bundle, GeoPoint geoPoint) {
-        bundle.putInt(USER_LOCATION_LATITUDE, geoPoint.getLatitudeE6());
-        bundle.putInt(USER_LOCATION_LONGITUDE, geoPoint.getLongitudeE6());
     }
 
     public static Message getMessageWithGeoPoint(GeoPoint geoPoint, int messageId) {
@@ -101,10 +98,13 @@ public class BlipItUtils {
         return new OverlayItem(geoPoint, blip.getTitle(), blip.getMessage());
     }
 
-    public static String getChannelsAsString(List<String> channelList) {
+    public static String getChannelsAsString(List<Channel> channelList) {
         StringBuilder buffer = new StringBuilder();
-        for (String channel : channelList) {
-            buffer.append(channel).append(CHANNEL_SEPARATOR);
+        for (Channel channel : channelList) {
+            buffer.append(channel.getId());
+            buffer.append(ID_NAME_SEPARATOR);
+            buffer.append(channel.getName());
+            buffer.append(CHANNEL_SEPARATOR);
         }
         if (buffer.length() > 0) buffer.deleteCharAt(buffer.length() - 1);
         return buffer.toString();
@@ -119,12 +119,18 @@ public class BlipItUtils {
         return userLocation;
     }
 
-    public static List<String> toChannelList(String channelPrefStr) {
-        List<String> channels = new ArrayList<String>();
-        if (channelPrefStr != null) {
-            channels.addAll(Arrays.asList(channelPrefStr.split(CHANNEL_SPLITTER)));
+    public static List<Channel> toChannelList(String channelsStr) {
+        List<Channel> channelList = new ArrayList<Channel>();
+        if (channelsStr != null) {
+            String[] channels = channelsStr.split(CHANNEL_SPLITTER);
+            if (channels != null && channels.length > 0) {
+                for (String channel : channels) {
+                    String[] idName = channel.split(ID_NAME_SEPARATOR);
+                    if (idName.length == 2) channelList.add(new Channel(idName[0], idName[1], idName[1]));
+                }
+            }
         }
-        return channels;
+        return channelList;
     }
 
     public static float getRadius(SharedPreferences sharedPreferences, String key) {
@@ -134,4 +140,5 @@ public class BlipItUtils {
             return sharedPreferences.getFloat(key, 2f);
         }
     }
+
 }

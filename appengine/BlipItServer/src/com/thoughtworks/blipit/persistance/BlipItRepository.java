@@ -23,7 +23,7 @@ package com.thoughtworks.blipit.persistance;
 import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.blipit.domain.Channel;
-import com.thoughtworks.blipit.domain.ChannelCategory;
+import com.thoughtworks.contract.common.ChannelCategory;
 import com.thoughtworks.contract.GeoLocation;
 import com.thoughtworks.contract.subscribe.UserPrefs;
 
@@ -43,25 +43,31 @@ public class BlipItRepository {
                     }
 
                     public Object[] parameters() {
-                        final Object[] parameters = new Object[1];
-                        parameters[0] = userPrefs.getChannels();
-                        return parameters;
+                        return new Object[]{getChannelIds(userPrefs)};
                     }
                 },
                 handler);
     }
 
+    private List<String> getChannelIds(UserPrefs userPrefs) {
+        List<String> channelIds = new ArrayList<String>();
+        for (com.thoughtworks.contract.common.Channel channel : userPrefs.getChannels()) {
+            channelIds.add(channel.getId());
+        }
+        return channelIds;
+    }
+
     public void retrieveChannelsByCategory(ChannelCategory channelCategory, final Utils.ResultHandler<Channel> handler) {
-        final ArrayList<Channel> channels = saveAndGetChannels(channelCategory, handler);
+        List<Channel> channels = saveAndGetChannels(channelCategory, handler);
         for (Channel channel : channels) {
             handler.onSuccess(channel);
         }
     }
 
     // TODO: Currently saves & gets the channels. This should go away in future. Find out a way to insert reference data like Channels.
-    private ArrayList<Channel> saveAndGetChannels(ChannelCategory channelCategory, final Utils.ResultHandler<Channel> handler) {
+    private List<Channel> saveAndGetChannels(ChannelCategory channelCategory, final Utils.ResultHandler<Channel> handler) {
         List<String> channelNames = getChannelNames(channelCategory);
-        final ArrayList<Channel> channels = new ArrayList<Channel>();
+        final List<Channel> channels = new ArrayList<Channel>();
         for (String channelName : channelNames) {
             final Channel channel = new Channel();
             channel.setCategory(channelCategory);

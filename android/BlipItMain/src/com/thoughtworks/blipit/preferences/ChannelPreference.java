@@ -29,17 +29,17 @@ import android.util.SparseBooleanArray;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.thoughtworks.blipit.utils.BlipItUtils;
+import com.thoughtworks.contract.common.Channel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static com.thoughtworks.blipit.utils.BlipItUtils.CHANNEL_SPLITTER;
 import static com.thoughtworks.blipit.utils.BlipItUtils.CHANNEL_PREF_KEY;
 
 public class ChannelPreference extends DialogPreference {
     private ListView listView;
-    private List<String> channels;
+    private List<Channel> availableChannels;
+    private List<String> availableChannelNames;
 
     public ChannelPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -49,25 +49,30 @@ public class ChannelPreference extends DialogPreference {
     protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
         super.onPrepareDialogBuilder(builder);
         listView = new ListView(getContext());
-        channels = getChannels();
-        listView.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_multiple_choice, channels));
+        initAvailableChannels();
+        listView.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_multiple_choice, availableChannelNames));
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         checkItemsFromPreferences();
         builder.setView(listView);
     }
 
-    // TODO: Make a web service call to retrieve the various channels available
-    private List<String> getChannels() {
-        return Arrays.asList("Food", "Retail", "Transport", "Gaming", "Movies", "Fire", "Accident");
+    private void initAvailableChannels() {
+        SharedPreferences sharedPreferences = getSharedPreferences();
+        String allChannelsStr = sharedPreferences.getString(BlipItUtils.ALL_CHANNELS_KEY, null);
+        availableChannels = BlipItUtils.toChannelList(allChannelsStr);
+        availableChannelNames = new ArrayList<String>();
+        for (Channel availableChannel : availableChannels) {
+            availableChannelNames.add(availableChannel.getName());
+        }
     }
 
     private void checkItemsFromPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences();
         String preferredChannelStr = sharedPreferences.getString(CHANNEL_PREF_KEY, null);
         if (preferredChannelStr != null) {
-            String[] channels = preferredChannelStr.split(CHANNEL_SPLITTER);
-            for (String channel : channels) {
-                int channelIndex = this.channels.indexOf(channel);
+            List<Channel> prefChannelList = BlipItUtils.toChannelList(preferredChannelStr);
+            for (Channel prefChannel : prefChannelList) {
+                int channelIndex = availableChannelNames.indexOf(prefChannel.getName());
                 if (channelIndex >= 0) {
                     listView.setItemChecked(channelIndex, true);
                 }
@@ -79,19 +84,26 @@ public class ChannelPreference extends DialogPreference {
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
         if (positiveResult) {
-            List<String> channelListStr = getSelectedChannels();
+            List<Channel> channelList = getSelectedChannels();
             SharedPreferences sharedPreferences = getSharedPreferences();
-            sharedPreferences.edit().putString(CHANNEL_PREF_KEY, BlipItUtils.getChannelsAsString(channelListStr)).commit();
+            sharedPreferences.edit().putString(CHANNEL_PREF_KEY, BlipItUtils.getChannelsAsString(channelList)).commit();
         }
     }
 
-    private List<String> getSelectedChannels() {
-        List<String> channelListStr = new ArrayList<String>();
+    private List<Channel> getSelectedChannels() {
+        List<Channel> channelList = new ArrayList<Channel>();
         SparseBooleanArray checkedItemPositions = listView.getCheckedItemPositions();
-        for (int i = 0; i < channels.size(); i++) {
-            String channel = channels.get(i);
-            if (checkedItemPositions.get(i, false)) channelListStr.add(channel);
+        for (int i = 0; i < availableChannelNames.size(); i++) {
+            String channel = availableChannelNames.get(i);
+            if (checkedItemPositions.get(i, false)) {
+                for (Channel availableChannel : availableChannels) {
+                    if (availableChannel.getName().equals(channel)) {
+                        channelList.add(availableChannel);
+                        break;
+                    }
+                }
+            }
         }
-        return channelListStr;
+        return channelList;
     }
 }
