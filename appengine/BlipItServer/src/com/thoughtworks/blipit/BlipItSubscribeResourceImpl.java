@@ -21,24 +21,23 @@
 package com.thoughtworks.blipit;
 
 import com.thoughtworks.blipit.domain.Alert;
-import com.thoughtworks.blipit.persistance.AlertRepository;
+import com.thoughtworks.blipit.persistance.BlipItRepository;
+import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
 import com.thoughtworks.contract.subscribe.GetBlipsRequest;
 import com.thoughtworks.contract.subscribe.GetBlipsResponse;
-import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
 import com.thoughtworks.contract.subscribe.UserPrefs;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.restlet.resource.ServerResource;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BlipItSubscribeResourceImpl extends ServerResource implements BlipItSubscribeResource {
+public class BlipItSubscribeResourceImpl extends BlipItCommonResourceImpl implements BlipItSubscribeResource {
     private static final Logger log = Logger.getLogger(BlipItSubscribeResourceImpl.class.getName());
-    private AlertRepository alertRepository;
+    private BlipItRepository blipItRepository;
 
     public BlipItSubscribeResourceImpl() {
-        alertRepository = new AlertRepository();
+        blipItRepository = new BlipItRepository();
     }
 
     @Get
@@ -51,7 +50,7 @@ public class BlipItSubscribeResourceImpl extends ServerResource implements BlipI
         final GetBlipsResponse blipItResponse = new GetBlipsResponse();
         UserPrefs userPrefs = blipItRequest.getUserPrefs();
         if (userPrefs == null || userPrefs.getChannels() == null || userPrefs.getChannels().isEmpty()) return blipItResponse;
-        alertRepository.filterAlerts(blipItRequest.getUserLocation(), userPrefs, new Utils.ResultHandler<Alert>() {
+        blipItRepository.filterAlerts(blipItRequest.getUserLocation(), userPrefs, new Utils.ResultHandler<Alert>() {
             public void onSuccess(Alert alert) {
                 blipItResponse.setSuccess();
                 blipItResponse.addBlips(alert.toBlip());

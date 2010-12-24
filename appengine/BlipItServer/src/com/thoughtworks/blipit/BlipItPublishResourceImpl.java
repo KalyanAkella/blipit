@@ -21,7 +21,6 @@
 package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.GeoPt;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.blipit.persistance.DataStoreHelper;
 import com.thoughtworks.contract.BlipItResponse;
@@ -36,7 +35,6 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Post;
-import org.restlet.resource.ServerResource;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -44,7 +42,7 @@ import java.util.logging.Logger;
 
 import static com.thoughtworks.blipit.Utils.splitByComma;
 
-public class BlipItPublishResourceImpl extends ServerResource implements BlipItPublishResource {
+public class BlipItPublishResourceImpl extends BlipItCommonResourceImpl implements BlipItPublishResource {
     private static final Logger log = Logger.getLogger(BlipItPublishResourceImpl.class.getName());
 
     @Post
@@ -72,10 +70,11 @@ public class BlipItPublishResourceImpl extends ServerResource implements BlipItP
         Alert alert = getAlert(saveBlipRequest);
         final SaveBlipResponse saveBlipResponse = new SaveBlipResponse();
         DataStoreHelper.save(alert, new Utils.ResultHandler<Alert>() {
-            public void onSuccess(Alert arg) {
+            public void onSuccess(Alert savedAlert) {
                 saveBlipResponse.setSuccess();
-                saveBlipResponse.setBlipId(KeyFactory.keyToString(arg.getKey()));
-                log.info("Alert with title, " + arg.getSource() + " saved successfully with ID: " + arg.getKey());
+                String keyAsString = savedAlert.getKeyAsString();
+                saveBlipResponse.setBlipId(keyAsString);
+                log.info("Alert with title, " + savedAlert.getSource() + " saved successfully with ID: " + keyAsString);
             }
 
             public void onError(Throwable throwable) {
