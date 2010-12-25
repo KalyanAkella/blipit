@@ -22,11 +22,9 @@ package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.domain.Alert;
-import com.thoughtworks.contract.common.ChannelCategory;
 import com.thoughtworks.blipit.persistance.DataStoreHelper;
 import com.thoughtworks.contract.BlipItResponse;
 import com.thoughtworks.contract.GeoLocation;
-import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.publish.BlipItPublishResource;
 import com.thoughtworks.contract.publish.DeleteBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
@@ -36,7 +34,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
+import org.restlet.resource.Delete;
 import org.restlet.resource.Post;
 
 import java.util.List;
@@ -92,14 +90,14 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
         return saveBlipResponse;
     }
 
-    @Post
+    @Delete
     public BlipItResponse deleteBlip(DeleteBlipRequest deleteBlipRequest) {
-        String blipId = deleteBlipRequest.getBlipId();
+        final String blipId = deleteBlipRequest.getBlipId();
         final BlipItResponse blipItResponse = new BlipItResponse();
         DataStoreHelper.delete(Alert.class, blipId, new Utils.ResultHandler<Alert>() {
             public void onSuccess(Alert arg) {
                 blipItResponse.setSuccess();
-                log.info("Alert with title, " + arg.getSource() + " deleted successfully");
+                log.info("Alert with ID, " + blipId + " deleted successfully");
             }
 
             public void onError(Throwable throwable) {
@@ -125,13 +123,4 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
         return new Alert(alertTitle, alertDescription, new GeoPt(alertLatitude, alertLongitude), channels);
     }
 
-    @Get
-    public GetChannelsResponse getPanicChannels() {
-        return getChannels(ChannelCategory.PANIC);
-    }
-
-    @Get
-    public GetChannelsResponse getFreeChannels() {
-        return getChannels(ChannelCategory.AD);
-    }
 }

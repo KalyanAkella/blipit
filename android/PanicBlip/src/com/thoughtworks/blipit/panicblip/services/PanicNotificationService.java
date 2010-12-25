@@ -51,6 +51,7 @@ import java.util.List;
 
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.APP_TAG;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.LOCATION_CHANGED;
+import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.areSameStrings;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getGeoLocation;
 
 public class PanicNotificationService extends Service {
@@ -62,6 +63,7 @@ public class PanicNotificationService extends Service {
     private Looper panicNotificationServiceLooper;
     private PanicNotificationServiceHandler panicNotificationServiceHandler;
     private SaveBlipRequest panicBlip;
+    private Location currentBestLocation;
 
     public PanicNotificationService() {
         panicBlip = new SaveBlipRequest();
@@ -95,7 +97,7 @@ public class PanicNotificationService extends Service {
 
     @Override
     public void onStart(Intent intent, int startId) {
-        Message message = panicNotificationServiceHandler.obtainMessage();  // this just creates a fresh message - no magic here !!!
+        Message message = panicNotificationServiceHandler.obtainMessage();
         message.arg1 = startId;
         message.obj = intent;
         message.what = intent.getIntExtra(APP_TAG, -1);
@@ -129,21 +131,54 @@ public class PanicNotificationService extends Service {
     }
 
     public void onLocationChanged(Intent intent) {
-        if (panicBlip.isEmpty()) return;
+        if (panicBlip == null || panicBlip.isEmpty()) return;
         Bundle bundle = intent.getExtras();
         if (bundle.containsKey(LocationManager.KEY_LOCATION_CHANGED)) {
-            // TODO: Determine if this is a good enough location reading
             Location newLocation = (Location) bundle.get(LocationManager.KEY_LOCATION_CHANGED);
-            reportPanic(newLocation, panicBlip.getApplicableChannels());
+            if (isBetterLocation(newLocation)) reportPanic(newLocation);
         }
     }
 
+    /**
+     * Algorithm that determines whether the current location fix is good enough. Based on the sample code obtained
+     * from http://developer.android.com/guide/topics/location/obtaining-user-location.html
+     *
+     * @param location the location obtained in the current fix
+     * @return true if the current fix is good enough compared to the earlier one, else returns false.
+     */
+    private boolean isBetterLocation(Location location) {
+        boolean result;
+        if (currentBestLocation == null) {
+            result = true;
+        } else {
+            long timeDelta = location.getTime() - currentBestLocation.getTime();
+            boolean isNewer = timeDelta > minTimeForLocUpdates;
+            boolean isOlder = timeDelta < -minTimeForLocUpdates;
+
+            if (isNewer) {
+                result = true;
+            } else if (isOlder) {
+                result = false;
+            } else {
+                int accuracyDelta = (int) (location.getAccuracy() - currentBestLocation.getAccuracy());
+                boolean isLessAccurate = accuracyDelta > 0;
+                boolean isMoreAccurate = accuracyDelta < 0;
+                boolean isVeryLessAccurate = accuracyDelta > 200;
+                boolean isFromSameProvider = areSameStrings(location.getProvider(), currentBestLocation.getProvider());
+                result = isMoreAccurate || !isLessAccurate || !isVeryLessAccurate && isFromSameProvider;
+            }
+        }
+        if (result) currentBestLocation = location;
+        return result;
+    }
+
     public void reportPanic(List<String> topics) {
+        panicBlip.setApplicableChannels(topics);
         Location lastKnownLocation = getLastKnownLocation();
         if (lastKnownLocation == null) {
             Toast.makeText(this, "Your issue will be reported as soon as we detect your current location", Toast.LENGTH_LONG).show();
         } else {
-            reportPanic(lastKnownLocation, topics);
+            reportPanic(lastKnownLocation);
         }
     }
 
@@ -156,10 +191,9 @@ public class PanicNotificationService extends Service {
         return lastKnownLocation;
     }
 
-    private void reportPanic(Location newLocation, List<String> topics) {
+    private void reportPanic(Location newLocation) {
         try {
             panicBlip.setUserLocation(getGeoLocation(newLocation));
-            panicBlip.setApplicableChannels(topics);
             BlipItPublishResource publishResource = PanicBlipServiceHelper.getPublishResource(blipItServiceUrl);
             SaveBlipResponse saveBlipResponse = publishResource.saveBlip(panicBlip);
             if (saveBlipResponse.isFailure()) {
@@ -181,6 +215,7 @@ public class PanicNotificationService extends Service {
     }
 
     public void clearPanic() {
+        if (panicBlip == null || panicBlip.isEmpty()) return;
         try {
             BlipItPublishResource blipItPublishResource = PanicBlipServiceHelper.getPublishResource(blipItServiceUrl);
             DeleteBlipRequest deleteBlipRequest = new DeleteBlipRequest();
@@ -189,15 +224,15 @@ public class PanicNotificationService extends Service {
             if (blipItResponse.isFailure()) {
                 String errorMessage = blipItResponse.getBlipItError().getMessage();
                 Log.e(APP_TAG, "Unable to clear panic blip. Error from server: " + errorMessage);
-                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "We are unable to clear your issue at this time. Please try again.", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(this, "Issue cleared successfully", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Issue cleared successfully", Toast.LENGTH_SHORT).show();
+                stopSelf(); // stop the PanicNotificationService after clearing all issues
             }
         } catch (Exception e) {
             Toast.makeText(this, "We are unable to clear your issue at this time. Please try again.", Toast.LENGTH_LONG).show();
             Log.e(APP_TAG, "Error occurred while clearing the panic blip", e);
         }
-        stopSelf();
     }
 
     private void readServiceMetadata() {

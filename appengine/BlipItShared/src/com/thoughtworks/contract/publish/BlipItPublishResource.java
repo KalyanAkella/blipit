@@ -21,9 +21,8 @@
 package com.thoughtworks.contract.publish;
 
 import com.thoughtworks.contract.BlipItResponse;
-import com.thoughtworks.contract.common.GetChannelsResponse;
 import org.restlet.representation.Representation;
-import org.restlet.resource.Get;
+import org.restlet.resource.Delete;
 import org.restlet.resource.Post;
 
 public interface BlipItPublishResource {
@@ -33,12 +32,6 @@ public interface BlipItPublishResource {
     @Post
     SaveBlipResponse saveBlip(SaveBlipRequest saveBlipRequest);
 
-    @Post
+    @Delete
     BlipItResponse deleteBlip(DeleteBlipRequest deleteBlipRequest);
-
-    @Get
-    GetChannelsResponse getPanicChannels();
-
-    @Get
-    GetChannelsResponse getFreeChannels();
 }
