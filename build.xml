@@ -21,6 +21,9 @@
 	<target name="run.tests">
 		<ant antfile="build.xml" target="run-tests" dir="android/BlipItTest"/>
 	</target>
+    <target name="run.appengine.tests">
+		<ant antfile="build.xml" target="run-tests" dir="appengine/BlipItServer"/>
+	</target>
 	<target name="gps">
 		<ant antfile="build.xml" target="gps" dir="android/BlipItTest"/>
 	</target>

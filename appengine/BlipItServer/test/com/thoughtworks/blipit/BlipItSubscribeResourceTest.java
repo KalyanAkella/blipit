@@ -20,26 +20,67 @@
 
 package com.thoughtworks.blipit;
 
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.thoughtworks.contract.common.Channel;
 import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
+import com.thoughtworks.contract.subscribe.GetBlipsRequest;
+import com.thoughtworks.contract.subscribe.GetBlipsResponse;
+import com.thoughtworks.contract.subscribe.UserPrefs;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class BlipItSubscribeResourceTest {
-    
+
     private BlipItSubscribeResource blipItSubscribeServerResource;
+    private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
     @Before
     public void setup() {
         blipItSubscribeServerResource = new BlipItSubscribeResourceImpl();
-        // insert test alerts here to the datastore
+        helper.setUp();
     }
-    
+
+    @After
+    public void tearDown() {
+        helper.tearDown();
+    }
+
     @Test
     public void testShowMessage() {
         String message = blipItSubscribeServerResource.showMessage();
         assertThat(message.contains("HTTP"), is(true));
+    }
+
+    @Test
+    public void testGetBlipsFiltersAlertsBasedOnUsersChannelPreference() {
+        final DatastoreStub datastoreStub = new DatastoreStub();
+        datastoreStub.setupEntityAsPersisted(TestData.Alerts.FameMovie());
+        datastoreStub.setupEntityAsPersisted(TestData.Alerts.PVRMovie());
+        datastoreStub.setupEntityAsPersisted(TestData.Alerts.MTRFood());
+
+        final GetBlipsRequest blipItRequest = GetBlipItRequest(Arrays.asList(TestData.Channels.Movie()));
+        final GetBlipsResponse blips = blipItSubscribeServerResource.getBlips(blipItRequest);
+
+        assertThat(blips.isSuccess(), is(true));
+        assertThat(blips.getBlips().size(), is(2));
+    }
+
+    private GetBlipsRequest GetBlipItRequest(List<Channel> channels) {
+        final ArrayList<Channel> userChannels = new ArrayList<Channel>();
+        userChannels.addAll(channels);
+        final UserPrefs userPrefs = new UserPrefs();
+        userPrefs.setChannels(userChannels);
+        final GetBlipsRequest blipItRequest = new GetBlipsRequest();
+        blipItRequest.setUserPrefs(userPrefs);
+        return blipItRequest;
     }
 }

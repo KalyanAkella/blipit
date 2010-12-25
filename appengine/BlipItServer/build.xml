@@ -118,7 +118,7 @@
         <javac srcdir="src" destdir="${war.dir}/WEB-INF/classes" classpathref="project.classpath" debug="on"/>
     </target>
 
-    <target name="test-compile" depends="compile" description="Compile the application unit test code">
+    <target name="test-compile" depends="war" description="Compile the application unit test code">
         <mkdir dir="${war.dir}/WEB-INF/test-classes"/>
         <copy todir="${war.dir}/WEB-INF/test-classes">
             <fileset dir="test">
