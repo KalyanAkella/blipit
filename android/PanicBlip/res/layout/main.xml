@@ -17,16 +17,22 @@
             />
     <LinearLayout
             style="@android:style/ButtonBar"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:gravity="bottom|center">
         <Button android:id="@+id/submit_panic_btn"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="@string/submit_panic"
                 android:enabled="false">
         </Button>
         <Button android:id="@+id/clear_panic_btn"
-                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="@string/clear_panic"
                 android:enabled="false">
         </Button>
