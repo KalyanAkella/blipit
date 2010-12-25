@@ -21,6 +21,7 @@
 package com.thoughtworks.contract.publish;
 
 import com.thoughtworks.contract.GeoLocation;
+import com.thoughtworks.contract.common.Channel;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,13 +31,13 @@ import java.util.Map;
 
 public class SaveBlipRequest implements Serializable {
     private GeoLocation userLocation;
-    private List<String> applicableChannels;
+    private List<Channel> applicableChannels;
     private Map<String, String> metaData;
     private String blipId;
 
     public SaveBlipRequest() {
         metaData = new HashMap<String, String>();
-        applicableChannels = new ArrayList<String>();
+        applicableChannels = new ArrayList<Channel>();
     }
 
     public GeoLocation getBlipLocation() {
@@ -47,11 +48,11 @@ public class SaveBlipRequest implements Serializable {
         this.userLocation = userLocation;
     }
 
-    public List<String> getApplicableChannels() {
+    public List<Channel> getApplicableChannels() {
         return applicableChannels;
     }
 
-    public void setApplicableChannels(List<String> applicableChannels) {
+    public void setApplicableChannels(List<Channel> applicableChannels) {
         this.applicableChannels = applicableChannels;
     }
 

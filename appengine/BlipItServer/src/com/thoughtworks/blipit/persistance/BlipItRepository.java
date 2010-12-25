@@ -90,7 +90,7 @@ public class BlipItRepository {
         if (channelCategory == ChannelCategory.AD)
             return Arrays.asList("Food", "Retail", "Transport", "Gaming", "Movies", "Fire", "Accident");
         else if (channelCategory == ChannelCategory.PANIC)
-            return Arrays.asList("Fire", "Accident");
+            return Arrays.asList("Fire", "Accident", "Require Blood", "Ambulance", "Earthquake", "Cyclone");
         return Arrays.asList();
     }
 }

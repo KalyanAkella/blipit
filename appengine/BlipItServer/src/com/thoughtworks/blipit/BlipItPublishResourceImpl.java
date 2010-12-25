@@ -25,16 +25,21 @@ import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.blipit.persistance.DataStoreHelper;
 import com.thoughtworks.contract.BlipItResponse;
 import com.thoughtworks.contract.GeoLocation;
+import com.thoughtworks.contract.common.Channel;
+import com.thoughtworks.contract.common.ChannelCategory;
+import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.publish.BlipItPublishResource;
 import com.thoughtworks.contract.publish.DeleteBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipResponse;
+import com.thoughtworks.contract.utils.ChannelUtils;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
+import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
 import java.util.List;
@@ -108,10 +113,12 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
         return blipItResponse;
     }
 
-    // TODO: Take the alert title & desc from PanicBlip
+    // TODO: Take the alert title & desc from PanicBlip.
     private Alert getAlert(SaveBlipRequest saveBlipRequest) {
         GeoLocation blipLocation = saveBlipRequest.getBlipLocation();
-        return new Alert("Panic Title", "Panic Desc", Utils.asGeoPoint(blipLocation), saveBlipRequest.getApplicableChannels());
+        // TODO: Load & link the channels from data store
+        List<Channel> applicableChannels = saveBlipRequest.getApplicableChannels();
+        return new Alert("Panic Title", "Panic Desc", Utils.asGeoPoint(blipLocation), ChannelUtils.toChannelNames(applicableChannels));
     }
 
     private Alert getAlert(Form form) {
@@ -123,4 +130,8 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
         return new Alert(alertTitle, alertDescription, new GeoPt(alertLatitude, alertLongitude), channels);
     }
 
+    @Get
+    public GetChannelsResponse getAvailableChannels(ChannelCategory channelCategory) {
+        return getChannels(channelCategory);
+    }
 }

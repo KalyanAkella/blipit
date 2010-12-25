@@ -27,11 +27,9 @@ import android.os.Message;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
 import com.thoughtworks.contract.GeoLocation;
-import com.thoughtworks.contract.common.Channel;
 import com.thoughtworks.contract.subscribe.Blip;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class BlipItUtils {
     public static final String USER_LOCATION_LATITUDE = "USER_LOCATION_LATITUDE";
@@ -45,10 +43,7 @@ public class BlipItUtils {
     public static final String APP_TAG = "BlipItActivity";
     public static final String RADIUS_PREF_KEY = "radius_pref_key";
     public static final String CHANNEL_PREF_KEY = "channel_pref_key";
-    public static final String ALL_CHANNELS_KEY = "all_channels_key";
-    public static final String CHANNEL_SPLITTER = "\\|";
-    public static final String CHANNEL_SEPARATOR = "|";
-    private static final String ID_NAME_SEPARATOR = ":";
+    public static final String AD_CHANNELS_KEY = "ad_channels_key";
 
     private BlipItUtils() {
     }
@@ -98,18 +93,6 @@ public class BlipItUtils {
         return new OverlayItem(geoPoint, blip.getTitle(), blip.getMessage());
     }
 
-    public static String getChannelsAsString(List<Channel> channelList) {
-        StringBuilder buffer = new StringBuilder();
-        for (Channel channel : channelList) {
-            buffer.append(channel.getId());
-            buffer.append(ID_NAME_SEPARATOR);
-            buffer.append(channel.getName());
-            buffer.append(CHANNEL_SEPARATOR);
-        }
-        if (buffer.length() > 0) buffer.deleteCharAt(buffer.length() - 1);
-        return buffer.toString();
-    }
-
     public static GeoLocation toGeoLocation(GeoPoint currentUserLocation) {
         GeoLocation userLocation = new GeoLocation();
         if (currentUserLocation != null) {
@@ -117,20 +100,6 @@ public class BlipItUtils {
             userLocation.setLongitude(currentUserLocation.getLongitudeE6() * 1E-6);
         }
         return userLocation;
-    }
-
-    public static List<Channel> toChannelList(String channelsStr) {
-        List<Channel> channelList = new ArrayList<Channel>();
-        if (channelsStr != null) {
-            String[] channels = channelsStr.split(CHANNEL_SPLITTER);
-            if (channels != null && channels.length > 0) {
-                for (String channel : channels) {
-                    String[] idName = channel.split(ID_NAME_SEPARATOR);
-                    if (idName.length == 2) channelList.add(new Channel(idName[0], idName[1], idName[1]));
-                }
-            }
-        }
-        return channelList;
     }
 
     public static float getRadius(SharedPreferences sharedPreferences, String key) {

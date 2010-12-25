@@ -26,6 +26,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
+import com.thoughtworks.contract.common.Channel;
 
 import java.util.ArrayList;
 
@@ -41,8 +42,7 @@ public class PanicNotificationServiceHandler extends Handler {
     public void handleMessage(Message msg) {
         if (msg.what == PanicBlipUtils.REPORT_PANIC) {
             Bundle bundle = msg.getData();
-            ArrayList<String> topics = bundle.getStringArrayList(PanicBlipUtils.PANIC_BLIP);
-            panicNotificationService.reportAndRegisterPanic(topics);
+            panicNotificationService.reportPanic((ArrayList<Channel>) bundle.getSerializable(PanicBlipUtils.PANIC_BLIP));
         } else if (msg.what == PanicBlipUtils.CLEAR_PANIC) {
             panicNotificationService.clearPanic();
         } else if (msg.what == PanicBlipUtils.LOCATION_CHANGED) {

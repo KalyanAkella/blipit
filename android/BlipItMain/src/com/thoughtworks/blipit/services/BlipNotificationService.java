@@ -42,6 +42,7 @@ import com.thoughtworks.contract.subscribe.Blip;
 import com.thoughtworks.contract.subscribe.GetBlipsRequest;
 import com.thoughtworks.contract.subscribe.GetBlipsResponse;
 import com.thoughtworks.contract.subscribe.UserPrefs;
+import com.thoughtworks.contract.utils.ChannelUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -151,7 +152,7 @@ public class BlipNotificationService extends IntentService {
         blipItRequest.setUserLocation(BlipItUtils.toGeoLocation(getCurrentUserLocation()));
         UserPrefs userPrefs = new UserPrefs();
         userPrefs.setRadius(radius);
-        userPrefs.setChannels(BlipItUtils.toChannelList(channelPrefStr));
+        userPrefs.setChannels(ChannelUtils.toChannelList(channelPrefStr));
         blipItRequest.setUserPrefs(userPrefs);
         return blipItRequest;
     }

@@ -41,12 +41,12 @@ import android.util.Log;
 import android.widget.Toast;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipServiceHelper;
 import com.thoughtworks.contract.BlipItResponse;
+import com.thoughtworks.contract.common.Channel;
 import com.thoughtworks.contract.publish.BlipItPublishResource;
 import com.thoughtworks.contract.publish.DeleteBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.APP_TAG;
@@ -172,7 +172,7 @@ public class PanicNotificationService extends Service {
         return result;
     }
 
-    public void reportPanic(List<String> topics) {
+    public void reportPanic(List<Channel> topics) {
         panicBlip.setApplicableChannels(topics);
         Location lastKnownLocation = getLastKnownLocation();
         if (lastKnownLocation == null) {
@@ -206,12 +206,8 @@ public class PanicNotificationService extends Service {
             }
         } catch (Exception e) {
             Toast.makeText(this, "We are unable to report your issue at this time. Please try again.", Toast.LENGTH_LONG).show();
-            Log.e(APP_TAG, "Error occurred while saving report", e);
+            Log.e(APP_TAG, "Error occurred while saving panic blip", e);
         }
-    }
-
-    public void reportAndRegisterPanic(ArrayList<String> topics) {
-        reportPanic(topics);
     }
 
     public void clearPanic() {

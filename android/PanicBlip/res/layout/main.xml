@@ -9,14 +9,26 @@
             android:layout_height="wrap_content"
             android:text="@string/welcome_msg"
             />
-    <Button android:id="@+id/report_issue_btn"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="@string/report_issue">
-        <requestFocus/>
-    </Button>
-    <Button android:id="@+id/clear_all_issues_btn"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="@string/clear_all_issues">
-    </Button>
+    <ListView android:id="@+id/panicChannelList"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_weight="1"
+              android:choiceMode="multipleChoice"
+            />
+    <LinearLayout
+            style="@android:style/ButtonBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <Button android:id="@+id/submit_panic_btn"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/submit_panic"
+                android:enabled="false">
+        </Button>
+        <Button android:id="@+id/clear_panic_btn"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/clear_panic"
+                android:enabled="false">
+        </Button>
+    </LinearLayout>
 </LinearLayout>
-
