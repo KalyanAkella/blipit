@@ -30,6 +30,7 @@ import com.thoughtworks.contract.subscribe.UserPrefs;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,10 +51,11 @@ public class BlipItSubscribeResourceImpl extends BlipItCommonServerResource impl
         final GetBlipsResponse blipItResponse = new GetBlipsResponse();
         UserPrefs userPrefs = blipItRequest.getUserPrefs();
         if (userPrefs == null || userPrefs.getChannels() == null || userPrefs.getChannels().isEmpty()) return blipItResponse;
+        final ArrayList<Alert> alerts = new ArrayList<Alert>();
         blipItRepository.filterAlerts(blipItRequest.getUserLocation(), userPrefs, new Utils.ResultHandler<Alert>() {
             public void onSuccess(Alert alert) {
                 blipItResponse.setSuccess();
-                blipItResponse.addBlips(alert.toBlip());
+                alerts.add(alert);
             }
 
             public void onError(Throwable throwable) {
@@ -61,7 +63,21 @@ public class BlipItSubscribeResourceImpl extends BlipItCommonServerResource impl
                 blipItResponse.setFailure(Utils.getBlipItError(throwable.getMessage()));
             }
         });
+
+        final ArrayList<IAlertFilter> alertFilters = GetAlertFilters(blipItRequest, userPrefs);
+        for(IAlertFilter alertFilter : alertFilters)
+            alertFilter.apply(alerts);
+
+        for(Alert alert : alerts){
+            blipItResponse.addBlips(alert.toBlip());
+        }
         return blipItResponse;
+    }
+
+    private ArrayList<IAlertFilter> GetAlertFilters(GetBlipsRequest blipItRequest, UserPrefs userPrefs) {
+        final ArrayList<IAlertFilter> alertFilters = new ArrayList<IAlertFilter>();
+        alertFilters.add(new DistanceFilter(blipItRequest.getUserLocation(), userPrefs.getRadius()));
+        return alertFilters;
     }
 
     @Get
