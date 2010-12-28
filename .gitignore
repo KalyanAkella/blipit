@@ -22,3 +22,4 @@ bin
 BlipIt
 android/BlipItMain/libs/
 android/BlipItMain/res/layout/main.xml
+android/BlipItMain/res/values/settings.xml
