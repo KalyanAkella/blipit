@@ -64,6 +64,8 @@ public class BlipItSubscribeResourceImpl extends BlipItCommonServerResource impl
             }
         });
 
+        if(blipItResponse.isFailure()) return blipItResponse;
+
         final ArrayList<IAlertFilter> alertFilters = GetAlertFilters(blipItRequest, userPrefs);
         for(IAlertFilter alertFilter : alertFilters)
             alertFilter.apply(alerts);
