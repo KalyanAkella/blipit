@@ -20,15 +20,11 @@
 
 package com.thoughtworks.blipit;
 
-import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import com.thoughtworks.contract.common.Channel;
 import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
 import com.thoughtworks.contract.subscribe.GetBlipsRequest;
 import com.thoughtworks.contract.subscribe.GetBlipsResponse;
 import com.thoughtworks.contract.subscribe.UserPrefs;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -38,21 +34,18 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class BlipItSubscribeResourceTest {
+public class BlipItSubscribeResourceTest extends DataStoreStubTest {
 
     private BlipItSubscribeResource blipItSubscribeServerResource;
-    private final LocalServiceTestHelper helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
 
-    @Before
-    public void setup() {
+    @Override
+    protected void doSetup() {
         blipItSubscribeServerResource = new BlipItSubscribeResourceImpl();
-        helper.setUp();
     }
 
-    @After
-    public void tearDown() {
-        helper.tearDown();
-    }
+    @Override
+    protected void doTearDown() {  }
+
 
     @Test
     public void testShowMessage() {
