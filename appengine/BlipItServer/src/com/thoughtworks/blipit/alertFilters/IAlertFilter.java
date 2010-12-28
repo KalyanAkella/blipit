@@ -1,4 +1,4 @@
-package com.thoughtworks.blipit;
+package com.thoughtworks.blipit.alertFilters;
 
 import com.thoughtworks.blipit.domain.Alert;
 

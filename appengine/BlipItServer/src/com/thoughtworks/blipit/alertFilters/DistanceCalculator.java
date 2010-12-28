@@ -1,4 +1,4 @@
-package com.thoughtworks.blipit;
+package com.thoughtworks.blipit.alertFilters;
 
 import com.google.appengine.api.datastore.GeoPt;
 

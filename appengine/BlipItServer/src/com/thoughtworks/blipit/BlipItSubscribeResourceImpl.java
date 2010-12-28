@@ -20,6 +20,8 @@
 
 package com.thoughtworks.blipit;
 
+import com.thoughtworks.blipit.alertFilters.DistanceFilter;
+import com.thoughtworks.blipit.alertFilters.IAlertFilter;
 import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.contract.common.ChannelCategory;
 import com.thoughtworks.contract.common.GetChannelsResponse;

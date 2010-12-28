@@ -1,6 +1,7 @@
-package com.thoughtworks.blipit;
+package com.thoughtworks.blipit.alertFilters;
 
 import com.google.appengine.api.datastore.GeoPt;
+import com.thoughtworks.blipit.GeoLocationToGeoPointConverter;
 import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.contract.GeoLocation;
 
