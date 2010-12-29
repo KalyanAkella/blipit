@@ -23,7 +23,7 @@ package com.thoughtworks.blipit;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.thoughtworks.blipit.domain.Alert;
+import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.blipit.persistance.DataStoreHelper;
 import com.thoughtworks.contract.BlipItResponse;
 import com.thoughtworks.contract.Constants;
@@ -46,7 +46,9 @@ import org.restlet.resource.Post;
 
 import javax.jdo.PersistenceManager;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,20 +62,20 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
     }
 
     @Post
-    public Representation acceptAlert(Representation entity) {
+    public Representation acceptBlip(Representation entity) {
         final Representation[] result = {null};
-        Alert alert = getAlert(new Form(entity));
-        DataStoreHelper.save(alert, new Utils.ResultHandler<Alert>() {
-            public void onSuccess(Alert arg) {
+        Blip blip = getBlip(new Form(entity));
+        DataStoreHelper.save(blip, new Utils.ResultHandler<Blip>() {
+            public void onSuccess(Blip arg) {
                 setStatus(Status.SUCCESS_CREATED);
-                result[0] = new StringRepresentation("Alert creation successful", MediaType.TEXT_PLAIN);
-                log.info("Alert with title, " + arg.getTitle() + " saved successfully with ID: " + arg.getKey());
+                result[0] = new StringRepresentation("Blip creation successful", MediaType.TEXT_PLAIN);
+                log.info("Blip with title, " + arg.getTitle() + " saved successfully with ID: " + arg.getKey());
             }
 
             public void onError(Throwable throwable) {
                 setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-                result[0] = new StringRepresentation("Alert creation failed with error: " + throwable, MediaType.TEXT_PLAIN);
-                log.log(Level.SEVERE, "Alert creation failed with error", throwable);
+                result[0] = new StringRepresentation("Blip creation failed with error: " + throwable, MediaType.TEXT_PLAIN);
+                log.log(Level.SEVERE, "Blip creation failed with error", throwable);
             }
         });
         return result[0];
@@ -82,92 +84,91 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
     @Post
     public SaveBlipResponse saveBlip(SaveBlipRequest saveBlipRequest) {
         final SaveBlipResponse saveBlipResponse = new SaveBlipResponse();
-        Alert alert = constructAlert(saveBlipRequest, saveBlipResponse);
+        Blip blip = constructBlip(saveBlipRequest, saveBlipResponse);
         if (saveBlipResponse.isSuccess()) {
-            DataStoreHelper.save(alert, new Utils.ResultHandler<Alert>() {
-                public void onSuccess(Alert savedAlert) {
+            DataStoreHelper.save(blip, new Utils.ResultHandler<Blip>() {
+                public void onSuccess(Blip savedBlip) {
                     saveBlipResponse.setSuccess();
-                    String keyAsString = savedAlert.getKeyAsString();
+                    String keyAsString = savedBlip.getKeyAsString();
                     saveBlipResponse.setBlipId(keyAsString);
-                    log.info("Alert with title, " + savedAlert.getTitle() + " saved successfully with ID: " + keyAsString);
+                    log.info("Blip with title, " + savedBlip.getTitle() + " saved successfully with ID: " + keyAsString);
                 }
 
                 public void onError(Throwable throwable) {
                     saveBlipResponse.setFailure(Utils.getBlipItError(throwable.getMessage()));
-                    log.log(Level.SEVERE, "Alert creation failed with error", throwable);
+                    log.log(Level.SEVERE, "Blip creation failed with error", throwable);
                 }
             });
         }
         return saveBlipResponse;
     }
 
-    private Alert constructAlert(SaveBlipRequest saveBlipRequest, SaveBlipResponse saveBlipResponse) {
-        Alert alert = null;
+    private Blip constructBlip(SaveBlipRequest saveBlipRequest, SaveBlipResponse saveBlipResponse) {
+        Blip blip = null;
         PersistenceManager persistenceManager = null;
 
         try {
             persistenceManager = DataStoreHelper.getPersistenceManager();
             List<Channel> channels = saveBlipRequest.getChannels();
-            List<com.thoughtworks.blipit.domain.Channel> alertChannels = new ArrayList<com.thoughtworks.blipit.domain.Channel>();
+            Set<Key> channelKeys = new HashSet<Key>();
             for (Channel channel : channels) {
-                alertChannels.add(mapToChannel(persistenceManager, channel));
+                channelKeys.add(mapToChannelKey(channel));
             }
 
             String blipId = saveBlipRequest.getBlipId();
             String title = saveBlipRequest.getMetaDataValue(Constants.TITLE);
             String description = saveBlipRequest.getMetaDataValue(Constants.DESC);
-            GeoPt alertLoc = Utils.asGeoPoint(saveBlipRequest.getBlipLocation());
+            GeoPt blipLoc = Utils.asGeoPoint(saveBlipRequest.getBlipLocation());
 
             if (StringUtils.notEmpty(blipId)) {
-                Key alertKey = KeyFactory.stringToKey(blipId);
-                alert = persistenceManager.getObjectById(Alert.class, alertKey);
-                alert.setTitle(title);
-                alert.setDescription(description);
-                alert.setGeoPoint(alertLoc);
-                alert.setChannels(alertChannels);
+                Key blipKey = KeyFactory.stringToKey(blipId);
+                blip = persistenceManager.getObjectById(Blip.class, blipKey);
+                blip.setTitle(title);
+                blip.setDescription(description);
+                blip.setGeoPoint(blipLoc);
+                blip.setChannelKeys(channelKeys);
             } else {
-                alert = new Alert(title, description, alertLoc, alertChannels);
+                blip = new Blip(title, description, blipLoc, channelKeys);
             }
         } catch (Exception e) {
             saveBlipResponse.setFailure(Utils.getBlipItError(e.getMessage()));
-            log.log(Level.SEVERE, "Alert creation failed with error", e);
+            log.log(Level.SEVERE, "Blip creation failed with error", e);
         } finally {
             if (persistenceManager != null) persistenceManager.close();
         }
 
-        return alert;
+        return blip;
     }
 
     @Delete
     public BlipItResponse deleteBlip(DeleteBlipRequest deleteBlipRequest) {
         final String blipId = deleteBlipRequest.getBlipId();
         final BlipItResponse blipItResponse = new BlipItResponse();
-        DataStoreHelper.delete(Alert.class, blipId, new Utils.ResultHandler<Alert>() {
-            public void onSuccess(Alert arg) {
+        DataStoreHelper.delete(Blip.class, blipId, new Utils.ResultHandler<Blip>() {
+            public void onSuccess(Blip arg) {
                 blipItResponse.setSuccess();
-                log.info("Alert with ID, " + blipId + " deleted successfully");
+                log.info("Blip with ID, " + blipId + " deleted successfully");
             }
 
             public void onError(Throwable throwable) {
                 blipItResponse.setFailure(Utils.getBlipItError(throwable.getMessage()));
-                log.log(Level.SEVERE, "Alert deletion failed with error", throwable);
+                log.log(Level.SEVERE, "Blip deletion failed with error", throwable);
             }
         });
         return blipItResponse;
     }
 
-    private com.thoughtworks.blipit.domain.Channel mapToChannel(PersistenceManager persistenceManager, Channel channel) {
-        String id = channel.getId();
-        Key key = KeyFactory.stringToKey(id);
-        return persistenceManager.getObjectById(com.thoughtworks.blipit.domain.Channel.class, key);
+    private Key mapToChannelKey(Channel channel) {
+        return KeyFactory.stringToKey(channel.getId());
     }
 
-    // TODO: This method should attempt to load the channel ID from data store and then create the alert. look at saveBlip()
-    private Alert getAlert(Form form) {
-        String alertTitle = form.getFirstValue("alert.title");
-        String alertDescription = form.getFirstValue("alert.desc");
-        Float alertLatitude = Float.valueOf(form.getFirstValue("alert.loc.lat"));
-        Float alertLongitude = Float.valueOf(form.getFirstValue("alert.loc.long"));
+    // TODO: This method should attempt to load the channel ID from data store and then create the Blip. look at saveBlip()
+    // FIX ME: This method is broken !!! Does not set the channels correctly on a given blip !!!
+    private Blip getBlip(Form form) {
+        String blipTitle = form.getFirstValue("alert.title");
+        String blipDescription = form.getFirstValue("alert.desc");
+        Float blipLatitude = Float.valueOf(form.getFirstValue("alert.loc.lat"));
+        Float blipLongitude = Float.valueOf(form.getFirstValue("alert.loc.long"));
         List<String> channelStrs = splitByComma(form.getFirstValue("alert.channels"));
         List<com.thoughtworks.blipit.domain.Channel> channels = new ArrayList<com.thoughtworks.blipit.domain.Channel>();
 
@@ -175,10 +176,9 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
             com.thoughtworks.blipit.domain.Channel channel = new com.thoughtworks.blipit.domain.Channel();
             channel.setName(channelStr);
             channel.setCategory(com.thoughtworks.blipit.domain.Category.AD);
-            channel.setDescription(channelStr);
             channels.add(channel);
         }
-        return new Alert(alertTitle, alertDescription, new GeoPt(alertLatitude, alertLongitude), channels);
+        return new Blip(blipTitle, blipDescription, new GeoPt(blipLatitude, blipLongitude), null); // <-- we're assigning 'null' for channel keys here
     }
 
     @Get

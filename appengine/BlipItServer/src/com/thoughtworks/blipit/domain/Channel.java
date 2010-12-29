@@ -1,6 +1,7 @@
 package com.thoughtworks.blipit.domain;
 
 import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
@@ -9,7 +10,7 @@ import javax.jdo.annotations.PrimaryKey;
 import java.io.Serializable;
 
 @PersistenceCapable
-public class Channel implements Serializable {
+public class Channel implements Serializable, Comparable<Channel> {
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
@@ -18,19 +19,15 @@ public class Channel implements Serializable {
     private String name;
 
     @Persistent
-    private String description;
-
-    @Persistent
     private Category category;
 
     public Channel() {
-        this(null, null, null, null);
+        this(null, null, null);
     }
 
-    public Channel(Key key, String name, String description, Category category) {
+    public Channel(Key key, String name, Category category) {
         this.key = key;
         this.name = name;
-        this.description = description;
         this.category = category;
     }
 
@@ -46,14 +43,6 @@ public class Channel implements Serializable {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public Category getCategory() {
         return category;
     }
@@ -63,7 +52,27 @@ public class Channel implements Serializable {
     }
 
     public String getKeyAsString() {
-        return String.valueOf(key);
+        return KeyFactory.keyToString(key);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Channel channel = (Channel) o;
+
+        if (key != null ? !key.equals(channel.key) : channel.key != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return key != null ? key.hashCode() : 0;
+    }
+
+    public int compareTo(Channel channel) {
+        return this.name.compareTo(channel.name);
+    }
 }

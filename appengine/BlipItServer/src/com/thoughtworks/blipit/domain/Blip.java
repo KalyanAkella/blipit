@@ -23,17 +23,17 @@ package com.thoughtworks.blipit.domain;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.thoughtworks.contract.subscribe.Blip;
 import com.thoughtworks.contract.GeoLocation;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @PersistenceCapable
-public class Alert {
+public class Blip {
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
@@ -48,17 +48,25 @@ public class Alert {
     private GeoPt geoPoint;
 
     @Persistent
-    private List<Channel> channels;
+    private Set<Key> channelKeys; // un-owned one-to-many relationship. a channel can also be part of other Blips
 
-    public Alert(String title, String description, GeoPt geoPoint, List<Channel> channels) {
+    public Blip(String title, String description, GeoPt geoPoint, Set<Key> channelKeys) {
         this.title = title;
         this.description = description;
         this.geoPoint = geoPoint;
-        this.channels = channels;
+        this.channelKeys = channelKeys;
+    }
+
+    public Blip(String title, String description, GeoPt geoPoint) {
+        this(title, description, geoPoint, new HashSet<Key>());
     }
 
     public Key getKey() {
         return key;
+    }
+
+    public void setKey(Key key) {
+        this.key = key;
     }
 
     public String getTitle() {
@@ -73,8 +81,8 @@ public class Alert {
         return geoPoint;
     }
 
-    public List<Channel> getChannels() {
-        return channels;
+    public Set<Key> getChannelKeys() {
+        return channelKeys;
     }
 
     public void setTitle(String title) {
@@ -89,12 +97,13 @@ public class Alert {
         this.geoPoint = geoPoint;
     }
 
-    public void setChannels(List<Channel> channels) {
-        this.channels = channels;
+    public Blip setChannelKeys(Set<Key> channelKeys) {
+        this.channelKeys = channelKeys;
+        return this;
     }
 
-    public Blip toBlip() {
-        Blip blip = new Blip();
+    public com.thoughtworks.contract.subscribe.Blip toBlip() {
+        com.thoughtworks.contract.subscribe.Blip blip = new com.thoughtworks.contract.subscribe.Blip();
         blip.setTitle(title);
         blip.setMessage(description);
         GeoLocation geoLocation = new GeoLocation();

@@ -34,7 +34,7 @@ public class ChannelUtils {
             if (channels != null && channels.length > 0) {
                 for (String channel : channels) {
                     String[] idName = channel.split(ID_NAME_SEPARATOR);
-                    if (idName.length == 2) channelList.add(new Channel(idName[0], idName[1], idName[1], category));
+                    if (idName.length == 2) channelList.add(new Channel(idName[0], idName[1], category));
                 }
             }
         }

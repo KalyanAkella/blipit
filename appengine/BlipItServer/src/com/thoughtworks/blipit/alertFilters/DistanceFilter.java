@@ -2,7 +2,7 @@ package com.thoughtworks.blipit.alertFilters;
 
 import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.GeoLocationToGeoPointConverter;
-import com.thoughtworks.blipit.domain.Alert;
+import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.contract.GeoLocation;
 
 import java.util.ArrayList;
@@ -20,9 +20,9 @@ public class DistanceFilter implements IAlertFilter {
         distanceCalculator = new DistanceCalculator();
     }
 
-    public void apply(List<Alert> alerts) {
-        final ArrayList<Alert> alertsOutsideDistanceOfConvinience = new ArrayList<Alert>();
-        for (Alert alert : alerts) {
+    public void apply(List<Blip> alerts) {
+        final ArrayList<Blip> alertsOutsideDistanceOfConvinience = new ArrayList<Blip>();
+        for (Blip alert : alerts) {
             final GeoPt alertPt = alert.getGeoPoint();
             final GeoPt userPt = GeoLocationToGeoPointConverter.Convert(userLocation);
             final double distanceFromUser = distanceCalculator.CalculationByDistance(userPt, alertPt);

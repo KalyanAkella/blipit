@@ -21,20 +21,23 @@
 package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.GeoPt;
-import com.thoughtworks.blipit.domain.Alert;
+import com.google.appengine.api.datastore.Key;
+import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.blipit.domain.Channel;
 import com.thoughtworks.contract.GeoLocation;
 import com.thoughtworks.contract.common.Category;
-import com.thoughtworks.contract.subscribe.Blip;
 import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
 import com.thoughtworks.contract.subscribe.GetBlipsRequest;
 import com.thoughtworks.contract.subscribe.GetBlipsResponse;
 import com.thoughtworks.contract.subscribe.UserPrefs;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -46,24 +49,30 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
     private final float MAXIMUM_RADIUS = 10000f; //10km
     private final GeoPt userLocation = TestData.Locations.K3sHome();
 
-    @Override
-    protected void doSetup() {
+    @Before
+    public void setUp() {
         blipItSubscribeServerResource = new BlipItSubscribeResourceImpl();
+        DataStoreStub dataStoreStub = new DataStoreStub();
+        Key movieChannelKey = dataStoreStub.setupEntityAsPersisted(TestData.Channels.Movie());
+        Key foodChannelKey = dataStoreStub.setupEntityAsPersisted(TestData.Channels.Food());
+
+        Set<Key> channelKeys = makeSet(movieChannelKey, foodChannelKey);
+        dataStoreStub.setupEntityAsPersisted(TestData.Alerts.NavarangTheatre().setChannelKeys(channelKeys));
+        dataStoreStub.setupEntityAsPersisted(TestData.Alerts.FameLido().setChannelKeys(channelKeys));
+        dataStoreStub.setupEntityAsPersisted(TestData.Alerts.MTR().setChannelKeys(channelKeys));
+        dataStoreStub.setupEntityAsPersisted(TestData.Alerts.PVRCinemas().setChannelKeys(channelKeys));
     }
 
-    @Override
-    protected void doTearDown() {
+    private Set<Key> makeSet(Key... keys) {
+        Set<Key> keySet = new HashSet<Key>();
+        keySet.addAll(Arrays.asList(keys));
+        return keySet;
     }
 
     @Test
     public void testGetBlipsFiltersAlertsBasedOnUsersChannelPreference() {
-        final DatastoreStub datastoreStub = new DatastoreStub();
-        datastoreStub.setupEntityAsPersisted(TestData.Alerts.NavarangTheatre());
-        datastoreStub.setupEntityAsPersisted(TestData.Alerts.FameLido());
-        datastoreStub.setupEntityAsPersisted(TestData.Alerts.MTR());
-
-        final GetBlipsRequest blipItRequest = constructGetBlipsRequest(Arrays.asList(TestData.Channels.Movie()), MAXIMUM_RADIUS);
-        final GetBlipsResponse blips = blipItSubscribeServerResource.getBlips(blipItRequest);
+        GetBlipsRequest blipItRequest = constructGetBlipsRequest(Arrays.asList(TestData.Channels.Movie()), MAXIMUM_RADIUS);
+        GetBlipsResponse blips = blipItSubscribeServerResource.getBlips(blipItRequest);
 
         assertThat(blips.isSuccess(), is(true));
         assertThat(blips.getBlips().size(), is(2));
@@ -71,7 +80,7 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
         assertBlip(blips.getBlips().get(1), TestData.Alerts.FameLido());
     }
 
-    private void assertBlip(Blip blip, Alert alert) {
+    private void assertBlip(com.thoughtworks.contract.subscribe.Blip blip, Blip alert) {
         assertThat(blip.getTitle(), is(alert.getTitle()));
         assertThat(blip.getMessage(), is(alert.getDescription()));
         assertThat(GeoLocationToGeoPointConverter.Convert(blip.getBlipLocation()), is(alert.getGeoPoint()));
@@ -79,13 +88,8 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
 
     @Test
     public void testGetBlipsFiltersAlertsBasedOnUsersDistanceOfConvinience() {
-        final DatastoreStub datastoreStub = new DatastoreStub();
-        datastoreStub.setupEntityAsPersisted(TestData.Alerts.NavarangTheatre());
-        datastoreStub.setupEntityAsPersisted(TestData.Alerts.PVRCinemas());
-        datastoreStub.setupEntityAsPersisted(TestData.Alerts.FameLido());
-
-        final GetBlipsRequest blipItRequest = constructGetBlipsRequest(Arrays.asList(TestData.Channels.Movie()), MAXIMUM_RADIUS);
-        final GetBlipsResponse blips = blipItSubscribeServerResource.getBlips(blipItRequest);
+        GetBlipsRequest blipItRequest = constructGetBlipsRequest(Arrays.asList(TestData.Channels.Movie()), MAXIMUM_RADIUS);
+        GetBlipsResponse blips = blipItSubscribeServerResource.getBlips(blipItRequest);
 
         assertThat(blips.isSuccess(), is(true));
         assertThat(blips.getBlips().size(), is(2));
@@ -115,8 +119,7 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
         for (Channel userChannel : userChannels) {
             String id = userChannel.getKeyAsString();
             String name = userChannel.getName();
-            String description = userChannel.getDescription();
-            com.thoughtworks.contract.common.Channel channel = new com.thoughtworks.contract.common.Channel(id, name, description, Category.AD);
+            com.thoughtworks.contract.common.Channel channel = new com.thoughtworks.contract.common.Channel(id, name, Category.AD);
             channels.add(channel);
         }
         return channels;

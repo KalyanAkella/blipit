@@ -11,24 +11,14 @@ public class DataStoreStubTest {
     protected LocalServiceTestHelper helper;
 
     @Before
-    public void setup() {
+    public void before() {
         helper = new LocalServiceTestHelper(new LocalDatastoreServiceTestConfig());
         helper.setUp();
-        doSetup();
     }
 
     @After
-    public void tearDown() {
-        doTearDown();
+    public void after() {
         helper.tearDown();
-    }
-
-    //Override this in derived class to add any test fixture specific setup
-    protected void doSetup() {
-    }
-
-    //Override this in derived class to add any test fixture specific teardown
-    protected void doTearDown() {
     }
 
     //TODO: Find a way of making this class, doSetup and doTearDown abstract and remove this method.

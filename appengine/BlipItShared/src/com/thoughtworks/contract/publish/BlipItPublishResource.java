@@ -30,7 +30,7 @@ import org.restlet.resource.Post;
 
 public interface BlipItPublishResource {
     @Post
-    Representation acceptAlert(Representation entity);
+    Representation acceptBlip(Representation entity);
 
     @Post
     SaveBlipResponse saveBlip(SaveBlipRequest saveBlipRequest);

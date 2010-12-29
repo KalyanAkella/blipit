@@ -5,13 +5,11 @@ import java.io.Serializable;
 public class Channel implements Serializable {
     private String id;
     private String name;
-    private String desc;
     private Category category;
 
-    public Channel(String id, String name, String desc, Category category) {
+    public Channel(String id, String name, Category category) {
         this.id = id;
         this.name = name;
-        this.desc = desc;
         this.category = category;
     }
 
@@ -29,14 +27,6 @@ public class Channel implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
 
     public Category getCategory() {

@@ -21,7 +21,7 @@
 package com.thoughtworks.blipit.persistance;
 
 import com.thoughtworks.blipit.Utils;
-import com.thoughtworks.blipit.domain.Alert;
+import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.blipit.domain.Category;
 import com.thoughtworks.blipit.domain.Channel;
 
@@ -31,9 +31,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class BlipItRepository {
-    public void filterAlertsByChannels(final List<String> channelIds, Utils.ResultHandler<Alert> handler) {
+    public void filterAlertsByChannels(final List<String> channelIds, Utils.ResultHandler<Blip> handler) {
         DataStoreHelper.retrieveAllAndProcess(
-                Alert.class,
+                Blip.class,
                 new Utils.QueryHandler() {
                     public void prepare(Query query) {
                         query.setFilter("userChannels.contains(channels)");
@@ -62,7 +62,6 @@ public class BlipItRepository {
             final Channel channel = new Channel();
             channel.setCategory(channelCategory);
             channel.setName(channelName);
-            channel.setDescription(channelName);
             DataStoreHelper.save(channel, new Utils.ResultHandler<Channel>() {
                 public void onSuccess(Channel arg) {
                     channels.add(channel);

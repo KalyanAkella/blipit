@@ -20,7 +20,7 @@
 
 package com.thoughtworks.blipit;
 
-import com.thoughtworks.blipit.domain.Alert;
+import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
@@ -45,8 +45,8 @@ public class BlipItSubscribeResourceImpl extends BlipItCommonServerResource impl
         final GetBlipsResponse blipItResponse = new GetBlipsResponse();
         UserPrefs userPrefs = blipItRequest.getUserPrefs();
         if (isEmpty(userPrefs)) return blipItResponse;
-        blipItRepository.filterAlertsByChannels(userPrefs.getChannelIds(), new Utils.ResultHandler<Alert>() {
-            public void onSuccess(Alert alert) {
+        blipItRepository.filterAlertsByChannels(userPrefs.getChannelIds(), new Utils.ResultHandler<Blip>() {
+            public void onSuccess(Blip alert) {
                 blipItResponse.setSuccess();
                 blipItResponse.addBlips(alert.toBlip());
             }

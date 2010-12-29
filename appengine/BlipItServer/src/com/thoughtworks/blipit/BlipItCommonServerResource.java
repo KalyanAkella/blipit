@@ -23,7 +23,7 @@ public class BlipItCommonServerResource extends ServerResource {
         blipItRepository.retrieveChannelsByCategory(category, new Utils.ResultHandler<Channel>() {
             public void onSuccess(Channel savedChannel) {
                 channelsResponse.setSuccess();
-                channelsResponse.addChannel(savedChannel.getKeyAsString(), savedChannel.getName(), savedChannel.getDescription(), channelCategory);
+                channelsResponse.addChannel(savedChannel.getKeyAsString(), savedChannel.getName(), channelCategory);
             }
 
             public void onError(Throwable throwable) {

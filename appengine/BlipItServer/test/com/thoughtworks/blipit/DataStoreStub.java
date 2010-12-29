@@ -3,6 +3,7 @@ package com.thoughtworks.blipit;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.Key;
 
 import javax.jdo.annotations.Persistent;
 import java.lang.annotation.Annotation;
@@ -10,14 +11,14 @@ import java.lang.reflect.Field;
 
 import static org.junit.Assert.fail;
 
-public class DatastoreStub {
+public class DataStoreStub {
 
     private DatastoreService ds = DatastoreServiceFactory.getDatastoreService();
 
-    public void setupEntityAsPersisted(Object entity) {
-        final Entity entityToPersist = new Entity(entity.getClass().getSimpleName());
+    public Key setupEntityAsPersisted(Object entity) {
+        Entity entityToPersist = new Entity(entity.getClass().getSimpleName());
         setPersistentFieldValuesFromEntity(entity, entityToPersist);
-        ds.put(entityToPersist);
+        return ds.put(entityToPersist);
     }
 
     private void setPersistentFieldValuesFromEntity(Object entity, Entity entityToPersist) {
@@ -27,10 +28,7 @@ public class DatastoreStub {
                 field.setAccessible(true);
                 //TODO : Change this to use field.IsAnnotationPresent method <K3>
                 if(!isAnnotationPresentOnField(field, Persistent.class)) continue;
-                String name = field.getName();
-                Object value = field.get(entity);
-                System.out.println(name + " -> " + String.valueOf(value));
-                entityToPersist.setProperty(name, value);
+                entityToPersist.setProperty(field.getName(), field.get(entity));
             } catch (IllegalAccessException e) {
                 System.out.println("Exception while setting up test data:" + e);
                 fail();
