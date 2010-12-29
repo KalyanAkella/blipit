@@ -172,12 +172,14 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
         List<String> channelStrs = splitByComma(form.getFirstValue("alert.channels"));
         List<com.thoughtworks.blipit.domain.Channel> channels = new ArrayList<com.thoughtworks.blipit.domain.Channel>();
 
+/*
         for (String channelStr : channelStrs) {
             com.thoughtworks.blipit.domain.Channel channel = new com.thoughtworks.blipit.domain.Channel();
             channel.setName(channelStr);
-            channel.setCategory(com.thoughtworks.blipit.domain.Category.AD);
+            channel.setCategory(CategoryEnum.AD);
             channels.add(channel);
         }
+*/
         return new Blip(blipTitle, blipDescription, new GeoPt(blipLatitude, blipLongitude), null); // <-- we're assigning 'null' for channel keys here
     }
 

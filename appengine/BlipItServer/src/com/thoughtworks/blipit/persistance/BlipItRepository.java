@@ -20,28 +20,32 @@
 
 package com.thoughtworks.blipit.persistance;
 
+import com.google.appengine.api.datastore.Category;
+import com.google.appengine.api.datastore.Key;
 import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.blipit.domain.Blip;
-import com.thoughtworks.blipit.domain.Category;
 import com.thoughtworks.blipit.domain.Channel;
 
 import javax.jdo.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class BlipItRepository {
-    public void filterAlertsByChannels(final List<String> channelIds, Utils.ResultHandler<Blip> handler) {
+    public void filterAlertsByChannels(final Set<Key> channelKeys, Utils.ResultHandler<Blip> handler) {
         DataStoreHelper.retrieveAllAndProcess(
                 Blip.class,
                 new Utils.QueryHandler() {
                     public void prepare(Query query) {
-                        query.setFilter("userChannels.contains(channels)");
-                        query.declareParameters("java.util.List userChannels");
+                        query.declareParameters("java.util.Set channelKeys");
+                        query.setFilter("channelKeys.contains(this.channelKeys)");
+//                        query.declareVariables("com.google.appengine.api.datastore.Key channelKey");
+//                        query.setFilter("this.channelKeys.contains(channelKey) && channelKeys.contains(channelKey)");
                     }
 
                     public Object[] parameters() {
-                        return new Object[]{channelIds};
+                        return new Object[]{channelKeys};
                     }
                 },
                 handler);
@@ -76,9 +80,9 @@ public class BlipItRepository {
     }
 
     private List<String> getChannelNames(Category channelCategory) {
-        if (channelCategory == Category.AD)
+        if (com.thoughtworks.contract.common.Category.AD.name().equals(channelCategory.getCategory()))
             return Arrays.asList("Food", "Retail", "Transport", "Gaming", "Movies", "Fire", "Accident");
-        else if (channelCategory == Category.PANIC)
+        else if (com.thoughtworks.contract.common.Category.PANIC.name().equals(channelCategory.getCategory()))
             return Arrays.asList("Fire", "Accident", "Require Blood", "Ambulance", "Earthquake", "Cyclone");
         return Arrays.asList();
     }

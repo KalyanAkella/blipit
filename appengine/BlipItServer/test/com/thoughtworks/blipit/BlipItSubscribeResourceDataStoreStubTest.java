@@ -53,14 +53,15 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
     public void setUp() {
         blipItSubscribeServerResource = new BlipItSubscribeResourceImpl();
         DataStoreStub dataStoreStub = new DataStoreStub();
-        Key movieChannelKey = dataStoreStub.setupEntityAsPersisted(TestData.Channels.Movie());
-        Key foodChannelKey = dataStoreStub.setupEntityAsPersisted(TestData.Channels.Food());
+        TestData.Channels.MOVIE.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Channels.MOVIE));
+        TestData.Channels.FOOD.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Channels.FOOD));
 
-        Set<Key> channelKeys = makeSet(movieChannelKey, foodChannelKey);
-        dataStoreStub.setupEntityAsPersisted(TestData.Alerts.NavarangTheatre().setChannelKeys(channelKeys));
-        dataStoreStub.setupEntityAsPersisted(TestData.Alerts.FameLido().setChannelKeys(channelKeys));
-        dataStoreStub.setupEntityAsPersisted(TestData.Alerts.MTR().setChannelKeys(channelKeys));
-        dataStoreStub.setupEntityAsPersisted(TestData.Alerts.PVRCinemas().setChannelKeys(channelKeys));
+        Set<Key> movieChannelKeys = makeSet(TestData.Channels.MOVIE.getKey());
+        Set<Key> foodChannelKeys = makeSet(TestData.Channels.FOOD.getKey());
+        TestData.Alerts.NAVARANG.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Alerts.NAVARANG.setChannelKeys(movieChannelKeys)));
+        TestData.Alerts.FAMELIDO.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Alerts.FAMELIDO.setChannelKeys(movieChannelKeys)));
+        TestData.Alerts.MTR.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Alerts.MTR.setChannelKeys(foodChannelKeys)));
+        TestData.Alerts.PVR.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Alerts.PVR.setChannelKeys(movieChannelKeys)));
     }
 
     private Set<Key> makeSet(Key... keys) {
@@ -71,13 +72,14 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
 
     @Test
     public void testGetBlipsFiltersAlertsBasedOnUsersChannelPreference() {
-        GetBlipsRequest blipItRequest = constructGetBlipsRequest(Arrays.asList(TestData.Channels.Movie()), MAXIMUM_RADIUS);
+        GetBlipsRequest blipItRequest = constructGetBlipsRequest(Arrays.asList(TestData.Channels.MOVIE), MAXIMUM_RADIUS);
         GetBlipsResponse blips = blipItSubscribeServerResource.getBlips(blipItRequest);
 
         assertThat(blips.isSuccess(), is(true));
-        assertThat(blips.getBlips().size(), is(2));
-        assertBlip(blips.getBlips().get(0), TestData.Alerts.NavarangTheatre());
-        assertBlip(blips.getBlips().get(1), TestData.Alerts.FameLido());
+        assertThat(blips.getBlips().size(), is(3));
+        assertBlip(blips.getBlips().get(0), TestData.Alerts.NAVARANG);
+        assertBlip(blips.getBlips().get(1), TestData.Alerts.FAMELIDO);
+        assertBlip(blips.getBlips().get(2), TestData.Alerts.PVR);
     }
 
     private void assertBlip(com.thoughtworks.contract.subscribe.Blip blip, Blip alert) {
@@ -88,13 +90,14 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
 
     @Test
     public void testGetBlipsFiltersAlertsBasedOnUsersDistanceOfConvinience() {
-        GetBlipsRequest blipItRequest = constructGetBlipsRequest(Arrays.asList(TestData.Channels.Movie()), MAXIMUM_RADIUS);
+        GetBlipsRequest blipItRequest = constructGetBlipsRequest(Arrays.asList(TestData.Channels.MOVIE), MAXIMUM_RADIUS);
         GetBlipsResponse blips = blipItSubscribeServerResource.getBlips(blipItRequest);
 
         assertThat(blips.isSuccess(), is(true));
-        assertThat(blips.getBlips().size(), is(2));
-        assertBlip(blips.getBlips().get(0), TestData.Alerts.NavarangTheatre());
-        assertBlip(blips.getBlips().get(1), TestData.Alerts.FameLido());
+        assertThat(blips.getBlips().size(), is(3));
+        assertBlip(blips.getBlips().get(0), TestData.Alerts.NAVARANG);
+        assertBlip(blips.getBlips().get(1), TestData.Alerts.FAMELIDO);
+        assertBlip(blips.getBlips().get(2), TestData.Alerts.PVR);
     }
 
     private GetBlipsRequest constructGetBlipsRequest(List<Channel> channels, float distanceOfConvenience) {

@@ -1,5 +1,6 @@
 package com.thoughtworks.blipit.domain;
 
+import com.google.appengine.api.datastore.Category;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
@@ -33,6 +34,10 @@ public class Channel implements Serializable, Comparable<Channel> {
 
     public Key getKey() {
         return key;
+    }
+
+    public void setKey(Key key) {
+        this.key = key;
     }
 
     public String getName() {

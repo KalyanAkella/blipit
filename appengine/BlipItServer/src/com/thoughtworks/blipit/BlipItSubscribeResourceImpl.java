@@ -20,8 +20,11 @@
 
 package com.thoughtworks.blipit;
 
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.contract.common.Category;
+import com.thoughtworks.contract.common.Channel;
 import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
 import com.thoughtworks.contract.subscribe.GetBlipsRequest;
@@ -30,6 +33,8 @@ import com.thoughtworks.contract.subscribe.UserPrefs;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +50,7 @@ public class BlipItSubscribeResourceImpl extends BlipItCommonServerResource impl
         final GetBlipsResponse blipItResponse = new GetBlipsResponse();
         UserPrefs userPrefs = blipItRequest.getUserPrefs();
         if (isEmpty(userPrefs)) return blipItResponse;
-        blipItRepository.filterAlertsByChannels(userPrefs.getChannelIds(), new Utils.ResultHandler<Blip>() {
+        blipItRepository.filterAlertsByChannels(getChannelKeys(userPrefs), new Utils.ResultHandler<Blip>() {
             public void onSuccess(Blip alert) {
                 blipItResponse.setSuccess();
                 blipItResponse.addBlips(alert.toBlip());
@@ -57,6 +62,14 @@ public class BlipItSubscribeResourceImpl extends BlipItCommonServerResource impl
             }
         });
         return blipItResponse;
+    }
+
+    private Set<Key> getChannelKeys(UserPrefs userPrefs) {
+        Set<Key> channelKeys = new HashSet<Key>();
+        for (Channel channel : userPrefs.getChannels()) {
+            channelKeys.add(KeyFactory.stringToKey(channel.getId()));
+        }
+        return channelKeys;
     }
 
     private boolean isEmpty(UserPrefs userPrefs) {

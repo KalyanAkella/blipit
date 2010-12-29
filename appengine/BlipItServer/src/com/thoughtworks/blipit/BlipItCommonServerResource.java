@@ -1,8 +1,8 @@
 package com.thoughtworks.blipit;
 
 import com.thoughtworks.blipit.domain.Channel;
-import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.blipit.persistance.BlipItRepository;
+import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.GetChannelsResponse;
 import org.restlet.resource.ServerResource;
 
@@ -19,7 +19,7 @@ public class BlipItCommonServerResource extends ServerResource {
 
     protected GetChannelsResponse getChannels(final Category channelCategory) {
         final GetChannelsResponse channelsResponse = new GetChannelsResponse();
-        com.thoughtworks.blipit.domain.Category category = com.thoughtworks.blipit.domain.Category.convert(channelCategory);
+        com.google.appengine.api.datastore.Category category = Utils.convert(channelCategory);
         blipItRepository.retrieveChannelsByCategory(category, new Utils.ResultHandler<Channel>() {
             public void onSuccess(Channel savedChannel) {
                 channelsResponse.setSuccess();

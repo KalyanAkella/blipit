@@ -20,8 +20,8 @@
 
 package com.thoughtworks.blipit;
 
+import com.google.appengine.api.datastore.Category;
 import com.google.appengine.api.datastore.GeoPt;
-import com.thoughtworks.blipit.domain.Channel;
 import com.thoughtworks.contract.BlipItError;
 import com.thoughtworks.contract.GeoLocation;
 import org.datanucleus.util.StringUtils;
@@ -60,21 +60,19 @@ public class Utils {
         return new GeoPt(((float) blipLocation.getLatitude()), ((float) blipLocation.getLongitude()));
     }
 
-    public static List<Channel> asChannels(List<com.thoughtworks.contract.common.Channel> applicableChannels) {
-        ArrayList<Channel> channels = new ArrayList<Channel>();
-        for (com.thoughtworks.contract.common.Channel applicableChannel : applicableChannels) {
-            channels.add(new Channel());
-        }
-        return channels;
+    public static Category convert(com.thoughtworks.contract.common.Category category) {
+        return new Category(category.name());
     }
 
     public static interface ResultHandler<T> {
         void onSuccess(T arg);
+
         void onError(Throwable throwable);
     }
 
     public static interface QueryHandler {
         void prepare(Query query);
+
         Object[] parameters();
     }
 }
