@@ -21,6 +21,7 @@
 package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.GeoPt;
+import com.thoughtworks.blipit.domain.Channel;
 import com.thoughtworks.contract.BlipItError;
 import com.thoughtworks.contract.GeoLocation;
 import org.datanucleus.util.StringUtils;
@@ -57,6 +58,14 @@ public class Utils {
 
     static GeoPt asGeoPoint(GeoLocation blipLocation) {
         return new GeoPt(((float) blipLocation.getLatitude()), ((float) blipLocation.getLongitude()));
+    }
+
+    public static List<Channel> asChannels(List<com.thoughtworks.contract.common.Channel> applicableChannels) {
+        ArrayList<Channel> channels = new ArrayList<Channel>();
+        for (com.thoughtworks.contract.common.Channel applicableChannel : applicableChannels) {
+            channels.add(new Channel());
+        }
+        return channels;
     }
 
     public static interface ResultHandler<T> {

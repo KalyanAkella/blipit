@@ -1,5 +1,6 @@
 package com.thoughtworks.contract.utils;
 
+import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.Channel;
 
 import java.util.ArrayList;
@@ -26,14 +27,14 @@ public class ChannelUtils {
         return buffer.toString();
     }
 
-    public static List<Channel> toChannelList(String channelsStr) {
+    public static List<Channel> toChannelList(String channelsStr, Category category) {
         List<Channel> channelList = new ArrayList<Channel>();
         if (channelsStr != null) {
             String[] channels = channelsStr.split(CHANNEL_SPLITTER);
             if (channels != null && channels.length > 0) {
                 for (String channel : channels) {
                     String[] idName = channel.split(ID_NAME_SEPARATOR);
-                    if (idName.length == 2) channelList.add(new Channel(idName[0], idName[1], idName[1]));
+                    if (idName.length == 2) channelList.add(new Channel(idName[0], idName[1], idName[1], category));
                 }
             }
         }

@@ -27,7 +27,10 @@ public class DatastoreStub {
                 field.setAccessible(true);
                 //TODO : Change this to use field.IsAnnotationPresent method <K3>
                 if(!isAnnotationPresentOnField(field, Persistent.class)) continue;
-                entityToPersist.setProperty(field.getName(), field.get(entity));
+                String name = field.getName();
+                Object value = field.get(entity);
+                System.out.println(name + " -> " + String.valueOf(value));
+                entityToPersist.setProperty(name, value);
             } catch (IllegalAccessException e) {
                 System.out.println("Exception while setting up test data:" + e);
                 fail();

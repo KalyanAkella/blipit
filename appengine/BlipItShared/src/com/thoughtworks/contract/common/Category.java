@@ -1,5 +1,5 @@
 package com.thoughtworks.contract.common;
 
-public enum ChannelCategory {
+public enum Category {
     NONE, PANIC, AD
 }

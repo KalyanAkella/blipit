@@ -2,7 +2,8 @@ package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.domain.Alert;
-import com.thoughtworks.contract.common.Channel;
+import com.thoughtworks.blipit.domain.Category;
+import com.thoughtworks.blipit.domain.Channel;
 
 import java.util.Arrays;
 
@@ -11,11 +12,11 @@ public class TestData {
     static class Channels {
 
         public static Channel Movie() {
-            return new Channel("MoviesChannelId", "Movies", "Movie Description");
+            return new Channel(null, "Movies", "Movie Description", Category.AD);
         }
 
         public static Channel Food() {
-            return new Channel("FoodChannelId", "Food", "Food Description");
+            return new Channel(null, "Food", "Food Description", Category.AD);
         }
     }
 
@@ -23,19 +24,19 @@ public class TestData {
     static class Alerts {
 
         public static Alert NavarangTheatre() {
-            return new Alert("Navarang", "Kannada Movie", new GeoPt(12.99800466383297f, 77.55291799658964f), Arrays.asList(Channels.Movie().getId()));
+            return new Alert("Navarang", "Kannada Movie", new GeoPt(12.99800466383297f, 77.55291799658964f), Arrays.asList(Channels.Movie()));
         }
 
         public static Alert FameLido() {
-            return new Alert("Fame Lido", "Movie premier", new GeoPt(12.973881024116972f, 77.62282172793577f), Arrays.asList(Channels.Movie().getId()));
+            return new Alert("Fame Lido", "Movie premier", new GeoPt(12.973881024116972f, 77.62282172793577f), Arrays.asList(Channels.Movie()));
         }
 
         public static Alert PVRCinemas() {
-            return new Alert("PVR", "Movie screening", new GeoPt(12.935131942393395f, 77.61056939715574f), Arrays.asList(Channels.Movie().getId()));
+            return new Alert("PVR", "Movie screening", new GeoPt(12.935131942393395f, 77.61056939715574f), Arrays.asList(Channels.Movie()));
         }
 
         public static Alert MTR() {
-            return new Alert("MTR", "Karnataka ethnic food", new GeoPt(12.955009113220616f, 77.58542100543211f), Arrays.asList(Channels.Food().getId()));
+            return new Alert("MTR", "Karnataka ethnic food", new GeoPt(12.955009113220616f, 77.58542100543211f), Arrays.asList(Channels.Food()));
         }
     }
 

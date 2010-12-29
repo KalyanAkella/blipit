@@ -31,13 +31,13 @@ import java.util.Map;
 
 public class SaveBlipRequest implements Serializable {
     private GeoLocation userLocation;
-    private List<Channel> applicableChannels;
+    private List<Channel> channels;
     private Map<String, String> metaData;
     private String blipId;
 
     public SaveBlipRequest() {
         metaData = new HashMap<String, String>();
-        applicableChannels = new ArrayList<Channel>();
+        channels = new ArrayList<Channel>();
     }
 
     public GeoLocation getBlipLocation() {
@@ -48,12 +48,12 @@ public class SaveBlipRequest implements Serializable {
         this.userLocation = userLocation;
     }
 
-    public List<Channel> getApplicableChannels() {
-        return applicableChannels;
+    public List<Channel> getChannels() {
+        return channels;
     }
 
-    public void setApplicableChannels(List<Channel> applicableChannels) {
-        this.applicableChannels = applicableChannels;
+    public void setChannels(List<Channel> channels) {
+        this.channels = channels;
     }
 
     public String getBlipId() {
@@ -72,11 +72,15 @@ public class SaveBlipRequest implements Serializable {
         metaData.put(key, value);
     }
 
+    public String getMetaDataValue(String key) {
+        return metaData.get(key);
+    }
+
     public boolean isEmpty() {
-        return applicableChannels == null || applicableChannels.isEmpty();
+        return channels == null || channels.isEmpty();
     }
 
     public void clear() {
-        applicableChannels.clear();
+        channels.clear();
     }
 }

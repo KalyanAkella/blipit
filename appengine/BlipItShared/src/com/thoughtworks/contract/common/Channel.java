@@ -4,15 +4,15 @@ import java.io.Serializable;
 
 public class Channel implements Serializable {
     private String id;
-
     private String name;
-
     private String desc;
+    private Category category;
 
-    public Channel(String id, String name, String desc) {
+    public Channel(String id, String name, String desc, Category category) {
         this.id = id;
         this.name = name;
         this.desc = desc;
+        this.category = category;
     }
 
     public String getId() {
@@ -37,6 +37,14 @@ public class Channel implements Serializable {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     @Override

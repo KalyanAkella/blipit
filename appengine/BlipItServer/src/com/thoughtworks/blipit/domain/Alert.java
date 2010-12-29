@@ -39,7 +39,7 @@ public class Alert {
     private Key key;
 
     @Persistent
-    private String source;
+    private String title;
 
     @Persistent
     private String description;
@@ -48,10 +48,10 @@ public class Alert {
     private GeoPt geoPoint;
 
     @Persistent
-    private List<String> channels;
+    private List<Channel> channels;
 
-    public Alert(String source, String description, GeoPt geoPoint, List<String> channels) {
-        this.source = source;
+    public Alert(String title, String description, GeoPt geoPoint, List<Channel> channels) {
+        this.title = title;
         this.description = description;
         this.geoPoint = geoPoint;
         this.channels = channels;
@@ -61,8 +61,8 @@ public class Alert {
         return key;
     }
 
-    public String getSource() {
-        return source;
+    public String getTitle() {
+        return title;
     }
 
     public String getDescription() {
@@ -73,19 +73,29 @@ public class Alert {
         return geoPoint;
     }
 
-    public List<String> getChannels() {
+    public List<Channel> getChannels() {
         return channels;
     }
 
-    public boolean isSameAs(Alert alert) {
-        return this.getSource().equals(alert.getSource()) &&
-                this.getDescription().equalsIgnoreCase(alert.getDescription()) &&
-                this.getGeoPoint().compareTo(alert.getGeoPoint()) == 0;
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setGeoPoint(GeoPt geoPoint) {
+        this.geoPoint = geoPoint;
+    }
+
+    public void setChannels(List<Channel> channels) {
+        this.channels = channels;
     }
 
     public Blip toBlip() {
         Blip blip = new Blip();
-        blip.setTitle(source);
+        blip.setTitle(title);
         blip.setMessage(description);
         GeoLocation geoLocation = new GeoLocation();
         geoLocation.setLatitude(geoPoint.getLatitude());

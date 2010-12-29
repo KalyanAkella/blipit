@@ -1,16 +1,15 @@
 package com.thoughtworks.blipit.domain;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.thoughtworks.contract.common.ChannelCategory;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
+import java.io.Serializable;
 
 @PersistenceCapable
-public class Channel {
+public class Channel implements Serializable {
     @PrimaryKey
     @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
     private Key key;
@@ -22,13 +21,13 @@ public class Channel {
     private String description;
 
     @Persistent
-    private ChannelCategory category;
+    private Category category;
 
     public Channel() {
         this(null, null, null, null);
     }
 
-    public Channel(Key key, String name, String description, ChannelCategory category) {
+    public Channel(Key key, String name, String description, Category category) {
         this.key = key;
         this.name = name;
         this.description = description;
@@ -37,10 +36,6 @@ public class Channel {
 
     public Key getKey() {
         return key;
-    }
-
-    public void setKey(Key key) {
-        this.key = key;
     }
 
     public String getName() {
@@ -59,15 +54,16 @@ public class Channel {
         this.description = description;
     }
 
-    public ChannelCategory getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(ChannelCategory category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
     public String getKeyAsString() {
-        return KeyFactory.keyToString(key);
+        return String.valueOf(key);
     }
+
 }

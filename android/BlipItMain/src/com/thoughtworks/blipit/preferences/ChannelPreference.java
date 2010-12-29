@@ -29,6 +29,7 @@ import android.util.SparseBooleanArray;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import com.thoughtworks.blipit.utils.BlipItUtils;
+import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.Channel;
 import com.thoughtworks.contract.utils.ChannelUtils;
 
@@ -60,7 +61,7 @@ public class ChannelPreference extends DialogPreference {
     private void initAvailableChannels() {
         SharedPreferences sharedPreferences = getSharedPreferences();
         String allChannelsStr = sharedPreferences.getString(BlipItUtils.AD_CHANNELS_KEY, null);
-        availableChannels = ChannelUtils.toChannelList(allChannelsStr);
+        availableChannels = ChannelUtils.toChannelList(allChannelsStr, Category.AD);
         availableChannelNames = ChannelUtils.toChannelNames(availableChannels);
     }
 
@@ -68,7 +69,7 @@ public class ChannelPreference extends DialogPreference {
         SharedPreferences sharedPreferences = getSharedPreferences();
         String preferredChannelStr = sharedPreferences.getString(CHANNEL_PREF_KEY, null);
         if (preferredChannelStr != null) {
-            List<Channel> prefChannelList = ChannelUtils.toChannelList(preferredChannelStr);
+            List<Channel> prefChannelList = ChannelUtils.toChannelList(preferredChannelStr, Category.AD);
             for (Channel prefChannel : prefChannelList) {
                 int channelIndex = availableChannelNames.indexOf(prefChannel.getName());
                 if (channelIndex >= 0) {

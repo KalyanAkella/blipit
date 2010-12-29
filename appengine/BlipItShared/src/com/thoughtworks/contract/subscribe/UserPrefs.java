@@ -23,6 +23,7 @@ package com.thoughtworks.contract.subscribe;
 import com.thoughtworks.contract.common.Channel;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserPrefs implements Serializable {
@@ -43,5 +44,17 @@ public class UserPrefs implements Serializable {
 
     public void setRadius(double radius) {
         this.radius = radius;
+    }
+
+    public boolean isEmpty() {
+        return getChannels() == null || getChannels().isEmpty();
+    }
+
+    public List<String> getChannelIds() {
+        List<String> channelIds = new ArrayList<String>();
+        for (Channel channel : getChannels()) {
+            channelIds.add(channel.getId());
+        }
+        return channelIds;
     }
 }

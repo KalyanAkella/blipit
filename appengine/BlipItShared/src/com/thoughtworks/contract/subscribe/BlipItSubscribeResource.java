@@ -20,18 +20,16 @@
 
 package com.thoughtworks.contract.subscribe;
 
-import com.thoughtworks.contract.common.ChannelCategory;
+import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.GetChannelsResponse;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
 public interface BlipItSubscribeResource {
-    @Get
-    public String showMessage();
 
     @Post
     public GetBlipsResponse getBlips(GetBlipsRequest blipItRequest);
 
     @Get
-    GetChannelsResponse getAvailableChannels(ChannelCategory channelCategory);
+    GetChannelsResponse getAvailableChannels(Category channelCategory);
 }

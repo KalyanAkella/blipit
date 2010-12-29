@@ -21,18 +21,20 @@
 package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.GeoPt;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.domain.Alert;
 import com.thoughtworks.blipit.persistance.DataStoreHelper;
 import com.thoughtworks.contract.BlipItResponse;
-import com.thoughtworks.contract.GeoLocation;
+import com.thoughtworks.contract.Constants;
+import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.Channel;
-import com.thoughtworks.contract.common.ChannelCategory;
 import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.publish.BlipItPublishResource;
 import com.thoughtworks.contract.publish.DeleteBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipResponse;
-import com.thoughtworks.contract.utils.ChannelUtils;
+import org.datanucleus.util.StringUtils;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
@@ -42,6 +44,8 @@ import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
+import javax.jdo.PersistenceManager;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,7 +67,7 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
             public void onSuccess(Alert arg) {
                 setStatus(Status.SUCCESS_CREATED);
                 result[0] = new StringRepresentation("Alert creation successful", MediaType.TEXT_PLAIN);
-                log.info("Alert with title, " + arg.getSource() + " saved successfully with ID: " + arg.getKey());
+                log.info("Alert with title, " + arg.getTitle() + " saved successfully with ID: " + arg.getKey());
             }
 
             public void onError(Throwable throwable) {
@@ -77,22 +81,61 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
 
     @Post
     public SaveBlipResponse saveBlip(SaveBlipRequest saveBlipRequest) {
-        Alert alert = getAlert(saveBlipRequest);
         final SaveBlipResponse saveBlipResponse = new SaveBlipResponse();
-        DataStoreHelper.save(alert, new Utils.ResultHandler<Alert>() {
-            public void onSuccess(Alert savedAlert) {
-                saveBlipResponse.setSuccess();
-                String keyAsString = savedAlert.getKeyAsString();
-                saveBlipResponse.setBlipId(keyAsString);
-                log.info("Alert with title, " + savedAlert.getSource() + " saved successfully with ID: " + keyAsString);
+        Alert alert = constructAlert(saveBlipRequest, saveBlipResponse);
+        if (saveBlipResponse.isSuccess()) {
+            DataStoreHelper.save(alert, new Utils.ResultHandler<Alert>() {
+                public void onSuccess(Alert savedAlert) {
+                    saveBlipResponse.setSuccess();
+                    String keyAsString = savedAlert.getKeyAsString();
+                    saveBlipResponse.setBlipId(keyAsString);
+                    log.info("Alert with title, " + savedAlert.getTitle() + " saved successfully with ID: " + keyAsString);
+                }
+
+                public void onError(Throwable throwable) {
+                    saveBlipResponse.setFailure(Utils.getBlipItError(throwable.getMessage()));
+                    log.log(Level.SEVERE, "Alert creation failed with error", throwable);
+                }
+            });
+        }
+        return saveBlipResponse;
+    }
+
+    private Alert constructAlert(SaveBlipRequest saveBlipRequest, SaveBlipResponse saveBlipResponse) {
+        Alert alert = null;
+        PersistenceManager persistenceManager = null;
+
+        try {
+            persistenceManager = DataStoreHelper.getPersistenceManager();
+            List<Channel> channels = saveBlipRequest.getChannels();
+            List<com.thoughtworks.blipit.domain.Channel> alertChannels = new ArrayList<com.thoughtworks.blipit.domain.Channel>();
+            for (Channel channel : channels) {
+                alertChannels.add(mapToChannel(persistenceManager, channel));
             }
 
-            public void onError(Throwable throwable) {
-                saveBlipResponse.setFailure(Utils.getBlipItError(throwable.getMessage()));
-                log.log(Level.SEVERE, "Alert creation failed with error", throwable);
+            String blipId = saveBlipRequest.getBlipId();
+            String title = saveBlipRequest.getMetaDataValue(Constants.TITLE);
+            String description = saveBlipRequest.getMetaDataValue(Constants.DESC);
+            GeoPt alertLoc = Utils.asGeoPoint(saveBlipRequest.getBlipLocation());
+
+            if (StringUtils.notEmpty(blipId)) {
+                Key alertKey = KeyFactory.stringToKey(blipId);
+                alert = persistenceManager.getObjectById(Alert.class, alertKey);
+                alert.setTitle(title);
+                alert.setDescription(description);
+                alert.setGeoPoint(alertLoc);
+                alert.setChannels(alertChannels);
+            } else {
+                alert = new Alert(title, description, alertLoc, alertChannels);
             }
-        });
-        return saveBlipResponse;
+        } catch (Exception e) {
+            saveBlipResponse.setFailure(Utils.getBlipItError(e.getMessage()));
+            log.log(Level.SEVERE, "Alert creation failed with error", e);
+        } finally {
+            if (persistenceManager != null) persistenceManager.close();
+        }
+
+        return alert;
     }
 
     @Delete
@@ -113,25 +156,33 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
         return blipItResponse;
     }
 
-    // TODO: Take the alert title & desc from PanicBlip.
-    private Alert getAlert(SaveBlipRequest saveBlipRequest) {
-        GeoLocation blipLocation = saveBlipRequest.getBlipLocation();
-        // TODO: Load & link the channels from data store
-        List<Channel> applicableChannels = saveBlipRequest.getApplicableChannels();
-        return new Alert("Panic Title", "Panic Desc", Utils.asGeoPoint(blipLocation), ChannelUtils.toChannelNames(applicableChannels));
+    private com.thoughtworks.blipit.domain.Channel mapToChannel(PersistenceManager persistenceManager, Channel channel) {
+        String id = channel.getId();
+        Key key = KeyFactory.stringToKey(id);
+        return persistenceManager.getObjectById(com.thoughtworks.blipit.domain.Channel.class, key);
     }
 
+    // TODO: This method should attempt to load the channel ID from data store and then create the alert. look at saveBlip()
     private Alert getAlert(Form form) {
         String alertTitle = form.getFirstValue("alert.title");
         String alertDescription = form.getFirstValue("alert.desc");
         Float alertLatitude = Float.valueOf(form.getFirstValue("alert.loc.lat"));
         Float alertLongitude = Float.valueOf(form.getFirstValue("alert.loc.long"));
-        List<String> channels = splitByComma(form.getFirstValue("alert.channels"));
+        List<String> channelStrs = splitByComma(form.getFirstValue("alert.channels"));
+        List<com.thoughtworks.blipit.domain.Channel> channels = new ArrayList<com.thoughtworks.blipit.domain.Channel>();
+
+        for (String channelStr : channelStrs) {
+            com.thoughtworks.blipit.domain.Channel channel = new com.thoughtworks.blipit.domain.Channel();
+            channel.setName(channelStr);
+            channel.setCategory(com.thoughtworks.blipit.domain.Category.AD);
+            channel.setDescription(channelStr);
+            channels.add(channel);
+        }
         return new Alert(alertTitle, alertDescription, new GeoPt(alertLatitude, alertLongitude), channels);
     }
 
     @Get
-    public GetChannelsResponse getAvailableChannels(ChannelCategory channelCategory) {
+    public GetChannelsResponse getAvailableChannels(Category channelCategory) {
         return getChannels(channelCategory);
     }
 }

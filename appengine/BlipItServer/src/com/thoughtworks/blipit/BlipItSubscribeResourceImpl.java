@@ -20,10 +20,8 @@
 
 package com.thoughtworks.blipit;
 
-import com.thoughtworks.blipit.alertFilters.DistanceFilter;
-import com.thoughtworks.blipit.alertFilters.IAlertFilter;
 import com.thoughtworks.blipit.domain.Alert;
-import com.thoughtworks.contract.common.ChannelCategory;
+import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
 import com.thoughtworks.contract.subscribe.GetBlipsRequest;
@@ -32,7 +30,6 @@ import com.thoughtworks.contract.subscribe.UserPrefs;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,21 +40,15 @@ public class BlipItSubscribeResourceImpl extends BlipItCommonServerResource impl
         super();
     }
 
-    @Get
-    public String showMessage() {
-        return "Hi there ! You've reached the BlipIt server !! I can only process HTTP post requests !!!";
-    }
-
     @Post
     public GetBlipsResponse getBlips(GetBlipsRequest blipItRequest) {
         final GetBlipsResponse blipItResponse = new GetBlipsResponse();
         UserPrefs userPrefs = blipItRequest.getUserPrefs();
-        if (userPrefs == null || userPrefs.getChannels() == null || userPrefs.getChannels().isEmpty()) return blipItResponse;
-        final ArrayList<Alert> alerts = new ArrayList<Alert>();
-        blipItRepository.filterAlerts(blipItRequest.getUserLocation(), userPrefs, new Utils.ResultHandler<Alert>() {
+        if (isEmpty(userPrefs)) return blipItResponse;
+        blipItRepository.filterAlertsByChannels(userPrefs.getChannelIds(), new Utils.ResultHandler<Alert>() {
             public void onSuccess(Alert alert) {
                 blipItResponse.setSuccess();
-                alerts.add(alert);
+                blipItResponse.addBlips(alert.toBlip());
             }
 
             public void onError(Throwable throwable) {
@@ -65,27 +56,15 @@ public class BlipItSubscribeResourceImpl extends BlipItCommonServerResource impl
                 blipItResponse.setFailure(Utils.getBlipItError(throwable.getMessage()));
             }
         });
-
-        if(blipItResponse.isFailure()) return blipItResponse;
-
-        final ArrayList<IAlertFilter> alertFilters = GetAlertFilters(blipItRequest, userPrefs);
-        for(IAlertFilter alertFilter : alertFilters)
-            alertFilter.apply(alerts);
-
-        for(Alert alert : alerts){
-            blipItResponse.addBlips(alert.toBlip());
-        }
         return blipItResponse;
     }
 
-    private ArrayList<IAlertFilter> GetAlertFilters(GetBlipsRequest blipItRequest, UserPrefs userPrefs) {
-        final ArrayList<IAlertFilter> alertFilters = new ArrayList<IAlertFilter>();
-        alertFilters.add(new DistanceFilter(blipItRequest.getUserLocation(), userPrefs.getRadius()));
-        return alertFilters;
+    private boolean isEmpty(UserPrefs userPrefs) {
+        return userPrefs == null || userPrefs.isEmpty();
     }
 
     @Get
-    public GetChannelsResponse getAvailableChannels(ChannelCategory channelCategory) {
+    public GetChannelsResponse getAvailableChannels(Category channelCategory) {
         return getChannels(channelCategory);
     }
 

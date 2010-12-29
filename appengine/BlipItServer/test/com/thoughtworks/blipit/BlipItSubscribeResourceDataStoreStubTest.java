@@ -22,9 +22,14 @@ package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.domain.Alert;
+import com.thoughtworks.blipit.domain.Channel;
 import com.thoughtworks.contract.GeoLocation;
-import com.thoughtworks.contract.common.Channel;
-import com.thoughtworks.contract.subscribe.*;
+import com.thoughtworks.contract.common.Category;
+import com.thoughtworks.contract.subscribe.Blip;
+import com.thoughtworks.contract.subscribe.BlipItSubscribeResource;
+import com.thoughtworks.contract.subscribe.GetBlipsRequest;
+import com.thoughtworks.contract.subscribe.GetBlipsResponse;
+import com.thoughtworks.contract.subscribe.UserPrefs;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -57,7 +62,7 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
         datastoreStub.setupEntityAsPersisted(TestData.Alerts.FameLido());
         datastoreStub.setupEntityAsPersisted(TestData.Alerts.MTR());
 
-        final GetBlipsRequest blipItRequest = GetBlipItRequest(Arrays.asList(TestData.Channels.Movie()), MAXIMUM_RADIUS);
+        final GetBlipsRequest blipItRequest = constructGetBlipsRequest(Arrays.asList(TestData.Channels.Movie()), MAXIMUM_RADIUS);
         final GetBlipsResponse blips = blipItSubscribeServerResource.getBlips(blipItRequest);
 
         assertThat(blips.isSuccess(), is(true));
@@ -67,7 +72,7 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
     }
 
     private void assertBlip(Blip blip, Alert alert) {
-        assertThat(blip.getTitle(), is(alert.getSource()));
+        assertThat(blip.getTitle(), is(alert.getTitle()));
         assertThat(blip.getMessage(), is(alert.getDescription()));
         assertThat(GeoLocationToGeoPointConverter.Convert(blip.getBlipLocation()), is(alert.getGeoPoint()));
     }
@@ -79,7 +84,7 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
         datastoreStub.setupEntityAsPersisted(TestData.Alerts.PVRCinemas());
         datastoreStub.setupEntityAsPersisted(TestData.Alerts.FameLido());
 
-        final GetBlipsRequest blipItRequest = GetBlipItRequest(Arrays.asList(TestData.Channels.Movie()), MAXIMUM_RADIUS);
+        final GetBlipsRequest blipItRequest = constructGetBlipsRequest(Arrays.asList(TestData.Channels.Movie()), MAXIMUM_RADIUS);
         final GetBlipsResponse blips = blipItSubscribeServerResource.getBlips(blipItRequest);
 
         assertThat(blips.isSuccess(), is(true));
@@ -88,12 +93,12 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
         assertBlip(blips.getBlips().get(1), TestData.Alerts.FameLido());
     }
 
-    private GetBlipsRequest GetBlipItRequest(List<Channel> channels, float distanceOfConvinience) {
+    private GetBlipsRequest constructGetBlipsRequest(List<Channel> channels, float distanceOfConvenience) {
         final ArrayList<Channel> userChannels = new ArrayList<Channel>();
         userChannels.addAll(channels);
         final UserPrefs userPrefs = new UserPrefs();
-        userPrefs.setChannels(userChannels);
-        userPrefs.setRadius(distanceOfConvinience);
+        userPrefs.setChannels(getChannels(userChannels));
+        userPrefs.setRadius(distanceOfConvenience);
 
         final GeoLocation userLocation = new GeoLocation();
         userLocation.setLatitude(this.userLocation.getLatitude());
@@ -103,5 +108,17 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
         blipItRequest.setUserPrefs(userPrefs);
         blipItRequest.setUserLocation(userLocation);
         return blipItRequest;
+    }
+
+    private List<com.thoughtworks.contract.common.Channel> getChannels(List<Channel> userChannels) {
+        ArrayList<com.thoughtworks.contract.common.Channel> channels = new ArrayList<com.thoughtworks.contract.common.Channel>();
+        for (Channel userChannel : userChannels) {
+            String id = userChannel.getKeyAsString();
+            String name = userChannel.getName();
+            String description = userChannel.getDescription();
+            com.thoughtworks.contract.common.Channel channel = new com.thoughtworks.contract.common.Channel(id, name, description, Category.AD);
+            channels.add(channel);
+        }
+        return channels;
     }
 }

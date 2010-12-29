@@ -53,6 +53,10 @@ import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.APP_TAG;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.LOCATION_CHANGED;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.areSameStrings;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getGeoLocation;
+import static com.thoughtworks.contract.Constants.DESC;
+import static com.thoughtworks.contract.Constants.DEVICE_ID;
+import static com.thoughtworks.contract.Constants.PHONE_NUMBER;
+import static com.thoughtworks.contract.Constants.TITLE;
 
 public class PanicNotificationService extends Service {
     private String blipItServiceUrl;
@@ -81,10 +85,12 @@ public class PanicNotificationService extends Service {
 
     private void readPhoneState() {
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-        panicBlip.addMetaData("DEVICE_ID", telephonyManager.getDeviceId());
-        panicBlip.addMetaData("PHONE_NUMBER", telephonyManager.getLine1Number());
-        Log.i(APP_TAG, "DeviceID: " + panicBlip.getMetaData().get("DEVICE_ID"));
-        Log.i(APP_TAG, "PhoneNumber: " + panicBlip.getMetaData().get("PHONE_NUMBER"));
+        panicBlip.addMetaData(DEVICE_ID, telephonyManager.getDeviceId());
+        panicBlip.addMetaData(PHONE_NUMBER, telephonyManager.getLine1Number());
+        panicBlip.addMetaData(TITLE, "Panic Request");
+        panicBlip.addMetaData(DESC, "Panic Request from " + telephonyManager.getLine1Number());
+        Log.i(APP_TAG, "DeviceID: " + panicBlip.getMetaData().get(DEVICE_ID));
+        Log.i(APP_TAG, "PhoneNumber: " + panicBlip.getMetaData().get(PHONE_NUMBER));
     }
 
     private void initHandlerThread() {
@@ -173,7 +179,7 @@ public class PanicNotificationService extends Service {
     }
 
     public void reportPanic(List<Channel> topics) {
-        panicBlip.setApplicableChannels(topics);
+        panicBlip.setChannels(topics);
         Location lastKnownLocation = getLastKnownLocation();
         if (lastKnownLocation == null) {
             Toast.makeText(this, "Your issue will be reported as soon as we detect your current location", Toast.LENGTH_LONG).show();

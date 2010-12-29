@@ -20,8 +20,8 @@ public class GetChannelsResponse extends BlipItResponse {
         this.channels = channels;
     }
 
-    public void addChannel(String id, String name, String desc) {
-        Channel newChannel = new Channel(id, name, desc);
+    public void addChannel(String id, String name, String desc, Category channelCategory) {
+        Channel newChannel = new Channel(id, name, desc, channelCategory);
         if (channels.contains(newChannel)) return;
         channels.add(newChannel);
     }

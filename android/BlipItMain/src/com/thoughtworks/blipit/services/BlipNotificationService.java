@@ -38,6 +38,7 @@ import android.util.Log;
 import com.google.android.maps.GeoPoint;
 import com.thoughtworks.blipit.utils.BlipItServiceHelper;
 import com.thoughtworks.blipit.utils.BlipItUtils;
+import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.subscribe.Blip;
 import com.thoughtworks.contract.subscribe.GetBlipsRequest;
 import com.thoughtworks.contract.subscribe.GetBlipsResponse;
@@ -152,7 +153,7 @@ public class BlipNotificationService extends IntentService {
         blipItRequest.setUserLocation(BlipItUtils.toGeoLocation(getCurrentUserLocation()));
         UserPrefs userPrefs = new UserPrefs();
         userPrefs.setRadius(radius);
-        userPrefs.setChannels(ChannelUtils.toChannelList(channelPrefStr));
+        userPrefs.setChannels(ChannelUtils.toChannelList(channelPrefStr, Category.AD));
         blipItRequest.setUserPrefs(userPrefs);
         return blipItRequest;
     }

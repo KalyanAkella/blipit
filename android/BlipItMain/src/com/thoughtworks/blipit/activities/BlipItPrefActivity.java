@@ -34,7 +34,7 @@ import android.util.Log;
 import android.widget.Toast;
 import com.thoughtworks.blipit.R;
 import com.thoughtworks.blipit.utils.BlipItServiceHelper;
-import com.thoughtworks.contract.common.ChannelCategory;
+import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.utils.ChannelUtils;
 
@@ -65,7 +65,7 @@ public class BlipItPrefActivity extends PreferenceActivity implements SharedPref
                     String channelObjectsAsString = "";
                     try {
                         String blipitServiceUrl = readBlipItServiceUrl();
-                        GetChannelsResponse response = BlipItServiceHelper.getSubscribeResource(blipitServiceUrl).getAvailableChannels(ChannelCategory.AD);
+                        GetChannelsResponse response = BlipItServiceHelper.getSubscribeResource(blipitServiceUrl).getAvailableChannels(Category.AD);
                         if (response.isSuccess()) {
                             channelObjectsAsString = ChannelUtils.getChannelsAsString(response.getChannels());
                         } else {

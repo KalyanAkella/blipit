@@ -21,7 +21,7 @@
 package com.thoughtworks.contract.publish;
 
 import com.thoughtworks.contract.BlipItResponse;
-import com.thoughtworks.contract.common.ChannelCategory;
+import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.GetChannelsResponse;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Delete;
@@ -39,5 +39,5 @@ public interface BlipItPublishResource {
     BlipItResponse deleteBlip(DeleteBlipRequest deleteBlipRequest);
 
     @Get
-    GetChannelsResponse getAvailableChannels(ChannelCategory channelCategory);
+    GetChannelsResponse getAvailableChannels(Category channelCategory);
 }

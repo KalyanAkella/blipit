@@ -46,7 +46,7 @@ import com.thoughtworks.blipit.panicblip.R;
 import com.thoughtworks.blipit.panicblip.services.PanicNotificationService;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipServiceHelper;
 import com.thoughtworks.contract.common.Channel;
-import com.thoughtworks.contract.common.ChannelCategory;
+import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.utils.ChannelUtils;
 
@@ -91,7 +91,7 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
                     String channelObjectsAsString = "";
                     try {
                         String blipitServiceUrl = readBlipItServiceUrl();
-                        GetChannelsResponse response = PanicBlipServiceHelper.getPublishResource(blipitServiceUrl).getAvailableChannels(ChannelCategory.PANIC);
+                        GetChannelsResponse response = PanicBlipServiceHelper.getPublishResource(blipitServiceUrl).getAvailableChannels(Category.PANIC);
                         if (response.isSuccess()) {
                             channelObjectsAsString = ChannelUtils.getChannelsAsString(response.getChannels());
                         } else {
@@ -128,7 +128,7 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
 
     private void updatePanicChannelList(String allChannelsStr) {
         if (allChannelsStr == null || allChannelsStr.length() == 0) return;
-        panicChannels = ChannelUtils.toChannelList(allChannelsStr);
+        panicChannels = ChannelUtils.toChannelList(allChannelsStr, Category.PANIC);
         panicChannelNames = ChannelUtils.toChannelNames(panicChannels);
         runOnUiThread(new Runnable() {
             public void run() {

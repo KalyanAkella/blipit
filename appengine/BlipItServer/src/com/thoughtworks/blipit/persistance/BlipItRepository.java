@@ -22,10 +22,8 @@ package com.thoughtworks.blipit.persistance;
 
 import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.blipit.domain.Alert;
+import com.thoughtworks.blipit.domain.Category;
 import com.thoughtworks.blipit.domain.Channel;
-import com.thoughtworks.contract.common.ChannelCategory;
-import com.thoughtworks.contract.GeoLocation;
-import com.thoughtworks.contract.subscribe.UserPrefs;
 
 import javax.jdo.Query;
 import java.util.ArrayList;
@@ -33,7 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class BlipItRepository {
-    public void filterAlerts(GeoLocation userLocation, final UserPrefs userPrefs, Utils.ResultHandler<Alert> handler) {
+    public void filterAlertsByChannels(final List<String> channelIds, Utils.ResultHandler<Alert> handler) {
         DataStoreHelper.retrieveAllAndProcess(
                 Alert.class,
                 new Utils.QueryHandler() {
@@ -43,21 +41,13 @@ public class BlipItRepository {
                     }
 
                     public Object[] parameters() {
-                        return new Object[]{getChannelIds(userPrefs)};
+                        return new Object[]{channelIds};
                     }
                 },
                 handler);
     }
 
-    private List<String> getChannelIds(UserPrefs userPrefs) {
-        List<String> channelIds = new ArrayList<String>();
-        for (com.thoughtworks.contract.common.Channel channel : userPrefs.getChannels()) {
-            channelIds.add(channel.getId());
-        }
-        return channelIds;
-    }
-
-    public void retrieveChannelsByCategory(ChannelCategory channelCategory, final Utils.ResultHandler<Channel> handler) {
+    public void retrieveChannelsByCategory(Category channelCategory, Utils.ResultHandler<Channel> handler) {
         List<Channel> channels = saveAndGetChannels(channelCategory, handler);
         for (Channel channel : channels) {
             handler.onSuccess(channel);
@@ -65,7 +55,7 @@ public class BlipItRepository {
     }
 
     // TODO: Currently saves & gets the channels. This should go away in future. Find out a way to insert reference data like Channels.
-    private List<Channel> saveAndGetChannels(ChannelCategory channelCategory, final Utils.ResultHandler<Channel> handler) {
+    private List<Channel> saveAndGetChannels(Category channelCategory, final Utils.ResultHandler<Channel> handler) {
         List<String> channelNames = getChannelNames(channelCategory);
         final List<Channel> channels = new ArrayList<Channel>();
         for (String channelName : channelNames) {
@@ -86,10 +76,10 @@ public class BlipItRepository {
         return channels;
     }
 
-    private List<String> getChannelNames(ChannelCategory channelCategory) {
-        if (channelCategory == ChannelCategory.AD)
+    private List<String> getChannelNames(Category channelCategory) {
+        if (channelCategory == Category.AD)
             return Arrays.asList("Food", "Retail", "Transport", "Gaming", "Movies", "Fire", "Accident");
-        else if (channelCategory == ChannelCategory.PANIC)
+        else if (channelCategory == Category.PANIC)
             return Arrays.asList("Fire", "Accident", "Require Blood", "Ambulance", "Earthquake", "Cyclone");
         return Arrays.asList();
     }
