@@ -18,6 +18,6 @@
         <url-pattern>/blipit/*</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
-        <welcome-file>PublishAlert.jsp</welcome-file>
+        <welcome-file>ManageBlips.jsp</welcome-file>
     </welcome-file-list>
 </web-app>
