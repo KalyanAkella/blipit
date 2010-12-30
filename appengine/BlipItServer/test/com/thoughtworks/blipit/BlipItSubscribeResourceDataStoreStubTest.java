@@ -85,7 +85,7 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
     private void assertBlip(com.thoughtworks.contract.subscribe.Blip blip, Blip alert) {
         assertThat(blip.getTitle(), is(alert.getTitle()));
         assertThat(blip.getMessage(), is(alert.getDescription()));
-        assertThat(GeoLocationToGeoPointConverter.Convert(blip.getBlipLocation()), is(alert.getGeoPoint()));
+        assertThat(Utils.asGeoPoint(blip.getBlipLocation()), is(alert.getGeoPoint()));
     }
 
     @Test

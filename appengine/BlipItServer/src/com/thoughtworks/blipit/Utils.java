@@ -56,8 +56,10 @@ public class Utils {
         return blipItError;
     }
 
-    static GeoPt asGeoPoint(GeoLocation blipLocation) {
-        return new GeoPt(((float) blipLocation.getLatitude()), ((float) blipLocation.getLongitude()));
+    public static GeoPt asGeoPoint(GeoLocation blipLocation) {
+        final Double latitude = blipLocation.getLatitude();
+        final Double longitude = blipLocation.getLongitude();
+        return new GeoPt(latitude.floatValue(), longitude.floatValue());
     }
 
     public static Category convert(com.thoughtworks.contract.common.Category category) {
