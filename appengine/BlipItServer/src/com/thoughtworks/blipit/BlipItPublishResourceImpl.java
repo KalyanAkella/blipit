@@ -130,6 +130,7 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
             } else {
                 blip = new Blip(title, description, blipLoc, channelKeys);
             }
+            saveBlipResponse.setSuccess();
         } catch (Exception e) {
             saveBlipResponse.setFailure(Utils.getBlipItError(e.getMessage()));
             log.log(Level.SEVERE, "Blip creation failed with error", e);
