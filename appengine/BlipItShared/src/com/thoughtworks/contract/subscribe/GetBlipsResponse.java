@@ -31,6 +31,7 @@ public class GetBlipsResponse extends BlipItResponse {
 
     public GetBlipsResponse() {
         blips = new ArrayList<Blip>();
+        setSuccess();
     }
 
     public List<Blip> getBlips() {

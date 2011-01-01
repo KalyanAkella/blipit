@@ -39,8 +39,7 @@ public class BlipItCommonServerResource extends ServerResource {
 
     protected GetChannelsResponse getChannels(final Category channelCategory) {
         final GetChannelsResponse channelsResponse = new GetChannelsResponse();
-        com.google.appengine.api.datastore.Category category = Utils.convert(channelCategory);
-        blipItRepository.retrieveChannelsByCategory(category, new Utils.ResultHandler<Channel>() {
+        blipItRepository.retrieveChannelsByCategory(Utils.convert(channelCategory), new Utils.ResultHandler<Channel>() {
             public void onSuccess(Channel savedChannel) {
                 channelsResponse.setSuccess();
                 channelsResponse.addChannel(savedChannel.getKeyAsString(), savedChannel.getName(), channelCategory);

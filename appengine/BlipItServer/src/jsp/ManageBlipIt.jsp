@@ -435,7 +435,7 @@
   function checkAllEntities() {
     var allCheckBox = document.getElementById("allkeys");
     var check = allCheckBox.checked;
-    var entitiesForm = document.getElementById("list-channels-form")
+    var entitiesForm = document.getElementById("list-entities-form")
     var keyPattern = /key[0-9]+/i;
     for (var i = 0; i < entitiesForm.length; i++) {
         if (keyPattern.test(entitiesForm.elements[i].name)) {
@@ -450,7 +450,7 @@
     var button = document.getElementById("delete_button");
     var uncheck = false;
     var disable = true;
-    var entitiesForm = document.getElementById("list-channels-form")
+    var entitiesForm = document.getElementById("list-entities-form")
     var keyPattern = /key[0-9]+/i;
     for (var i = 0; i < entitiesForm.length; i++) {
         if (keyPattern.test(entitiesForm.elements[i].name)) {
@@ -494,8 +494,8 @@
                 <div id="ae-nav" class="g-c">
 
                     <ul id="menu">
-                        <li><a href="ManageChannels.html" id="manage_channels_link">Manage Channels</a></li>
-                        <li><a href="ManageBlips.html" id="manage_blips_link">Manage Blips</a></li>
+                        <li><a href="ManageBlipIt.jsp?category=channels" id="manage_channels_link">Manage Channels</a></li>
+                        <li><a href="ManageBlipIt.jsp?category=blips" id="manage_blips_link">Manage Blips</a></li>
                     </ul>
 
                 </div>
@@ -503,10 +503,10 @@
             </div>
             <div id="ae-content" class="g-unit">
             <% String actionType = request.getParameter("category");
-            if (actionType == null || "channels".equals(actionType)) { %>
-            <jsp:include page="ManageChannels.jsp" />
-            <% } else { %>
+            if ("blips".equals(actionType)) { %>
             <jsp:include page="ManageBlips.jsp" />
+            <% } else { %>
+            <jsp:include page="ManageChannels.jsp" />
             <% } %>
             </div>
             <div id="ft">

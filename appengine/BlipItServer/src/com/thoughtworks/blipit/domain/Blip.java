@@ -48,7 +48,7 @@ public class Blip {
     private GeoPt geoPoint;
 
     @Persistent
-    private Set<Key> channelKeys; // un-owned one-to-many relationship. a channel can also be part of other Blips
+    private Set<Key> channelKeys; // un-owned one-to-many relationship. a given channel can be associated with multiple Blips
 
     public Blip(String title, String description, GeoPt geoPoint, Set<Key> channelKeys) {
         this.title = title;

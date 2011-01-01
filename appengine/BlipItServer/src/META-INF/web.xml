@@ -13,6 +13,10 @@
             <param-value>com.thoughtworks.blipit.BlipItService</param-value>
         </init-param>
     </servlet>
+    <servlet-mapping>
+        <servlet-name>blipit</servlet-name>
+        <url-pattern>/blipit/*</url-pattern>
+    </servlet-mapping>
     <servlet>
         <servlet-name>manageChannels</servlet-name>
         <servlet-class>com.thoughtworks.blipit.servlets.ManageChannels</servlet-class>
@@ -21,9 +25,13 @@
         <servlet-name>manageChannels</servlet-name>
         <url-pattern>/manageChannels</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>manageBlips</servlet-name>
+        <servlet-class>com.thoughtworks.blipit.servlets.ManageBlips</servlet-class>
+    </servlet>
     <servlet-mapping>
-        <servlet-name>blipit</servlet-name>
-        <url-pattern>/blipit/*</url-pattern>
+        <servlet-name>manageBlips</servlet-name>
+        <url-pattern>/manageBlips</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>ManageBlipIt.jsp</welcome-file>

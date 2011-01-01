@@ -29,8 +29,6 @@ import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
 public interface BlipItPublishResource {
-    @Post
-    Representation acceptBlip(Representation entity);
 
     @Post
     SaveBlipResponse saveBlip(SaveBlipRequest saveBlipRequest);

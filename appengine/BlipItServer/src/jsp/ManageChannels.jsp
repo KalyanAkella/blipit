@@ -7,7 +7,7 @@
 <%@ page import="com.thoughtworks.blipit.persistence.DataStoreHelper" %>
 
 <h3>Manage Channels</h3>
-<form id="list-channels-form" action="/manageChannels" method="post">
+<form id="list-entities-form" action="/manageChannels" method="post">
     <input type="hidden" name="category" value="channels"/>
     <input type="hidden" name="action" value="delete"/>
     <table class="entities" id="entities_table">
@@ -46,10 +46,9 @@
     <div class="entities g-section g-tpl-50-50">
         <div class="g-unit g-first">
             <div id="entities-control">
-            <input id="delete_button" type="submit" value="Delete" onclick="return confirm('Are you sure you wish to delete these channels?')"/>
+            <input id="delete_button" type="submit" value="Delete" onclick="return confirm('Are you sure you wish to delete these channel(s)?')"/>
             </div>
         </div>
-
     </div>
 </form>
 <br>

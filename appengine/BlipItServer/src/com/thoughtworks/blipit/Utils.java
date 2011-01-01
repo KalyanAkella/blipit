@@ -66,6 +66,18 @@ public class Utils {
         return new Category(category.name());
     }
 
+    public static boolean isValidManageAction(String action) {
+        return isDeleteAction(action) || isSaveAction(action);
+    }
+
+    public static boolean isSaveAction(String action) {
+        return "save".equalsIgnoreCase(action);
+    }
+
+    public static boolean isDeleteAction(String action) {
+        return "delete".equalsIgnoreCase(action);
+    }
+
     public static interface ResultHandler<T> {
         void onSuccess(T arg);
 

@@ -42,10 +42,6 @@ public class Channel implements Serializable, Comparable<Channel> {
     @Persistent
     private Category category;
 
-    public Channel() {
-        this(null, null, null);
-    }
-
     public Channel(String name, Category category) {
         this(null, name, category);
     }

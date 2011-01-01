@@ -16,27 +16,28 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.logging.Logger;
 
+import static com.thoughtworks.blipit.Utils.isValidManageAction;
+
 public class ManageChannels extends HttpServlet {
     private static final Logger logger = Logger.getLogger(ManageChannels.class.getName());
 
-    // Handles channel saving & deleting
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
-        if (isValidAction(action)) {
+        if (isValidManageAction(action)) {
             PersistenceManager persistenceManager = null;
             try {
                 persistenceManager = DataStoreHelper.getPersistenceManager();
-                if (isDeleteAction(action)) {
+                if (Utils.isDeleteAction(action)) {
                     deleteChannel(persistenceManager, req);
-                } else if (isSaveAction(action)) {
+                } else if (Utils.isSaveAction(action)) {
                     saveChannel(persistenceManager, req);
                 }
             } finally {
                 if (persistenceManager != null) persistenceManager.close();
             }
         }
-        resp.sendRedirect("/ManageBlipIt.jsp");
+        resp.sendRedirect("/ManageBlipIt.jsp?category=channels");
     }
 
     private void saveChannel(PersistenceManager persistenceManager, HttpServletRequest request) {
@@ -61,15 +62,4 @@ public class ManageChannels extends HttpServlet {
         }
     }
 
-    private boolean isValidAction(String action) {
-        return isDeleteAction(action) || isSaveAction(action);
-    }
-
-    private boolean isSaveAction(String action) {
-        return "save".equalsIgnoreCase(action);
-    }
-
-    private boolean isDeleteAction(String action) {
-        return "delete".equalsIgnoreCase(action);
-    }
 }

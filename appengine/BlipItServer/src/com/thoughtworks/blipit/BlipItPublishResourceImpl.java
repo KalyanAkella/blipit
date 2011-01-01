@@ -35,50 +35,22 @@ import com.thoughtworks.contract.publish.DeleteBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipResponse;
 import org.datanucleus.util.StringUtils;
-import org.restlet.data.Form;
-import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
 import javax.jdo.PersistenceManager;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.thoughtworks.blipit.Utils.splitByComma;
-
 public class BlipItPublishResourceImpl extends BlipItCommonServerResource implements BlipItPublishResource {
     private static final Logger log = Logger.getLogger(BlipItPublishResourceImpl.class.getName());
 
     public BlipItPublishResourceImpl() {
         super();
-    }
-
-    @Post
-    public Representation acceptBlip(Representation entity) {
-        final Representation[] result = {null};
-        Blip blip = getBlip(new Form(entity));
-        DataStoreHelper.save(blip, new Utils.ResultHandler<Blip>() {
-            public void onSuccess(Blip arg) {
-                setStatus(Status.SUCCESS_CREATED);
-                result[0] = new StringRepresentation("Blip creation successful", MediaType.TEXT_PLAIN);
-                log.info("Blip with title, " + arg.getTitle() + " saved successfully with ID: " + arg.getKey());
-            }
-
-            public void onError(Throwable throwable) {
-                setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-                result[0] = new StringRepresentation("Blip creation failed with error: " + throwable, MediaType.TEXT_PLAIN);
-                log.log(Level.SEVERE, "Blip creation failed with error", throwable);
-            }
-        });
-        return result[0];
     }
 
     @Post
@@ -103,6 +75,7 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
         return saveBlipResponse;
     }
 
+    // TODO: This method needs some refactoring !!!
     private Blip constructBlip(SaveBlipRequest saveBlipRequest, SaveBlipResponse saveBlipResponse) {
         Blip blip = null;
         PersistenceManager persistenceManager = null;
@@ -161,27 +134,6 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
 
     private Key mapToChannelKey(Channel channel) {
         return KeyFactory.stringToKey(channel.getId());
-    }
-
-    // TODO: This method should attempt to load the channel ID from data store and then create the Blip. look at saveBlip()
-    // FIX ME: This method is broken !!! Does not set the channels correctly on a given blip !!!
-    private Blip getBlip(Form form) {
-        String blipTitle = form.getFirstValue("alert.title");
-        String blipDescription = form.getFirstValue("alert.desc");
-        Float blipLatitude = Float.valueOf(form.getFirstValue("alert.loc.lat"));
-        Float blipLongitude = Float.valueOf(form.getFirstValue("alert.loc.long"));
-        List<String> channelStrs = splitByComma(form.getFirstValue("alert.channels"));
-        List<com.thoughtworks.blipit.domain.Channel> channels = new ArrayList<com.thoughtworks.blipit.domain.Channel>();
-
-/*
-        for (String channelStr : channelStrs) {
-            com.thoughtworks.blipit.domain.Channel channel = new com.thoughtworks.blipit.domain.Channel();
-            channel.setName(channelStr);
-            channel.setCategory(CategoryEnum.AD);
-            channels.add(channel);
-        }
-*/
-        return new Blip(blipTitle, blipDescription, new GeoPt(blipLatitude, blipLongitude), null); // <-- we're assigning 'null' for channel keys here
     }
 
     @Get
