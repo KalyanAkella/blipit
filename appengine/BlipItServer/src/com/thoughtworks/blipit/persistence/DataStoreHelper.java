@@ -18,7 +18,7 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.blipit.persistance;
+package com.thoughtworks.blipit.persistence;
 
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;

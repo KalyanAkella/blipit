@@ -21,7 +21,7 @@
 package com.thoughtworks.blipit;
 
 import com.thoughtworks.blipit.domain.Channel;
-import com.thoughtworks.blipit.persistance.BlipItRepository;
+import com.thoughtworks.blipit.persistence.BlipItRepository;
 import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.GetChannelsResponse;
 import org.restlet.resource.ServerResource;

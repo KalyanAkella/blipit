@@ -46,6 +46,10 @@ public class Channel implements Serializable, Comparable<Channel> {
         this(null, null, null);
     }
 
+    public Channel(String name, Category category) {
+        this(null, name, category);
+    }
+
     public Channel(Key key, String name, Category category) {
         this.key = key;
         this.name = name;

@@ -94,7 +94,7 @@ public class PanicNotificationService extends Service {
     }
 
     private void initHandlerThread() {
-        HandlerThread handlerThread = new HandlerThread("PanicNotificationServiceThread", Process.THREAD_PRIORITY_FOREGROUND);
+        HandlerThread handlerThread = new HandlerThread("PanicNotificationServiceThread");
         handlerThread.start();
         panicNotificationServiceLooper = handlerThread.getLooper();
         panicNotificationServiceHandler = new PanicNotificationServiceHandler(this, panicNotificationServiceLooper);

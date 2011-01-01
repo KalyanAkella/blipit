@@ -24,7 +24,7 @@ import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.domain.Blip;
-import com.thoughtworks.blipit.persistance.DataStoreHelper;
+import com.thoughtworks.blipit.persistence.DataStoreHelper;
 import com.thoughtworks.contract.BlipItResponse;
 import com.thoughtworks.contract.Constants;
 import com.thoughtworks.contract.common.Category;

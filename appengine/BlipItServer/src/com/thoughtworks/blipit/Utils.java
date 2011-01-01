@@ -77,4 +77,13 @@ public class Utils {
 
         Object[] parameters();
     }
+
+    public static class DefaultQueryHandler implements QueryHandler {
+        public void prepare(Query query) {
+        }
+
+        public Object[] parameters() {
+            return new Object[0];
+        }
+    }
 }
