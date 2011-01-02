@@ -19,14 +19,12 @@ class GeoCoderHandler(KeywordHandler):
 
     def handle(self, text):
         url = "http://maps.googleapis.com/maps/api/geocode/json?sensor=true&address=" + urllib.quote_plus(text)
-        print url
         result = urllib2.urlopen(url)
         json_data = json.loads(result.read())
-        print json_data
         if json_data['status'] == u'OK':
             latitude = json_data['results'][0]['geometry']['location']['lat']
             longitude = json_data['results'][0]['geometry']['location']['lng']
-            self.respond("Your lat is :" + latitude + " longitude is :" + longitude)
+            self.respond("lat is : %f and longitude is : %f" % (latitude,longitude))
             return
             
         self.respond("Sorry we do not understand your address!")
