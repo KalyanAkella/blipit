@@ -150,7 +150,7 @@ public class BlipItActivity extends MapActivity {
         return true;
     }
 
-    public Messenger getBlipNotificationHandler() {
+    public Messenger getBlipNotificationClientMessenger() {
         return blipNotificationHandler;
     }
 

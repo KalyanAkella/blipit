@@ -24,17 +24,23 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Message;
 import com.thoughtworks.contract.GeoLocation;
-import com.thoughtworks.contract.common.Channel;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 
 public class PanicBlipUtils {
-    public static final int REPORT_PANIC = 0;
+    public static final int MSG_REGISTER_CLIENT = 0;
+    public static final int REPORT_PANIC = 1;
+    public static final int REPORT_PANIC_SUCCESS = 2;
+    public static final int REPORT_PANIC_FAILURE = 3;
+    public static final int REPORT_PANIC_LOC_ERROR = 4;
+    public static final int CLEAR_PANIC = 5;
+    public static final int CLEAR_PANIC_SUCCESS = 6;
+    public static final int CLEAR_PANIC_FAILURE = 7;
+    public static final int LOCATION_CHANGED = 8;
+    public static final int MSG_UNREGISTER_CLIENT = 9;
     public static final String APP_TAG = "PanicBlipActivity";
-    public static final String PANIC_BLIP = "PANIC_BLIP";
-    public static final int CLEAR_PANIC = 1;
-    public static final int LOCATION_CHANGED = 2;
     public static final String PANIC_CHANNELS_KEY = "panic_channels_key";
+    public static final String PANIC_DATA = "panic_data";
 
     public static GeoLocation getGeoLocation(Location lastKnownLocation) {
         GeoLocation geoLocation = new GeoLocation();
@@ -43,15 +49,17 @@ public class PanicBlipUtils {
         return geoLocation;
     }
 
-    public static Message getMessageWithChannels(int messageId, ArrayList<Channel> channels) {
-        Message message = Message.obtain(null, messageId);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(PANIC_BLIP, channels);
-        message.setData(bundle);
-        return message;
-    }
-
     public static boolean areSameStrings(String str1, String str2) {
         return str1 == null ? str2 == null : str1.equals(str2);
+    }
+
+    public static Message getMessage(int messageId, Serializable data) {
+        Message message = Message.obtain(null, messageId);
+        if (data != null) {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(PANIC_DATA, data);
+            message.setData(bundle);
+        }
+        return message;
     }
 }

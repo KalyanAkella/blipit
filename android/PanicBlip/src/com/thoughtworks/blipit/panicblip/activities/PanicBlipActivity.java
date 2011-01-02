@@ -26,12 +26,10 @@ import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -39,14 +37,16 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.thoughtworks.blipit.panicblip.R;
 import com.thoughtworks.blipit.panicblip.services.PanicNotificationService;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipServiceHelper;
-import com.thoughtworks.contract.common.Channel;
+import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
 import com.thoughtworks.contract.common.Category;
+import com.thoughtworks.contract.common.Channel;
 import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.utils.ChannelUtils;
 
@@ -57,9 +57,9 @@ import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.APP_TAG;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.CLEAR_PANIC;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.PANIC_CHANNELS_KEY;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.REPORT_PANIC;
-import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getMessageWithChannels;
+import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getMessage;
 
-public class PanicBlipActivity extends Activity implements View.OnClickListener, ServiceConnection, DialogInterface.OnCancelListener, SharedPreferences.OnSharedPreferenceChangeListener {
+public class PanicBlipActivity extends Activity implements View.OnClickListener, DialogInterface.OnCancelListener, SharedPreferences.OnSharedPreferenceChangeListener, AdapterView.OnItemClickListener {
     private Thread channelsThread;
     private Messenger panicNotificationService;
     private boolean panicReportingPending;
@@ -68,6 +68,8 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
     private View clearPanicBtn;
     private List<Channel> panicChannels;
     private List<String> panicChannelNames;
+    private PanicNotificationClientHandler panicNotificationClientHandler;
+    private Messenger panicNotificationHandler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -124,6 +126,7 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
 
     private void initPanicChannelList() {
         panicChannelList = (ListView) findViewById(R.id.panicChannelList);
+        panicChannelList.setOnItemClickListener(this);
     }
 
     private void updatePanicChannelList(String allChannelsStr) {
@@ -133,8 +136,6 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
         runOnUiThread(new Runnable() {
             public void run() {
                 panicChannelList.setAdapter(new ArrayAdapter<String>(PanicBlipActivity.this, android.R.layout.simple_list_item_multiple_choice, panicChannelNames));
-                submitPanicBtn.setEnabled(true);
-                clearPanicBtn.setEnabled(true);
             }
         });
     }
@@ -173,7 +174,18 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(this);
+        unbindService();
+    }
+
+    public void unbindService() {
+        if (panicNotificationService != null) {
+            try {
+                panicNotificationService.send(Message.obtain(null, PanicBlipUtils.MSG_UNREGISTER_CLIENT));
+            } catch (RemoteException e) {
+                Log.e(APP_TAG, "Unable to unregister from panic notification service", e);
+            }
+        }
+        unbindService(panicNotificationClientHandler);
     }
 
     private void initPanicButtons() {
@@ -184,9 +196,11 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
     }
 
     private void initPanicNotificationService() {
+        panicNotificationClientHandler = new PanicNotificationClientHandler(this);
         Intent intent = new Intent(this, PanicNotificationService.class);
         startService(intent);
-        bindService(intent, this, 0);
+        bindService(intent, panicNotificationClientHandler, 0);
+        panicNotificationHandler = new Messenger(panicNotificationClientHandler);
     }
 
     public void onClick(View view) {
@@ -221,7 +235,7 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
 
     private void _reportPanic() {
         try {
-            panicNotificationService.send(getMessageWithChannels(REPORT_PANIC, getSelectedChannels()));
+            panicNotificationService.send(getMessage(REPORT_PANIC, getSelectedChannels()));
         } catch (RemoteException e) {
             Log.e(APP_TAG, "Unable to submit your panic", e);
             Toast.makeText(this, "Unable to submit your panic", Toast.LENGTH_LONG).show();
@@ -245,16 +259,19 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
         return channelList;
     }
 
-    public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        panicNotificationService = new Messenger(iBinder);
+    public void setPanicNotificationService(Messenger panicNotificationService) {
+        this.panicNotificationService = panicNotificationService;
+    }
+
+    public Messenger getPanicNotificationClientMessenger() {
+        return panicNotificationHandler;
+    }
+
+    public void reportPendingPanics() {
         if (panicReportingPending) {
             _reportPanic();
             panicReportingPending = false;
         }
-    }
-
-    public void onServiceDisconnected(ComponentName componentName) {
-        panicNotificationService = null;
     }
 
     public void onCancel(DialogInterface dialog) {
@@ -267,5 +284,50 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
         if (PANIC_CHANNELS_KEY.equals(key)) {
             dismissDialog(0);
         }
+    }
+
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (panicChannelList.isItemChecked(position)) {
+            submitPanicBtn.setEnabled(true);
+        } else {
+            long[] checkedItemPositions = panicChannelList.getCheckedItemIds();
+            if (checkedItemPositions.length == 0) {
+                submitPanicBtn.setEnabled(false);
+            } else {
+                submitPanicBtn.setEnabled(true);
+            }
+        }
+    }
+
+    public void clearPanicSuccess() {
+        showMessageOnUI("Issue cleared successfully");
+        panicChannelList.clearChoices();
+        panicChannelList.invalidateViews();
+        clearPanicBtn.setEnabled(false);
+        submitPanicBtn.setEnabled(false);
+    }
+
+    public void clearPanicFailure(String errorMessage) {
+        showMessageOnUI("We are unable to clear your issue at this time. Please try again.");
+        clearPanicBtn.setEnabled(true);
+    }
+
+    public void reportPanicSuccess() {
+        showMessageOnUI("Issue reported successfully");
+        clearPanicBtn.setEnabled(true);
+    }
+
+    public void reportPanicLocUnavailable() {
+        showMessageOnUI("Your issue will be reported as soon as we detect your current location");
+        clearPanicBtn.setEnabled(false);
+    }
+
+    public void reportPanicFailure(String errorMessage) {
+        showMessageOnUI("We are unable to report your issue at this time. Please try again.");
+        clearPanicBtn.setEnabled(false);
+    }
+
+    private void showMessageOnUI(final String message) {
+        Toast.makeText(PanicBlipActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 }

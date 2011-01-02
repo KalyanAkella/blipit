@@ -35,11 +35,11 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Process;
+import android.os.RemoteException;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Toast;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipServiceHelper;
+import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
 import com.thoughtworks.contract.BlipItResponse;
 import com.thoughtworks.contract.common.Channel;
 import com.thoughtworks.contract.publish.BlipItPublishResource;
@@ -47,18 +47,23 @@ import com.thoughtworks.contract.publish.DeleteBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipResponse;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.APP_TAG;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.LOCATION_CHANGED;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.areSameStrings;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getGeoLocation;
+import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getMessage;
 import static com.thoughtworks.contract.Constants.DESC;
 import static com.thoughtworks.contract.Constants.DEVICE_ID;
 import static com.thoughtworks.contract.Constants.PHONE_NUMBER;
 import static com.thoughtworks.contract.Constants.TITLE;
 
 public class PanicNotificationService extends Service {
+    private List<Messenger> clients;
     private String blipItServiceUrl;
     private Messenger panicMessenger;
     private int minTimeForLocUpdates;
@@ -71,6 +76,7 @@ public class PanicNotificationService extends Service {
 
     public PanicNotificationService() {
         panicBlip = new SaveBlipRequest();
+        clients = new ArrayList<Messenger>();
     }
 
     @Override
@@ -182,9 +188,22 @@ public class PanicNotificationService extends Service {
         panicBlip.setChannels(topics);
         Location lastKnownLocation = getLastKnownLocation();
         if (lastKnownLocation == null) {
-            Toast.makeText(this, "Your issue will be reported as soon as we detect your current location", Toast.LENGTH_LONG).show();
+            notifyClients(PanicBlipUtils.REPORT_PANIC_LOC_ERROR, null);
         } else {
             reportPanic(lastKnownLocation);
+        }
+    }
+
+    private void notifyClients(int messageId, Serializable data) {
+        Message message = getMessage(messageId, data);
+        for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {
+            Messenger client = iterator.next();
+            try {
+                client.send(message);
+            } catch (RemoteException e) {
+                Log.e(APP_TAG, "An error occurred while sending message with ID: " + messageId + " to client", e);
+                iterator.remove();
+            }
         }
     }
 
@@ -204,14 +223,14 @@ public class PanicNotificationService extends Service {
             SaveBlipResponse saveBlipResponse = publishResource.saveBlip(panicBlip);
             if (saveBlipResponse.isFailure()) {
                 String errorMessage = saveBlipResponse.getBlipItError().getMessage();
+                notifyClients(PanicBlipUtils.REPORT_PANIC_FAILURE, errorMessage);
                 Log.e(APP_TAG, "Unable to save panic blip. Error from server: " + errorMessage);
-                Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(this, "Issue reported successfully", Toast.LENGTH_LONG).show();
                 panicBlip.setBlipId(saveBlipResponse.getBlipId());
+                notifyClients(PanicBlipUtils.REPORT_PANIC_SUCCESS, null);
             }
         } catch (Exception e) {
-            Toast.makeText(this, "We are unable to report your issue at this time. Please try again.", Toast.LENGTH_LONG).show();
+            notifyClients(PanicBlipUtils.REPORT_PANIC_FAILURE, e.getMessage());
             Log.e(APP_TAG, "Error occurred while saving panic blip", e);
         }
     }
@@ -225,14 +244,14 @@ public class PanicNotificationService extends Service {
             BlipItResponse blipItResponse = blipItPublishResource.deleteBlip(deleteBlipRequest);
             if (blipItResponse.isFailure()) {
                 String errorMessage = blipItResponse.getBlipItError().getMessage();
+                notifyClients(PanicBlipUtils.CLEAR_PANIC_FAILURE, errorMessage);
                 Log.e(APP_TAG, "Unable to clear panic blip. Error from server: " + errorMessage);
-                Toast.makeText(this, "We are unable to clear your issue at this time. Please try again.", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(this, "Issue cleared successfully", Toast.LENGTH_SHORT).show();
-                stopSelf(); // stop the PanicNotificationService after clearing all issues
+                notifyClients(PanicBlipUtils.CLEAR_PANIC_SUCCESS, null);
+                stopSelf(); // stop the PanicNotificationService after clearing panic issue
             }
         } catch (Exception e) {
-            Toast.makeText(this, "We are unable to clear your issue at this time. Please try again.", Toast.LENGTH_LONG).show();
+            notifyClients(PanicBlipUtils.CLEAR_PANIC_FAILURE, e.getMessage());
             Log.e(APP_TAG, "Error occurred while clearing the panic blip", e);
         }
     }
@@ -253,4 +272,11 @@ public class PanicNotificationService extends Service {
         }
     }
 
+    public void addClient(Messenger clientMessenger) {
+        this.clients.add(clientMessenger);
+    }
+
+    public void removeClient(Messenger messenger) {
+        this.clients.remove(messenger);
+    }
 }

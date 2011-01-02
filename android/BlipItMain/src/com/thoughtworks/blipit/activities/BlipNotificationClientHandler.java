@@ -40,7 +40,7 @@ public class BlipNotificationClientHandler extends Handler implements ServiceCon
         Messenger blipItNotificationService = new Messenger(service);
         try {
             Message message = Message.obtain(null, BlipItUtils.MSG_REGISTER_CLIENT);
-            message.replyTo = blipItActivity.getBlipNotificationHandler();
+            message.replyTo = blipItActivity.getBlipNotificationClientMessenger();
             blipItNotificationService.send(message);
             blipItActivity.setBlipItNotificationService(blipItNotificationService);
         } catch (RemoteException e) {

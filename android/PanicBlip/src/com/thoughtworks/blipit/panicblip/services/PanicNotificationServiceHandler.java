@@ -40,13 +40,25 @@ public class PanicNotificationServiceHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
-        if (msg.what == PanicBlipUtils.REPORT_PANIC) {
-            Bundle bundle = msg.getData();
-            panicNotificationService.reportPanic((ArrayList<Channel>) bundle.getSerializable(PanicBlipUtils.PANIC_BLIP));
-        } else if (msg.what == PanicBlipUtils.CLEAR_PANIC) {
-            panicNotificationService.clearPanic();
-        } else if (msg.what == PanicBlipUtils.LOCATION_CHANGED) {
-            panicNotificationService.onLocationChanged((Intent) msg.obj);
+        switch (msg.what) {
+            case PanicBlipUtils.MSG_REGISTER_CLIENT:
+                panicNotificationService.addClient(msg.replyTo);
+                break;
+            case PanicBlipUtils.REPORT_PANIC:
+                Bundle bundle = msg.getData();
+                panicNotificationService.reportPanic((ArrayList<Channel>) bundle.getSerializable(PanicBlipUtils.PANIC_DATA));
+                break;
+            case PanicBlipUtils.CLEAR_PANIC:
+                panicNotificationService.clearPanic();
+                break;
+            case PanicBlipUtils.LOCATION_CHANGED:
+                panicNotificationService.onLocationChanged((Intent) msg.obj);
+                break;
+            case PanicBlipUtils.MSG_UNREGISTER_CLIENT:  // TODO: must be called as the service lives on even after the client activity dies
+                panicNotificationService.removeClient(msg.replyTo);
+                break;
+            default:
+                super.handleMessage(msg);
         }
     }
 }
