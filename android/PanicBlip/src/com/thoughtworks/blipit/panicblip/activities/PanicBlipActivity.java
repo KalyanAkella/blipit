@@ -171,6 +171,7 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
         return result;
     }
 
+    // TODO: there's a service connection leak error when we exit the activity after clicking on Clear Panic. Need to fix this !!!
     @Override
     protected void onDestroy() {
         super.onDestroy();
