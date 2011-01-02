@@ -18,12 +18,12 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.blipit.alertFilters;
+package com.thoughtworks.blipit.filters;
 
 import com.thoughtworks.blipit.domain.Blip;
 
 import java.util.List;
 
-public interface IAlertFilter {
-    void apply(List<Blip> alerts);
+public interface BlipsFilter {
+    void doFilter(List<Blip> blips);
 }

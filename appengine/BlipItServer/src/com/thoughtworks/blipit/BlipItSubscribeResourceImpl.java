@@ -23,6 +23,8 @@ package com.thoughtworks.blipit;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.domain.Blip;
+import com.thoughtworks.blipit.filters.BlipsFilter;
+import com.thoughtworks.blipit.filters.DistanceFilter;
 import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.Channel;
 import com.thoughtworks.contract.common.GetChannelsResponse;
@@ -33,7 +35,10 @@ import com.thoughtworks.contract.subscribe.UserPrefs;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,22 +51,39 @@ public class BlipItSubscribeResourceImpl extends BlipItCommonServerResource impl
     }
 
     @Post
-    public GetBlipsResponse getBlips(GetBlipsRequest blipItRequest) {
-        final GetBlipsResponse blipItResponse = new GetBlipsResponse();
-        UserPrefs userPrefs = blipItRequest.getUserPrefs();
-        if (isEmpty(userPrefs)) return blipItResponse;
+    public GetBlipsResponse getBlips(GetBlipsRequest getBlipsRequest) {
+        final GetBlipsResponse getBlipsResponse = new GetBlipsResponse();
+        UserPrefs userPrefs = getBlipsRequest.getUserPrefs();
+        if (isEmpty(userPrefs)) return getBlipsResponse;
+        final List<Blip> blips = new ArrayList<Blip>();
         blipItRepository.filterAlertsByChannels(getChannelKeys(userPrefs), new Utils.ResultHandler<Blip>() {
-            public void onSuccess(Blip alert) {
-                blipItResponse.setSuccess();
-                blipItResponse.addBlips(alert.toBlip());
+            public void onSuccess(Blip blip) {
+                getBlipsResponse.setSuccess();
+                blips.add(blip);
             }
 
             public void onError(Throwable throwable) {
                 log.log(Level.SEVERE, "An error occurred while fetching alerts", throwable);
-                blipItResponse.setFailure(Utils.getBlipItError(throwable.getMessage()));
+                getBlipsResponse.setFailure(Utils.getBlipItError(throwable.getMessage()));
             }
         });
-        return blipItResponse;
+
+        if (getBlipsResponse.isSuccess()) filterBlips(getBlipsRequest, blips);
+        populateBlips(getBlipsResponse, blips);
+        return getBlipsResponse;
+    }
+
+    private void populateBlips(GetBlipsResponse getBlipsResponse, List<Blip> blips) {
+        for (Blip blip : blips) {
+            getBlipsResponse.addBlips(blip.toBlip());
+        }
+    }
+
+    private void filterBlips(GetBlipsRequest getBlipsRequest, List<Blip> blips) {
+        List<BlipsFilter> filters = Arrays.<BlipsFilter>asList(new DistanceFilter(getBlipsRequest));
+        for (BlipsFilter filter : filters) {
+            filter.doFilter(blips);
+        }
     }
 
     private Set<Key> getChannelKeys(UserPrefs userPrefs) {

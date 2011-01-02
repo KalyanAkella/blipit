@@ -34,7 +34,7 @@ public class TestData {
     }
 
     //All the Geo points have the real co-ordinates, please keep it that way if you add more locations.
-    static class Alerts {
+    static class Blips {
         public static final Blip NAVARANG = new Blip("Navarang", "Kannada Movie", new GeoPt(12.99800466383297f, 77.55291799658964f));
         public static final Blip FAMELIDO = new Blip("Fame Lido", "Movie premier", new GeoPt(12.973881024116972f, 77.62282172793577f));
         public static final Blip PVR = new Blip("PVR", "Movie screening", new GeoPt(12.935131942393395f, 77.61056939715574f));

@@ -116,4 +116,21 @@ public class Blip {
     public String getKeyAsString() {
         return KeyFactory.keyToString(key);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Blip blip = (Blip) o;
+
+        if (key != null ? !key.equals(blip.key) : blip.key != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return key != null ? key.hashCode() : 0;
+    }
 }

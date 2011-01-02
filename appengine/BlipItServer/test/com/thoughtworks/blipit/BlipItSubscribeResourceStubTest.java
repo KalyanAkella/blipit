@@ -42,7 +42,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest {
+public class BlipItSubscribeResourceStubTest extends AbstractDataStoreStubTest {
 
     private BlipItSubscribeResource blipItSubscribeServerResource;
 
@@ -52,16 +52,15 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
     @Before
     public void setUp() {
         blipItSubscribeServerResource = new BlipItSubscribeResourceImpl();
-        DataStoreStub dataStoreStub = new DataStoreStub();
-        TestData.Channels.MOVIE.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Channels.MOVIE));
-        TestData.Channels.FOOD.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Channels.FOOD));
+        dataStoreStub.makePersistent(TestData.Channels.MOVIE);
+        dataStoreStub.makePersistent(TestData.Channels.FOOD);
 
         Set<Key> movieChannelKeys = makeSet(TestData.Channels.MOVIE.getKey());
         Set<Key> foodChannelKeys = makeSet(TestData.Channels.FOOD.getKey());
-        TestData.Alerts.NAVARANG.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Alerts.NAVARANG.setChannelKeys(movieChannelKeys)));
-        TestData.Alerts.FAMELIDO.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Alerts.FAMELIDO.setChannelKeys(movieChannelKeys)));
-        TestData.Alerts.MTR.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Alerts.MTR.setChannelKeys(foodChannelKeys)));
-        TestData.Alerts.PVR.setKey(dataStoreStub.setupEntityAsPersisted(TestData.Alerts.PVR.setChannelKeys(movieChannelKeys)));
+        dataStoreStub.makePersistent(TestData.Blips.NAVARANG.setChannelKeys(movieChannelKeys));
+        dataStoreStub.makePersistent(TestData.Blips.FAMELIDO.setChannelKeys(movieChannelKeys));
+        dataStoreStub.makePersistent(TestData.Blips.MTR.setChannelKeys(foodChannelKeys));
+        dataStoreStub.makePersistent(TestData.Blips.PVR.setChannelKeys(movieChannelKeys));
     }
 
     private Set<Key> makeSet(Key... keys) {
@@ -76,10 +75,9 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
         GetBlipsResponse blips = blipItSubscribeServerResource.getBlips(blipItRequest);
 
         assertThat(blips.isSuccess(), is(true));
-        assertThat(blips.getBlips().size(), is(3));
-        assertBlip(blips.getBlips().get(0), TestData.Alerts.NAVARANG);
-        assertBlip(blips.getBlips().get(1), TestData.Alerts.FAMELIDO);
-        assertBlip(blips.getBlips().get(2), TestData.Alerts.PVR);
+        assertThat(blips.getBlips().size(), is(2));
+        assertBlip(blips.getBlips().get(0), TestData.Blips.NAVARANG);
+        assertBlip(blips.getBlips().get(1), TestData.Blips.FAMELIDO);
     }
 
     private void assertBlip(com.thoughtworks.contract.subscribe.Blip blip, Blip alert) {
@@ -94,10 +92,9 @@ public class BlipItSubscribeResourceDataStoreStubTest extends DataStoreStubTest 
         GetBlipsResponse blips = blipItSubscribeServerResource.getBlips(blipItRequest);
 
         assertThat(blips.isSuccess(), is(true));
-        assertThat(blips.getBlips().size(), is(3));
-        assertBlip(blips.getBlips().get(0), TestData.Alerts.NAVARANG);
-        assertBlip(blips.getBlips().get(1), TestData.Alerts.FAMELIDO);
-        assertBlip(blips.getBlips().get(2), TestData.Alerts.PVR);
+        assertThat(blips.getBlips().size(), is(2));
+        assertBlip(blips.getBlips().get(0), TestData.Blips.NAVARANG);
+        assertBlip(blips.getBlips().get(1), TestData.Blips.FAMELIDO);
     }
 
     private GetBlipsRequest constructGetBlipsRequest(List<Channel> channels, float distanceOfConvenience) {

@@ -18,37 +18,42 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.blipit.alertFilters;
+package com.thoughtworks.blipit.filters;
 
 import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.contract.GeoLocation;
+import com.thoughtworks.contract.subscribe.GetBlipsRequest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DistanceFilter implements IAlertFilter {
+public class DistanceFilter implements BlipsFilter {
 
     private GeoLocation userLocation;
-    private double distanceOfConvinience;
+    private double preferredDistance;
     private DistanceCalculator distanceCalculator;
 
-    public DistanceFilter(GeoLocation userLocation, double distanceOfConvinience) {
+    public DistanceFilter(GeoLocation userLocation, double preferredDistance) {
         this.userLocation = userLocation;
-        this.distanceOfConvinience = distanceOfConvinience;
+        this.preferredDistance = preferredDistance;
         distanceCalculator = new DistanceCalculator();
     }
 
-    public void apply(List<Blip> alerts) {
-        final ArrayList<Blip> alertsOutsideDistanceOfConvinience = new ArrayList<Blip>();
-        for (Blip alert : alerts) {
-            final GeoPt alertPt = alert.getGeoPoint();
-            final GeoPt userPt = Utils.asGeoPoint(userLocation);
-            final double distanceFromUser = distanceCalculator.CalculationByDistance(userPt, alertPt);
-            if(distanceFromUser > distanceOfConvinience)
-                alertsOutsideDistanceOfConvinience.add(alert);
+    public DistanceFilter(GetBlipsRequest getBlipsRequest) {
+        this(getBlipsRequest.getUserLocation(), getBlipsRequest.getUserPrefs().getRadius());
+    }
+
+    public void doFilter(List<Blip> blips) {
+        List<Blip> blipsOutsideDistanceLimit = new ArrayList<Blip>();
+        for (Blip alert : blips) {
+            GeoPt blipLocation = alert.getGeoPoint();
+            GeoPt userLocation = Utils.asGeoPoint(this.userLocation);
+//            double distanceFromUser = distanceCalculator.computeDistance1(userLocation, blipLocation);
+            double distanceFromUser = distanceCalculator.computeDistance2(userLocation, blipLocation);
+            if(distanceFromUser > preferredDistance) blipsOutsideDistanceLimit.add(alert);
         }
-        alerts.removeAll(alertsOutsideDistanceOfConvinience);
+        blips.removeAll(blipsOutsideDistanceLimit);
     }
 }

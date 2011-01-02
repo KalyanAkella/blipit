@@ -28,7 +28,7 @@ import org.restlet.resource.Post;
 public interface BlipItSubscribeResource {
 
     @Post
-    public GetBlipsResponse getBlips(GetBlipsRequest blipItRequest);
+    public GetBlipsResponse getBlips(GetBlipsRequest getBlipsRequest);
 
     @Get
     GetChannelsResponse getAvailableChannels(Category channelCategory);
