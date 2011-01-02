@@ -50,15 +50,19 @@ public class Blip {
     @Persistent
     private Set<Key> channelKeys; // un-owned one-to-many relationship. a given channel can be associated with multiple Blips
 
-    public Blip(String title, String description, GeoPt geoPoint, Set<Key> channelKeys) {
+    @Persistent
+    private String creatorId;
+
+    public Blip(String title, String description, GeoPt geoPoint, Set<Key> channelKeys, String creatorId) {
         this.title = title;
         this.description = description;
         this.geoPoint = geoPoint;
         this.channelKeys = channelKeys;
+        this.creatorId = creatorId;
     }
 
     public Blip(String title, String description, GeoPt geoPoint) {
-        this(title, description, geoPoint, new HashSet<Key>());
+        this(title, description, geoPoint, new HashSet<Key>(), null);
     }
 
     public Key getKey() {
@@ -117,6 +121,14 @@ public class Blip {
         return KeyFactory.keyToString(key);
     }
 
+    public String getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -133,4 +145,5 @@ public class Blip {
     public int hashCode() {
         return key != null ? key.hashCode() : 0;
     }
+
 }

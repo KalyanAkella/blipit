@@ -21,6 +21,7 @@
 package com.thoughtworks.contract.publish;
 
 import com.thoughtworks.contract.GeoLocation;
+import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.Channel;
 
 import java.io.Serializable;
@@ -82,5 +83,9 @@ public class SaveBlipRequest implements Serializable {
 
     public void clear() {
         channels.clear();
+    }
+
+    public boolean isPanicRequest() {
+        return !isEmpty() && channels.get(0).getCategory().equals(Category.PANIC);
     }
 }

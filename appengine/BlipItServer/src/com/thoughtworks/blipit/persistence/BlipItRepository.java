@@ -30,7 +30,7 @@ import javax.jdo.Query;
 import java.util.Set;
 
 public class BlipItRepository {
-    public void filterAlertsByChannels(final Set<Key> channelKeys, Utils.ResultHandler<Blip> handler) {
+    public void filterBlipsByChannels(final Set<Key> channelKeys, Utils.ResultHandler<Blip> handler) {
         DataStoreHelper.retrieveAllAndProcess(
                 Blip.class,
                 new Utils.QueryHandler() {

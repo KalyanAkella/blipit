@@ -34,12 +34,12 @@ import com.thoughtworks.contract.publish.BlipItPublishResource;
 import com.thoughtworks.contract.publish.DeleteBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipResponse;
-import org.datanucleus.util.StringUtils;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
 import javax.jdo.PersistenceManager;
+import javax.jdo.Query;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -76,32 +76,33 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
     }
 
     // TODO: This method needs some refactoring !!!
+    // TODO: This method needs an integration test
     private Blip constructBlip(SaveBlipRequest saveBlipRequest, SaveBlipResponse saveBlipResponse) {
         Blip blip = null;
         PersistenceManager persistenceManager = null;
 
         try {
             persistenceManager = DataStoreHelper.getPersistenceManager();
-            List<Channel> channels = saveBlipRequest.getChannels();
-            Set<Key> channelKeys = new HashSet<Key>();
-            for (Channel channel : channels) {
-                channelKeys.add(mapToChannelKey(channel));
-            }
+            Set<Key> channelKeys = loadChannelKeys(saveBlipRequest);
 
-            String blipId = saveBlipRequest.getBlipId();
             String title = saveBlipRequest.getMetaDataValue(Constants.TITLE);
             String description = saveBlipRequest.getMetaDataValue(Constants.DESC);
+            String creatorId = getCreatorId(saveBlipRequest);
             GeoPt blipLoc = Utils.asGeoPoint(saveBlipRequest.getBlipLocation());
 
-            if (StringUtils.notEmpty(blipId)) {
-                Key blipKey = KeyFactory.stringToKey(blipId);
-                blip = persistenceManager.getObjectById(Blip.class, blipKey);
+            if (saveBlipRequest.isPanicRequest()) {
+                blip = loadBlipByCreatorId(creatorId, persistenceManager);
+            }
+
+            if (blip != null) {
                 blip.setTitle(title);
                 blip.setDescription(description);
                 blip.setGeoPoint(blipLoc);
                 blip.setChannelKeys(channelKeys);
-            } else {
-                blip = new Blip(title, description, blipLoc, channelKeys);
+                blip.setCreatorId(creatorId);
+            }
+            else {
+                blip = new Blip(title, description, blipLoc, channelKeys, creatorId);
             }
             saveBlipResponse.setSuccess();
         } catch (Exception e) {
@@ -112,6 +113,36 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
         }
 
         return blip;
+    }
+
+    private Blip loadBlipByCreatorId(String creatorId, PersistenceManager persistenceManager) {
+        Query query = null;
+        Blip result = null;
+        try {
+            query = persistenceManager.newQuery(Blip.class);
+            query.declareParameters("String creatorId");
+            query.setFilter("this.creatorId == creatorId");
+            List<Blip> blipsFromCreator = (List<Blip>) query.execute(creatorId);
+            if (Utils.isNotEmpty(blipsFromCreator)) {
+                result = blipsFromCreator.get(0);
+            }
+        } finally {
+            if (query != null) query.closeAll();
+        }
+        return result;
+    }
+
+    private String getCreatorId(SaveBlipRequest saveBlipRequest) {
+        return String.format("%s:%s", saveBlipRequest.getMetaDataValue(Constants.DEVICE_ID), saveBlipRequest.getMetaDataValue(Constants.PHONE_NUMBER));
+    }
+
+    private Set<Key> loadChannelKeys(SaveBlipRequest saveBlipRequest) {
+        List<Channel> channels = saveBlipRequest.getChannels();
+        Set<Key> channelKeys = new HashSet<Key>();
+        for (Channel channel : channels) {
+            channelKeys.add(mapToChannelKey(channel));
+        }
+        return channelKeys;
     }
 
     @Delete

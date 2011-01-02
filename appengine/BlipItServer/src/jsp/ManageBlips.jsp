@@ -60,6 +60,7 @@
             <th id="entities_table_header_name">Title</th>
             <th id="entities_table_header_desc">Description</th>
             <th id="entities_table_header_geopoint">Location</th>
+            <th id="entities_table_header_creatorId">CreatorId</th>
             <th id="entities_table_header_channels">Channel(s)</th>
         </tr>
         <%
@@ -87,6 +88,7 @@
                     <td><%= blip.getTitle()%></td>
                     <td><%= blip.getDescription()%></td>
                     <td><%= blip.getGeoPoint()%></td>
+                    <td><%= blip.getCreatorId()%></td>
                     <td><%= channelStr%></td>
                 </tr>
         <%

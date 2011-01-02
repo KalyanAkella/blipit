@@ -48,7 +48,7 @@ public class ManageBlips extends HttpServlet {
         Float blipLatitude = Float.valueOf(request.getParameter("blip.loc.lat"));
         Float blipLongitude = Float.valueOf(request.getParameter("blip.loc.long"));
         Set<Key> channelKeys = getChannelKeys(request.getParameterValues("blip.channels"));
-        persistenceManager.makePersistent(new Blip(title, desc, new GeoPt(blipLatitude, blipLongitude), channelKeys));
+        persistenceManager.makePersistent(new Blip(title, desc, new GeoPt(blipLatitude, blipLongitude), channelKeys, null));
     }
 
     private Set<Key> getChannelKeys(String[] channelKeyStrs) {

@@ -56,7 +56,7 @@ public class BlipItSubscribeResourceImpl extends BlipItCommonServerResource impl
         UserPrefs userPrefs = getBlipsRequest.getUserPrefs();
         if (isEmpty(userPrefs)) return getBlipsResponse;
         final List<Blip> blips = new ArrayList<Blip>();
-        blipItRepository.filterAlertsByChannels(getChannelKeys(userPrefs), new Utils.ResultHandler<Blip>() {
+        blipItRepository.filterBlipsByChannels(getChannelKeys(userPrefs), new Utils.ResultHandler<Blip>() {
             public void onSuccess(Blip blip) {
                 getBlipsResponse.setSuccess();
                 blips.add(blip);

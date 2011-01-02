@@ -211,7 +211,6 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
         }
     }
 
-    // TODO: does clear panic need restart of PNS if not already running !!!
     private void clearPanic() {
         if (panicNotificationService == null) {
             Toast.makeText(this, "Unable to clear all issues", Toast.LENGTH_LONG).show();
