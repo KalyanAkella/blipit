@@ -89,4 +89,23 @@ public class DataStoreHelper {
             if (persistenceManager != null) persistenceManager.close();
         }
     }
+
+    public static <T> List<T> retrieveAll(Class<T> clazz, Utils.QueryHandler queryHandler) {
+        PersistenceManager persistenceManager = null;
+        Query query = null;
+        List<T> result = null;
+        try {
+            persistenceManager = getPersistenceManager();
+            query = persistenceManager.newQuery(clazz);
+            queryHandler.prepare(query);
+            result = (List<T>) query.executeWithArray(queryHandler.parameters());
+        } finally {
+            if (query != null) query.closeAll();
+            if (persistenceManager != null) {
+                if (result != null) persistenceManager.evictAll(result);
+                persistenceManager.close();
+            }
+        }
+        return result;
+    }
 }

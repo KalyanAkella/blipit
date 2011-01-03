@@ -37,7 +37,7 @@ public class BlipItCommonServerResource extends ServerResource {
         blipItRepository = new BlipItRepository();
     }
 
-    protected GetChannelsResponse getChannels(final Category channelCategory) {
+    public GetChannelsResponse getChannels(final Category channelCategory) {
         final GetChannelsResponse channelsResponse = new GetChannelsResponse();
         blipItRepository.retrieveChannelsByCategory(Utils.convert(channelCategory), new Utils.ResultHandler<Channel>() {
             public void onSuccess(Channel savedChannel) {

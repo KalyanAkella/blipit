@@ -27,6 +27,7 @@ import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.blipit.domain.Channel;
 
 import javax.jdo.Query;
+import java.util.List;
 import java.util.Set;
 
 public class BlipItRepository {
@@ -59,5 +60,18 @@ public class BlipItRepository {
                 return new Object[] {channelCategory};
             }
         }, handler);
+    }
+
+    public List<Channel> retrieveChannelsByCategory(final Category channelCategory) {
+        return DataStoreHelper.retrieveAll(Channel.class, new Utils.QueryHandler() {
+            public void prepare(Query query) {
+                query.declareParameters("com.google.appengine.api.datastore.Category channelCategory");
+                query.setFilter("this.category == channelCategory");
+            }
+
+            public Object[] parameters() {
+                return new Object[] {channelCategory};
+            }
+        });
     }
 }
