@@ -4,7 +4,6 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gson.Gson;
 import com.thoughtworks.blipit.domain.Channel;
-import com.thoughtworks.blipit.persistence.BlipItRepository;
 import com.thoughtworks.blipit.persistence.DataStoreHelper;
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
@@ -18,16 +17,12 @@ import javax.jdo.PersistenceManager;
 
 public class ChannelResource extends ServerResource {
 
-    private String category;
-    private BlipItRepository blipItRepository;
     private String channelId;
 
     @Override
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        this.category = (String) getRequest().getAttributes().get("category");
         this.channelId = (String) getRequest().getAttributes().get("channel_id");
-        blipItRepository = new BlipItRepository();
     }
 
     // TODO: Send ErrorRepresentation in case of errors

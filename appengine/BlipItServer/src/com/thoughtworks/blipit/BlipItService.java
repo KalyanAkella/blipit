@@ -20,6 +20,7 @@
 
 package com.thoughtworks.blipit;
 
+import com.thoughtworks.blipit.restful.BlipResource;
 import com.thoughtworks.blipit.restful.BlipsResource;
 import com.thoughtworks.blipit.restful.ChannelResource;
 import com.thoughtworks.blipit.restful.ChannelsResource;
@@ -37,6 +38,7 @@ public class BlipItService extends Application {
         router.attach("/{category}/channel", ChannelsResource.class);
         router.attach("/{category}/channel/{channel_id}", ChannelResource.class);
         router.attach("/{category}/blip", BlipsResource.class);
+        router.attach("/{category}/blip/{blip_id}", BlipResource.class);
         return router;
     }
 }
