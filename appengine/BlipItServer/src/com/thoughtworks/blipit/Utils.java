@@ -25,6 +25,8 @@ import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.contract.BlipItError;
 import com.thoughtworks.contract.GeoLocation;
 import org.datanucleus.util.StringUtils;
+import org.restlet.data.MediaType;
+import org.restlet.representation.Variant;
 
 import javax.jdo.Query;
 import java.util.ArrayList;
@@ -76,6 +78,10 @@ public class Utils {
 
     public static boolean isDeleteAction(String action) {
         return "delete".equalsIgnoreCase(action);
+    }
+
+    public static boolean isJSONMediaType(Variant variant) {
+        return variant.getMediaType().equals(MediaType.APPLICATION_JSON);
     }
 
     public static interface ResultHandler<T> {
