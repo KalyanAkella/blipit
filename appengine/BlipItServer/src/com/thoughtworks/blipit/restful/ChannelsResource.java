@@ -22,7 +22,7 @@ public class ChannelsResource extends ServerResource {
     @Override
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        this.category = (String) getRequest().getAttributes().get("category");
+        this.category = (String) getRequestAttributes().get("category");
         blipItRepository = new BlipItRepository();
     }
 

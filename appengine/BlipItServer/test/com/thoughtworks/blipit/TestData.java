@@ -28,21 +28,35 @@ import com.thoughtworks.blipit.domain.CategoryEnum;
 
 public class TestData {
 
-    static class Channels {
+    public static class AdChannels {
         private static Category category = Utils.convert(CategoryEnum.AD);
         public static final Channel MOVIE = new Channel(null, "Movies", category);
         public static final Channel FOOD = new Channel(null, "Food", category);
     }
 
+    public static class PanicChannels {
+        private static Category category = Utils.convert(CategoryEnum.PANIC);
+        public static final Channel ACCIDENT = new Channel(null, "accident", category);
+        public static final Channel FIRE = new Channel(null, "fire", category);
+        public static final Channel EARTHQUAKE = new Channel(null, "earthquake", category);
+        public static final Channel TSUNAMI = new Channel(null, "tsunami", category);
+    }
+
     //All the Geo points have the real co-ordinates, please keep it that way if you add more locations.
-    static class Blips {
+    public static class AdBlips {
         public static final Blip NAVARANG = new Blip("Navarang", "Kannada Movie", new GeoPt(12.99800466383297f, 77.55291799658964f));
         public static final Blip FAMELIDO = new Blip("Fame Lido", "Movie premier", new GeoPt(12.973881024116972f, 77.62282172793577f));
         public static final Blip PVR = new Blip("PVR", "Movie screening", new GeoPt(12.935131942393395f, 77.61056939715574f));
         public static final Blip MTR = new Blip("MTR", "Karnataka ethnic food", new GeoPt(12.955009113220616f, 77.58542100543211f));
     }
 
-    static class Locations {
+    //All the Geo points have the real co-ordinates, please keep it that way if you add more locations.
+    public static class PanicBlips {
+        public static final Blip PANIC1 = new Blip("Panic1 Title", "Panic1 Desc", new GeoPt(12.99800466383297f, 77.55291799658964f));
+        public static final Blip PANIC2 = new Blip("Panic2 Title", "Panic2 Desc", new GeoPt(12.973881024116972f, 77.62282172793577f));
+    }
+
+    public static class Locations {
 
         public static GeoPt MGRoad() {
             return new GeoPt(12.97343146061112f, 77.61389533633421f);

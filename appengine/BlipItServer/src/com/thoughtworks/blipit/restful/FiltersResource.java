@@ -29,7 +29,7 @@ public class FiltersResource extends ServerResource {
     @Override
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        this.categoryStr = ((String) getRequest().getAttributes().get("category")).toLowerCase();
+        this.categoryStr = ((String) getRequestAttributes().get("category")).toLowerCase();
         blipItRepository = new BlipItRepository();
         gson = new Gson();
     }

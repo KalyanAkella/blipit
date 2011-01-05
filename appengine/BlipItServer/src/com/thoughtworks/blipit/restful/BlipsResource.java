@@ -25,12 +25,12 @@ public class BlipsResource extends ServerResource {
 
     private String categoryStr;
     private BlipItRepository blipItRepository;
-    private Gson gson;
+    protected Gson gson;
 
     @Override
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        this.categoryStr = ((String) getRequest().getAttributes().get("category")).toLowerCase();
+        this.categoryStr = ((String) getRequestAttributes().get("category")).toLowerCase();
         blipItRepository = new BlipItRepository();
         gson = new Gson();
     }

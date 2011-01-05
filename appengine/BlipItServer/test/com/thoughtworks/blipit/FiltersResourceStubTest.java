@@ -25,8 +25,6 @@ import com.google.appengine.api.datastore.Key;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 public class FiltersResourceStubTest extends AbstractDataStoreStubTest {
@@ -35,21 +33,15 @@ public class FiltersResourceStubTest extends AbstractDataStoreStubTest {
 
     @Before
     public void setUp() {
-        dataStoreStub.makePersistent(TestData.Channels.MOVIE);
-        dataStoreStub.makePersistent(TestData.Channels.FOOD);
+        dataStoreStub.makePersistent(TestData.AdChannels.MOVIE);
+        dataStoreStub.makePersistent(TestData.AdChannels.FOOD);
 
-        Set<Key> movieChannelKeys = makeSet(TestData.Channels.MOVIE.getKey());
-        Set<Key> foodChannelKeys = makeSet(TestData.Channels.FOOD.getKey());
-        dataStoreStub.makePersistent(TestData.Blips.NAVARANG.setChannelKeys(movieChannelKeys));
-        dataStoreStub.makePersistent(TestData.Blips.FAMELIDO.setChannelKeys(movieChannelKeys));
-        dataStoreStub.makePersistent(TestData.Blips.MTR.setChannelKeys(foodChannelKeys));
-        dataStoreStub.makePersistent(TestData.Blips.PVR.setChannelKeys(movieChannelKeys));
-    }
-
-    private Set<Key> makeSet(Key... keys) {
-        Set<Key> keySet = new HashSet<Key>();
-        keySet.addAll(Arrays.asList(keys));
-        return keySet;
+        Set<Key> movieChannelKeys = makeSet(TestData.AdChannels.MOVIE.getKey());
+        Set<Key> foodChannelKeys = makeSet(TestData.AdChannels.FOOD.getKey());
+        dataStoreStub.makePersistent(TestData.AdBlips.NAVARANG.setChannelKeys(movieChannelKeys));
+        dataStoreStub.makePersistent(TestData.AdBlips.FAMELIDO.setChannelKeys(movieChannelKeys));
+        dataStoreStub.makePersistent(TestData.AdBlips.MTR.setChannelKeys(foodChannelKeys));
+        dataStoreStub.makePersistent(TestData.AdBlips.PVR.setChannelKeys(movieChannelKeys));
     }
 
     @Test

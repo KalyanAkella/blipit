@@ -20,10 +20,15 @@
 
 package com.thoughtworks.blipit;
 
+import com.google.appengine.api.datastore.Key;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
 import org.junit.After;
 import org.junit.Before;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class AbstractDataStoreStubTest {
 
@@ -40,5 +45,11 @@ public abstract class AbstractDataStoreStubTest {
     @After
     public void after() {
         helper.tearDown();
+    }
+
+    protected Set<Key> makeSet(Key... keys) {
+        Set<Key> keySet = new HashSet<Key>();
+        keySet.addAll(Arrays.asList(keys));
+        return keySet;
     }
 }

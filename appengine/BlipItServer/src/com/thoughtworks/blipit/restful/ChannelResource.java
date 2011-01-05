@@ -22,7 +22,7 @@ public class ChannelResource extends ServerResource {
     @Override
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        this.channelId = (String) getRequest().getAttributes().get("channel_id");
+        this.channelId = (String) getRequestAttributes().get("channel_id");
     }
 
     // TODO: Send ErrorRepresentation in case of errors

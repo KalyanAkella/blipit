@@ -28,7 +28,7 @@ public class FilterResource extends ServerResource {
     @Override
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        this.filterId = (String) getRequest().getAttributes().get("filter_id");
+        this.filterId = (String) getRequestAttributes().get("filter_id");
         blipItRepository = new BlipItRepository();
     }
 

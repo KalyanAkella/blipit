@@ -22,7 +22,7 @@ public class BlipResource extends ServerResource {
     @Override
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        this.blipId = (String) getRequest().getAttributes().get("blip_id");
+        this.blipId = (String) getRequestAttributes().get("blip_id");
     }
 
     // TODO: Send ErrorRepresentation in case of errors
