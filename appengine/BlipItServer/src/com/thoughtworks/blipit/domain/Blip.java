@@ -146,4 +146,11 @@ public class Blip {
         return key != null ? key.hashCode() : 0;
     }
 
+    public void copy(Blip givenBlip) {
+        setTitle(givenBlip.title);
+        setDescription(givenBlip.description);
+        setGeoPoint(givenBlip.geoPoint);
+        setChannelKeys(givenBlip.channelKeys);
+        setCreatorId(givenBlip.creatorId);
+    }
 }
