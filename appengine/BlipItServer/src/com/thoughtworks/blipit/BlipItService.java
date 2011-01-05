@@ -34,7 +34,6 @@ public class BlipItService extends Application {
     public Restlet createInboundRoot() {
         Router router = new Router(getContext());
         router.attach("/subscribe", BlipItSubscribeResourceImpl.class);
-        router.attach("/publish", BlipItPublishResourceImpl.class);
         router.attach("/{category}/channel", ChannelsResource.class);
         router.attach("/{category}/channel/{channel_id}", ChannelResource.class);
         router.attach("/{category}/blip", BlipsResource.class);
