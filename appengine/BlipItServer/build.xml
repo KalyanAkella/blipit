@@ -64,10 +64,10 @@
         <fileset dir="${appengine.sdk}/lib">
             <include name="shared/**/*.jar"/>
         </fileset>
-        <fileset dir="../../shared/lib/common">
+        <fileset dir="../../lib/common">
             <include name="*.jar"/>
         </fileset>
-        <fileset dir="../../shared/lib/appengine">
+        <fileset dir="../../lib/appengine">
             <include name="*.jar"/>
         </fileset>
     </path>
@@ -87,31 +87,24 @@
         <fileset dir="${appengine.sdk}/lib">
             <include name="testing/*.jar"/>
         </fileset>
-        <fileset dir="../../shared/lib/common">
+        <fileset dir="../../lib/common">
             <include name="*.jar"/>
         </fileset>
-        <fileset dir="../../shared/lib/appengine">
+        <fileset dir="../../lib/appengine">
             <include name="*.jar"/>
         </fileset>
     </path>
 
-    <target name="buildshared" description="Builds the shared libraries">
-        <ant antfile="../BlipItShared/build.xml" target="jar" dir="../BlipItShared"/>
-    </target>
-
-    <target name="copyjars" depends="buildshared" description="Copies the App Engine JARs to the WAR.">
+    <target name="copyjars" description="Copies the App Engine JARs to the WAR.">
         <copy todir="${war.dir}/WEB-INF/lib" flatten="true">
             <fileset dir="${appengine.sdk}/lib/user">
                 <include name="**/*.jar"/>
             </fileset>
-            <fileset dir="../BlipItShared/dist">
-                <include name="**/*.jar"/>
+            <fileset dir="../../lib/common">
+                <include name="*.jar"/>
             </fileset>
-            <fileset dir="../../shared/lib/common">
-                <include name="**/*.jar"/>
-            </fileset>
-            <fileset dir="../../shared/lib/appengine">
-                <include name="**/*.jar"/>
+            <fileset dir="../../lib/appengine">
+                <include name="*.jar"/>
             </fileset>
         </copy>
     </target>

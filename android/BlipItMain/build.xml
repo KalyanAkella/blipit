@@ -80,16 +80,16 @@ in between standard targets -->
 
     <!-- Compile BlipIt specific shared libs -->
     <target name="-pre-compile">
-        <!--<ant antfile="../../appengine/BlipItShared/build.xml" target="jar" dir="../../appengine/BlipItShared"/>-->
+        <ant antfile="../BlipItShared/build.xml" target="jar" dir="../BlipItShared"/>
         <copy todir="${external.libs.dir}" flatten="true">
-            <!--<fileset dir="../../appengine/BlipItShared/dist">-->
-                <!--<include name="**/*.jar"/>-->
-            <!--</fileset>-->
+            <fileset dir="../BlipItShared/dist">
+                <include name="*.jar"/>
+            </fileset>
             <fileset dir="../../shared/lib/common" >
-                <include name="**/*.jar"/>
+                <include name="*.jar"/>
             </fileset>
             <fileset dir="../../shared/lib/android" >
-                <include name="**/*.jar"/>
+                <include name="*.jar"/>
             </fileset>
         </copy>
     </target>

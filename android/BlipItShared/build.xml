@@ -1,12 +1,7 @@
 <project name="BlipItShared" default="jar">
 
-    <property file="local.properties"/>
-
-    <path id="shared.classpath">
+    <path id="project.classpath">
         <pathelement path="build/classes"/>
-        <fileset dir="../../shared/lib/appengine" >
-            <include name="**/*.jar"/>
-        </fileset>
     </path>
 
     <target name="clean">
@@ -20,7 +15,7 @@
     </target>
 
     <target name="compile" depends="init">
-        <javac srcdir="src" destdir="build/classes" classpathref="shared.classpath"/>
+        <javac srcdir="src" destdir="build/classes" classpathref="project.classpath"/>
     </target>
 
     <target name="jar" depends="compile">
