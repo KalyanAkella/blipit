@@ -21,9 +21,7 @@
 package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.Category;
-import com.google.appengine.api.datastore.GeoPt;
-import com.thoughtworks.contract.BlipItError;
-import com.thoughtworks.contract.GeoLocation;
+import com.thoughtworks.blipit.domain.CategoryEnum;
 import org.datanucleus.util.StringUtils;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Variant;
@@ -52,19 +50,7 @@ public class Utils {
         return !isEmpty(collection);
     }
 
-    public static BlipItError getBlipItError(String message) {
-        BlipItError blipItError = new BlipItError();
-        blipItError.setMessage(message);
-        return blipItError;
-    }
-
-    public static GeoPt asGeoPoint(GeoLocation blipLocation) {
-        final Double latitude = blipLocation.getLatitude();
-        final Double longitude = blipLocation.getLongitude();
-        return new GeoPt(latitude.floatValue(), longitude.floatValue());
-    }
-
-    public static Category convert(com.thoughtworks.contract.common.Category category) {
+    public static Category convert(CategoryEnum category) {
         return new Category(category.name());
     }
 

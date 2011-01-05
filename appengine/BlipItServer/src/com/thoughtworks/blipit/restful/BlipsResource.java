@@ -6,6 +6,7 @@ import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.blipit.persistence.BlipItRepository;
 import com.thoughtworks.blipit.persistence.DataStoreHelper;
+import com.thoughtworks.blipit.domain.CategoryEnum;
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
@@ -37,7 +38,7 @@ public class BlipsResource extends ServerResource {
     // TODO: Send error representation on errors
     @Override
     protected Representation get(Variant variant) throws ResourceException {
-        Category category = Utils.convert(com.thoughtworks.contract.common.Category.valueOf(categoryStr.toUpperCase()));
+        Category category = Utils.convert(CategoryEnum.valueOf(categoryStr.toUpperCase()));
         List<Blip> blips = blipItRepository.retrieveBlipsByCategory(category);
         String json = gson.toJson(blips);
         return Utils.isJSONMediaType(variant) ? new JsonRepresentation(json) : new StringRepresentation(json);

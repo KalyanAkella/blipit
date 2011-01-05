@@ -24,7 +24,6 @@ import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.Utils;
-import com.thoughtworks.contract.GeoLocation;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
@@ -105,17 +104,6 @@ public class Blip {
     public Blip setChannelKeys(Set<Key> channelKeys) {
         this.channelKeys = channelKeys;
         return this;
-    }
-
-    public com.thoughtworks.contract.subscribe.Blip toBlip() {
-        com.thoughtworks.contract.subscribe.Blip blip = new com.thoughtworks.contract.subscribe.Blip();
-        blip.setTitle(title);
-        blip.setMessage(description);
-        GeoLocation geoLocation = new GeoLocation();
-        geoLocation.setLatitude(geoPoint.getLatitude());
-        geoLocation.setLongitude(geoPoint.getLongitude());
-        blip.setBlipLocation(geoLocation);
-        return blip;
     }
 
     public String getKeyAsString() {

@@ -24,11 +24,12 @@ import com.google.appengine.api.datastore.Category;
 import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.blipit.domain.Channel;
+import com.thoughtworks.blipit.domain.CategoryEnum;
 
 public class TestData {
 
     static class Channels {
-        private static Category category = Utils.convert(com.thoughtworks.contract.common.Category.AD);
+        private static Category category = Utils.convert(CategoryEnum.AD);
         public static final Channel MOVIE = new Channel(null, "Movies", category);
         public static final Channel FOOD = new Channel(null, "Food", category);
     }

@@ -23,7 +23,6 @@ package com.thoughtworks.blipit.filters;
 import com.google.appengine.api.datastore.GeoPt;
 import com.thoughtworks.blipit.AbstractDataStoreStubTest;
 import com.thoughtworks.blipit.domain.Blip;
-import com.thoughtworks.contract.GeoLocation;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,10 +39,8 @@ public class DistanceFilterTest extends AbstractDataStoreStubTest {
 
     @Before
     public void setup() {
-        GeoLocation geoLocation = new GeoLocation();
-        geoLocation.setLatitude(12.96755569542792);
-        geoLocation.setLongitude(77.56370584124754);
-        distanceFilter = new DistanceFilter(geoLocation, PREFERRED_DISTANCE_IN_METERS);
+        GeoPt geoPt = new GeoPt(12.96755569542792f, 77.56370584124754f);
+        distanceFilter = new DistanceFilter(geoPt, PREFERRED_DISTANCE_IN_METERS);
     }
     
     @Test

@@ -18,27 +18,8 @@
  * explanation of the license and how it is applied.
  */
 
-package com.thoughtworks.contract.subscribe;
+package com.thoughtworks.blipit.domain;
 
-import com.thoughtworks.contract.BlipItResponse;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public class GetBlipsResponse extends BlipItResponse {
-    private List<Blip> blips;
-
-    public GetBlipsResponse() {
-        blips = new ArrayList<Blip>();
-        setSuccess();
-    }
-
-    public List<Blip> getBlips() {
-        return blips;
-    }
-
-    public void addBlips(Blip... blips) {
-        this.blips.addAll(Arrays.asList(blips));
-    }
+public enum CategoryEnum {
+    NONE, PANIC, AD
 }

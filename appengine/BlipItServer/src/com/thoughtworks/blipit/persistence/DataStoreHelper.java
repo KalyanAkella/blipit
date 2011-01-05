@@ -20,8 +20,6 @@
 
 package com.thoughtworks.blipit.persistence;
 
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.Utils;
 
 import javax.jdo.JDOHelper;
@@ -39,55 +37,6 @@ public class DataStoreHelper {
 
     public static PersistenceManager getPersistenceManager() {
         return factory.getPersistenceManager();
-    }
-
-    public static <T> void save(T instance, Utils.ResultHandler<T> handler) {
-        PersistenceManager persistenceManager = null;
-        try {
-            persistenceManager = getPersistenceManager();
-            T entity = persistenceManager.makePersistent(instance);
-            handler.onSuccess(entity);
-        } catch(Exception e) {
-            handler.onError(e);
-        } finally {
-            if (persistenceManager != null) persistenceManager.close();
-        }
-    }
-
-    public static <T> void delete(Class<T> clazz, String keyString, Utils.ResultHandler<T> handler) {
-        PersistenceManager persistenceManager = null;
-        try {
-            persistenceManager = getPersistenceManager();
-            Key key = KeyFactory.stringToKey(keyString);
-            T entity = persistenceManager.getObjectById(clazz, key);
-            persistenceManager.deletePersistent(entity);
-            handler.onSuccess(entity);
-        } catch (Exception e) {
-            handler.onError(e);
-        } finally {
-            if (persistenceManager != null) persistenceManager.close();
-        }
-    }
-
-    public static <T> void retrieveAllAndProcess(Class<T> clazz, Utils.QueryHandler queryHandler, Utils.ResultHandler<T> handler) {
-        PersistenceManager persistenceManager = null;
-        Query query = null;
-        try {
-            persistenceManager = getPersistenceManager();
-            query = persistenceManager.newQuery(clazz);
-            queryHandler.prepare(query);
-            List<T> entities = (List<T>) query.executeWithArray(queryHandler.parameters());
-            if (Utils.isNotEmpty(entities)) {
-                for (T element : entities) {
-                    handler.onSuccess(element);
-                }
-            }
-        } catch (Exception e) {
-            handler.onError(e);
-        } finally {
-            if (query != null) query.closeAll();
-            if (persistenceManager != null) persistenceManager.close();
-        }
     }
 
     public static <T> List<T> retrieveAll(Class<T> clazz, Utils.QueryHandler queryHandler) {

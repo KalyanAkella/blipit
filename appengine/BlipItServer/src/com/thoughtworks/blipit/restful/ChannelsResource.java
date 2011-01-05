@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.blipit.domain.Channel;
 import com.thoughtworks.blipit.persistence.BlipItRepository;
-import com.thoughtworks.contract.common.Category;
+import com.thoughtworks.blipit.domain.CategoryEnum;
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
@@ -29,7 +29,7 @@ public class ChannelsResource extends ServerResource {
     // TODO: Send ErrorRepresentation in case of errors
     @Override
     protected Representation get(Variant variant) throws ResourceException {
-        Category channelCategory = Category.valueOf(category.toUpperCase());
+        CategoryEnum channelCategory = CategoryEnum.valueOf(category.toUpperCase());
         List<Channel> channels = blipItRepository.retrieveChannelsByCategory(Utils.convert(channelCategory));
         String json = new Gson().toJson(channels);
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON))

@@ -25,7 +25,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.blipit.domain.Channel;
 import com.thoughtworks.blipit.persistence.DataStoreHelper;
-import com.thoughtworks.contract.common.Category;
+import com.thoughtworks.blipit.domain.CategoryEnum;
 
 import javax.jdo.PersistenceManager;
 import javax.servlet.ServletException;
@@ -63,7 +63,7 @@ public class ManageChannels extends HttpServlet {
     private void saveChannel(PersistenceManager persistenceManager, HttpServletRequest request) {
         String channelName = request.getParameter("channel.name");
         String channelCategory = request.getParameter("channel.category");
-        Channel channel = new Channel(channelName, Utils.convert(Category.valueOf(channelCategory)));
+        Channel channel = new Channel(channelName, Utils.convert(CategoryEnum.valueOf(channelCategory)));
         persistenceManager.makePersistent(channel);
     }
 

@@ -21,10 +21,7 @@
 package com.thoughtworks.blipit.filters;
 
 import com.google.appengine.api.datastore.GeoPt;
-import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.blipit.domain.Blip;
-import com.thoughtworks.contract.GeoLocation;
-import com.thoughtworks.contract.subscribe.GetBlipsRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +31,6 @@ public class DistanceFilter implements BlipsFilter {
     private GeoPt userLocation;
     private double preferredDistance;
     private DistanceCalculator distanceCalculator;
-
-    public DistanceFilter(GeoLocation userLocation, double preferredDistance) {
-        this(Utils.asGeoPoint(userLocation), preferredDistance);
-    }
-
-    public DistanceFilter(GetBlipsRequest getBlipsRequest) {
-        this(getBlipsRequest.getUserLocation(), getBlipsRequest.getUserPrefs().getRadius());
-    }
 
     public DistanceFilter(GeoPt geoPoint, double preferredDistance) {
         this.userLocation = geoPoint;

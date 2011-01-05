@@ -33,25 +33,6 @@ import java.util.List;
 import java.util.Set;
 
 public class BlipItRepository {
-    public void filterBlipsByChannels(final Set<Key> channelKeys, Utils.ResultHandler<Blip> handler) {
-        DataStoreHelper.retrieveAllAndProcess(
-                Blip.class,
-                getQueryHandlerForChannels(channelKeys),
-                handler);
-    }
-
-    public void retrieveChannelsByCategory(final Category channelCategory, final Utils.ResultHandler<Channel> handler) {
-        DataStoreHelper.retrieveAllAndProcess(Channel.class, new Utils.QueryHandler() {
-            public void prepare(Query query) {
-                query.declareParameters("com.google.appengine.api.datastore.Category channelCategory");
-                query.setFilter("this.category == channelCategory");
-            }
-
-            public Object[] parameters() {
-                return new Object[] {channelCategory};
-            }
-        }, handler);
-    }
 
     public List<Channel> retrieveChannelsByCategory(final Category channelCategory) {
         return DataStoreHelper.retrieveAll(Channel.class, new Utils.QueryHandler() {
