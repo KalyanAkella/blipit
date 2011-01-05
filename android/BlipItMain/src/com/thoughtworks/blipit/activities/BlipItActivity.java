@@ -39,8 +39,8 @@ import com.thoughtworks.blipit.R;
 import com.thoughtworks.blipit.overlays.BalloonMyLocationOverlay;
 import com.thoughtworks.blipit.overlays.BlipOverlay;
 import com.thoughtworks.blipit.services.BlipNotificationService;
+import com.thoughtworks.blipit.types.Ad;
 import com.thoughtworks.blipit.utils.BlipItUtils;
-import com.thoughtworks.contract.subscribe.Blip;
 
 import java.util.List;
 
@@ -154,8 +154,8 @@ public class BlipItActivity extends MapActivity {
         return blipNotificationHandler;
     }
 
-    public void updateBlips(Bundle data) {
-        blipOverlay.addBlips((List<Blip>) data.get(BlipItUtils.BLIPS));
+    public void updateAds(Bundle data) {
+        blipOverlay.placeAds((List<Ad>) data.get(BlipItUtils.ADS));
         Log.i(APP_TAG, "Blip notification received");
     }
 

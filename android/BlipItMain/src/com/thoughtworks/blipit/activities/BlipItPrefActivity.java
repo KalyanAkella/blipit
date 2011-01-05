@@ -33,10 +33,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 import com.thoughtworks.blipit.R;
-import com.thoughtworks.blipit.utils.BlipItServiceHelper;
-import com.thoughtworks.contract.common.Category;
-import com.thoughtworks.contract.common.GetChannelsResponse;
-import com.thoughtworks.contract.utils.ChannelUtils;
+import com.thoughtworks.blipit.utils.BlipItHttpHelper;
 
 import static com.thoughtworks.blipit.utils.BlipItUtils.AD_CHANNELS_KEY;
 import static com.thoughtworks.blipit.utils.BlipItUtils.APP_TAG;
@@ -62,34 +59,31 @@ public class BlipItPrefActivity extends PreferenceActivity implements SharedPref
             channelsThread = new Thread() {
                 @Override
                 public void run() {
-                    String channelObjectsAsString = "";
+                    String channelsAsString = "";
                     try {
-                        String blipitServiceUrl = readBlipItServiceUrl();
-                        GetChannelsResponse response = BlipItServiceHelper.getSubscribeResource(blipitServiceUrl).getAvailableChannels(Category.AD);
-                        if (response.isSuccess()) {
-                            channelObjectsAsString = ChannelUtils.getChannelsAsString(response.getChannels());
-                        } else {
+                        String blipitServiceLoc = readBlipItServiceLoc();
+                        channelsAsString = BlipItHttpHelper.getInstance().getAllChannelsAsJson(blipitServiceLoc);
+                        if (channelsAsString == null || channelsAsString.length() == 0) {
                             showChannelsErrorToast();
-                            Log.e(APP_TAG, response.getBlipItError().getMessage());
                         }
                     } catch (Exception e) {
                         showChannelsErrorToast();
-                        Log.e(APP_TAG, "An error occurred while retrieving channels", e);
+                        Log.e(APP_TAG, "An error occurred while retrieving ad channels", e);
                     }
-                    sharedPreferences.edit().putString(AD_CHANNELS_KEY, channelObjectsAsString).commit();
+                    sharedPreferences.edit().putString(AD_CHANNELS_KEY, channelsAsString).commit();
                 }
             };
             channelsThread.start();
         }
     }
 
-    private String readBlipItServiceUrl() {
+    private String readBlipItServiceLoc() {
         String result =  null;
         try {
             PackageManager packageManager = getPackageManager();
             ComponentName componentName = new ComponentName(this, BlipItPrefActivity.class);
             ActivityInfo activityInfo = packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA);
-            result = activityInfo.metaData.getString("blipit.service.url");
+            result = activityInfo.metaData.getString("blipit.service.loc");
         } catch (PackageManager.NameNotFoundException e) {
             Log.wtf(APP_TAG, "Unable to retrieve activity metadata for " + BlipItPrefActivity.class, e);
         }
@@ -107,7 +101,7 @@ public class BlipItPrefActivity extends PreferenceActivity implements SharedPref
     @Override
     protected Dialog onCreateDialog(int id) {
         ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Please wait while we fetch the topics...");
+        progressDialog.setMessage("Please wait while we fetch the channels...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(true);
         progressDialog.setOnCancelListener(this);

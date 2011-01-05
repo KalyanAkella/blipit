@@ -36,14 +36,10 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.google.android.maps.GeoPoint;
-import com.thoughtworks.blipit.utils.BlipItServiceHelper;
+import com.thoughtworks.blipit.types.Ad;
+import com.thoughtworks.blipit.types.Filter;
+import com.thoughtworks.blipit.utils.BlipItHttpHelper;
 import com.thoughtworks.blipit.utils.BlipItUtils;
-import com.thoughtworks.contract.common.Category;
-import com.thoughtworks.contract.subscribe.Blip;
-import com.thoughtworks.contract.subscribe.GetBlipsRequest;
-import com.thoughtworks.contract.subscribe.GetBlipsResponse;
-import com.thoughtworks.contract.subscribe.UserPrefs;
-import com.thoughtworks.contract.utils.ChannelUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,6 +48,7 @@ import java.util.List;
 import static com.thoughtworks.blipit.utils.BlipItUtils.APP_TAG;
 import static com.thoughtworks.blipit.utils.BlipItUtils.CHANNEL_PREF_KEY;
 import static com.thoughtworks.blipit.utils.BlipItUtils.RADIUS_PREF_KEY;
+import static com.thoughtworks.blipit.utils.BlipItUtils.asArrayList;
 import static com.thoughtworks.blipit.utils.BlipItUtils.getMessageWithBlips;
 
 public class BlipNotificationService extends IntentService {
@@ -86,7 +83,7 @@ public class BlipNotificationService extends IntentService {
             PackageManager packageManager = getPackageManager();
             ComponentName componentName = new ComponentName(this, BlipNotificationService.class);
             ServiceInfo serviceInfo = packageManager.getServiceInfo(componentName, PackageManager.GET_META_DATA);
-            blipItServiceUrl = serviceInfo.metaData.getString("blipit.service.url");
+            blipItServiceUrl = serviceInfo.metaData.getString("blipit.service.loc");
         } catch (PackageManager.NameNotFoundException e) {
             Log.wtf(APP_TAG, "Unable to retrieve service metadata for " + BlipNotificationService.class, e);
         }
@@ -96,7 +93,7 @@ public class BlipNotificationService extends IntentService {
         pendingIntent = PendingIntent.getService(this, 0, new Intent(this, BlipNotificationService.class), 0);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         long firstTime = SystemClock.elapsedRealtime();
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstTime, 5 * 1000, pendingIntent);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, firstTime, BlipItUtils.NOTIFICATION_INTERVAL, pendingIntent);
     }
 
     @Override
@@ -125,37 +122,39 @@ public class BlipNotificationService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         try {
-            GetBlipsRequest blipItRequest = constructRequest();
-            GetBlipsResponse blipItResponse = BlipItServiceHelper.getSubscribeResource(blipItServiceUrl).getBlips(blipItRequest);
-            if (blipItResponse.isSuccess()) {
-                Message message = getMessageWithBlips((ArrayList<Blip>) blipItResponse.getBlips(), BlipItUtils.MSG_BLIPS_UPDATED);
+            Filter filter = constructFilter();
+            if (filter.isEmpty()) return;
+            List<Ad> ads = BlipItHttpHelper.getInstance().filter(blipItServiceUrl, filter);
+            if (ads != null) {
+                Message message = getMessageWithBlips(asArrayList(ads), BlipItUtils.MSG_BLIPS_UPDATED);
                 for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {
                     Messenger client = iterator.next();
                     try {
                         client.send(message);
                     } catch (RemoteException e) {
-                        Log.e(BlipItUtils.APP_TAG, "An error occurred while sending blips to client", e);
+                        Log.e(BlipItUtils.APP_TAG, "An error occurred while sending ads to client", e);
                         iterator.remove();
                     }
                 }
             }
         } catch (Exception e) {
-            Log.e(BlipItUtils.APP_TAG, "An error occurred while retrieving blips", e);
+            Log.e(BlipItUtils.APP_TAG, "An error occurred while retrieving Ads", e);
         }
     }
 
-    private GetBlipsRequest constructRequest() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        float radius = BlipItUtils.getRadius(sharedPreferences, RADIUS_PREF_KEY);
-        String channelPrefStr = sharedPreferences.getString(CHANNEL_PREF_KEY, null);
-        Log.i(APP_TAG, "Preferences: Radius -> " + radius + ", Channels -> " + channelPrefStr);
-        GetBlipsRequest blipItRequest = new GetBlipsRequest();
-        blipItRequest.setUserLocation(BlipItUtils.toGeoLocation(getCurrentUserLocation()));
-        UserPrefs userPrefs = new UserPrefs();
-        userPrefs.setRadius(radius);
-        userPrefs.setChannels(ChannelUtils.toChannelList(channelPrefStr, Category.AD));
-        blipItRequest.setUserPrefs(userPrefs);
-        return blipItRequest;
+    private Filter constructFilter() {
+        GeoPoint userLocation = getCurrentUserLocation();
+        Filter filter = new Filter();
+        if (userLocation != null) {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            float radius = BlipItUtils.getRadius(sharedPreferences, RADIUS_PREF_KEY);
+            String channelPrefStr = sharedPreferences.getString(CHANNEL_PREF_KEY, null);
+            Log.i(APP_TAG, "Preferences: Radius -> " + radius + ", Channels -> " + channelPrefStr);
+            filter.setRadius(radius * BlipItUtils.METRES_PER_KM);
+            filter.setGeoPoint(BlipItUtils.toLocation(userLocation));
+            filter.setChannelKeys(BlipItUtils.toChannelKeys(channelPrefStr));
+        }
+        return filter;
     }
 
 }

@@ -23,8 +23,8 @@ package com.thoughtworks.blipit.overlays;
 import android.graphics.drawable.Drawable;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
+import com.thoughtworks.blipit.types.Ad;
 import com.thoughtworks.blipit.utils.BlipItUtils;
-import com.thoughtworks.contract.subscribe.Blip;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +52,10 @@ public class BlipOverlay extends BalloonItemizedOverlay<OverlayItem> {
         populate();
     }
 
-    public void addBlips(List<Blip> blips) {
-        if (blips == null) return;
+    public void placeAds(List<Ad> ads) {
+        if (ads == null) return;
         this.blips.clear();
-        for (Blip blip : blips) {
+        for (Ad blip : ads) {
             addBlip(BlipItUtils.getOverlayItem(blip));
         }
         mapView.invalidate();

@@ -28,10 +28,8 @@ import android.util.AttributeSet;
 import android.util.SparseBooleanArray;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import com.thoughtworks.blipit.types.Channel;
 import com.thoughtworks.blipit.utils.BlipItUtils;
-import com.thoughtworks.contract.common.Category;
-import com.thoughtworks.contract.common.Channel;
-import com.thoughtworks.contract.utils.ChannelUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,15 +59,15 @@ public class ChannelPreference extends DialogPreference {
     private void initAvailableChannels() {
         SharedPreferences sharedPreferences = getSharedPreferences();
         String allChannelsStr = sharedPreferences.getString(BlipItUtils.AD_CHANNELS_KEY, null);
-        availableChannels = ChannelUtils.toChannelList(allChannelsStr, Category.AD);
-        availableChannelNames = ChannelUtils.toChannelNames(availableChannels);
+        availableChannels = BlipItUtils.toChannels(allChannelsStr);
+        availableChannelNames = BlipItUtils.toChannelNames(availableChannels);
     }
 
     private void checkItemsFromPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences();
         String preferredChannelStr = sharedPreferences.getString(CHANNEL_PREF_KEY, null);
         if (preferredChannelStr != null) {
-            List<Channel> prefChannelList = ChannelUtils.toChannelList(preferredChannelStr, Category.AD);
+            List<Channel> prefChannelList = BlipItUtils.toChannels(preferredChannelStr);
             for (Channel prefChannel : prefChannelList) {
                 int channelIndex = availableChannelNames.indexOf(prefChannel.getName());
                 if (channelIndex >= 0) {
@@ -85,7 +83,7 @@ public class ChannelPreference extends DialogPreference {
         if (positiveResult) {
             List<Channel> channelList = getSelectedChannels();
             SharedPreferences sharedPreferences = getSharedPreferences();
-            sharedPreferences.edit().putString(CHANNEL_PREF_KEY, ChannelUtils.getChannelsAsString(channelList)).commit();
+            sharedPreferences.edit().putString(CHANNEL_PREF_KEY, BlipItUtils.toChannelsJson(channelList)).commit();
         }
     }
 

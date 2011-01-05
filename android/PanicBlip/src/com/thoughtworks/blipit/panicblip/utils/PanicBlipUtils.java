@@ -85,7 +85,7 @@ public class PanicBlipUtils {
         return new Gson().fromJson(channelsJson, listOfTokensType);
     }
 
-    public static String toJson(Panic panic) {
+    public static String toPanicJson(Panic panic) {
         return new Gson().toJson(panic);
     }
 

@@ -88,7 +88,7 @@ public class PanicBlipHttpHelper {
         Panic savedPanic = null;
         HttpEntity httpEntity = null;
         try {
-            String panicJson = PanicBlipUtils.toJson(panic);
+            String panicJson = PanicBlipUtils.toPanicJson(panic);
             String blipItSvcUrl = String.format("http://%s/blipit/panic/blip", blipItSvcHost);
             StringEntity stringEntity = new StringEntity(panicJson, "UTF-8");
             stringEntity.setContentType(JSON_CONTENT_TYPE);

@@ -62,7 +62,7 @@ public class BlipNotificationClientHandler extends Handler implements ServiceCon
     public void handleMessage(Message msg) {
         switch (msg.what) {
             case BlipItUtils.MSG_BLIPS_UPDATED:
-                blipItActivity.updateBlips(msg.getData());
+                blipItActivity.updateAds(msg.getData());
                 break;
             default:
                 super.handleMessage(msg);

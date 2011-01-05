@@ -29,4 +29,8 @@ public class Location implements Serializable {
     public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
+
+    public boolean isEmpty() {
+        return latitude == 0 || longitude == 0;
+    }
 }
