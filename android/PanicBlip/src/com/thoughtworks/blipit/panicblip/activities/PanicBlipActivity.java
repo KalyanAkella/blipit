@@ -43,7 +43,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.thoughtworks.blipit.panicblip.R;
 import com.thoughtworks.blipit.panicblip.services.PanicNotificationService;
-import com.thoughtworks.blipit.panicblip.types.Channel;
+import com.thoughtworks.blipit.types.Channel;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipHttpHelper;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
 

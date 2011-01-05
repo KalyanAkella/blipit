@@ -1,4 +1,4 @@
-package com.thoughtworks.blipit.panicblip.types;
+package com.thoughtworks.blipit.types;
 
 import java.io.Serializable;
 

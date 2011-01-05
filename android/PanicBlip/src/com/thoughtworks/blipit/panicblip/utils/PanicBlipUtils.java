@@ -24,9 +24,9 @@ import android.os.Bundle;
 import android.os.Message;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.thoughtworks.blipit.panicblip.types.Channel;
-import com.thoughtworks.blipit.panicblip.types.Location;
-import com.thoughtworks.blipit.panicblip.types.Panic;
+import com.thoughtworks.blipit.types.Channel;
+import com.thoughtworks.blipit.types.Location;
+import com.thoughtworks.blipit.types.Blip;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -47,10 +47,9 @@ public class PanicBlipUtils {
     public static final String APP_TAG = "PanicBlipActivity";
     public static final String PANIC_CHANNELS_KEY = "panic_channels_key";
     public static final String PANIC_DATA = "panic_data";
-    public static final String CREATOR_ID = "%s:%s";
 
     public static Location getLocation(android.location.Location lastKnownLocation) {
-        com.thoughtworks.blipit.panicblip.types.Location geoLocation = new com.thoughtworks.blipit.panicblip.types.Location();
+        Location geoLocation = new Location();
         geoLocation.setLatitude((float) lastKnownLocation.getLatitude());
         geoLocation.setLongitude((float) lastKnownLocation.getLongitude());
         return geoLocation;
@@ -85,12 +84,12 @@ public class PanicBlipUtils {
         return new Gson().fromJson(channelsJson, listOfTokensType);
     }
 
-    public static String toPanicJson(Panic panic) {
+    public static String toPanicJson(Blip panic) {
         return new Gson().toJson(panic);
     }
 
-    public static Panic toPanic(String panicJson) {
-        return new Gson().fromJson(panicJson, Panic.class);
+    public static Blip toPanic(String panicJson) {
+        return new Gson().fromJson(panicJson, Blip.class);
     }
 
 }

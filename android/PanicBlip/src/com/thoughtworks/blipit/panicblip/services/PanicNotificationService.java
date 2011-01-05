@@ -38,8 +38,8 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import com.thoughtworks.blipit.panicblip.types.Channel;
-import com.thoughtworks.blipit.panicblip.types.Panic;
+import com.thoughtworks.blipit.types.Channel;
+import com.thoughtworks.blipit.types.Blip;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipHttpHelper;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
 
@@ -63,11 +63,11 @@ public class PanicNotificationService extends Service {
     private PendingIntent pendingIntentForLocUpdates;
     private Looper panicNotificationServiceLooper;
     private PanicNotificationServiceHandler panicNotificationServiceHandler;
-    private Panic panicBlip;
+    private Blip panicBlip;
     private Location currentBestLocation;
 
     public PanicNotificationService() {
-        panicBlip = new Panic();
+        panicBlip = new Blip();
         clients = new ArrayList<Messenger>();
     }
 
@@ -208,7 +208,7 @@ public class PanicNotificationService extends Service {
     private void reportPanic(Location newLocation) {
         try {
             panicBlip.setGeoPoint(getLocation(newLocation));
-            Panic savedPanic = PanicBlipHttpHelper.getInstance().savePanic(blipItServiceLoc, panicBlip);
+            Blip savedPanic = PanicBlipHttpHelper.getInstance().savePanic(blipItServiceLoc, panicBlip);
             if (savedPanic == null) {
                 notifyClients(PanicBlipUtils.REPORT_PANIC_FAILURE, null);
             } else {

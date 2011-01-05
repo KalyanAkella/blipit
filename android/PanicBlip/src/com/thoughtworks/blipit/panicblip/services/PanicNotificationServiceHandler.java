@@ -25,7 +25,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import com.thoughtworks.blipit.panicblip.types.Channel;
+import com.thoughtworks.blipit.types.Channel;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package com.thoughtworks.blipit.panicblip.utils;
 
 import android.util.Log;
-import com.thoughtworks.blipit.panicblip.types.Panic;
+import com.thoughtworks.blipit.types.Blip;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -84,8 +84,8 @@ public class PanicBlipHttpHelper {
         return channelsJson;
     }
 
-    public Panic savePanic(String blipItSvcHost, Panic panic) {
-        Panic savedPanic = null;
+    public Blip savePanic(String blipItSvcHost, Blip panic) {
+        Blip savedPanic = null;
         HttpEntity httpEntity = null;
         try {
             String panicJson = PanicBlipUtils.toPanicJson(panic);
@@ -110,7 +110,7 @@ public class PanicBlipHttpHelper {
         return savedPanic;
     }
 
-    public boolean deletePanic(String blipItSvcHost, Panic panic) {
+    public boolean deletePanic(String blipItSvcHost, Blip panic) {
         boolean result = false;
         HttpEntity httpEntity = null;
         try {
