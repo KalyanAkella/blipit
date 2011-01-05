@@ -46,6 +46,7 @@ public class BlipsResource extends ServerResource {
         return Utils.isJSONMediaType(variant) ? new JsonRepresentation(json) : new StringRepresentation(json);
     }
 
+    // TODO: Imp !!! Check the incoming blip for creatorID and update the existing blip for category PANIC
     @Override
     protected Representation post(Representation entity, Variant variant) throws ResourceException {
         PersistenceManager persistenceManager = null;

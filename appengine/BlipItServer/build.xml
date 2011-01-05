@@ -64,6 +64,9 @@
         <fileset dir="${appengine.sdk}/lib">
             <include name="shared/**/*.jar"/>
         </fileset>
+        <fileset dir="../../shared/lib/common">
+            <include name="*.jar"/>
+        </fileset>
         <fileset dir="../../shared/lib/appengine">
             <include name="*.jar"/>
         </fileset>
@@ -84,6 +87,9 @@
         <fileset dir="${appengine.sdk}/lib">
             <include name="testing/*.jar"/>
         </fileset>
+        <fileset dir="../../shared/lib/common">
+            <include name="*.jar"/>
+        </fileset>
         <fileset dir="../../shared/lib/appengine">
             <include name="*.jar"/>
         </fileset>
@@ -99,6 +105,9 @@
                 <include name="**/*.jar"/>
             </fileset>
             <fileset dir="../BlipItShared/dist">
+                <include name="**/*.jar"/>
+            </fileset>
+            <fileset dir="../../shared/lib/common">
                 <include name="**/*.jar"/>
             </fileset>
             <fileset dir="../../shared/lib/appengine">

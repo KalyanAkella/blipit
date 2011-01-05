@@ -43,12 +43,9 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.thoughtworks.blipit.panicblip.R;
 import com.thoughtworks.blipit.panicblip.services.PanicNotificationService;
-import com.thoughtworks.blipit.panicblip.utils.PanicBlipServiceHelper;
+import com.thoughtworks.blipit.panicblip.types.Channel;
+import com.thoughtworks.blipit.panicblip.utils.PanicBlipHttpHelper;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
-import com.thoughtworks.contract.common.Category;
-import com.thoughtworks.contract.common.Channel;
-import com.thoughtworks.contract.common.GetChannelsResponse;
-import com.thoughtworks.contract.utils.ChannelUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,22 +87,19 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
             channelsThread = new Thread() {
                 @Override
                 public void run() {
-                    String channelObjectsAsString = "";
+                    String channelsAsString = "";
                     try {
-                        String blipitServiceUrl = readBlipItServiceUrl();
-                        GetChannelsResponse response = PanicBlipServiceHelper.getPublishResource(blipitServiceUrl).getAvailableChannels(Category.PANIC);
-                        if (response.isSuccess()) {
-                            channelObjectsAsString = ChannelUtils.getChannelsAsString(response.getChannels());
-                        } else {
+                        String blipitServiceLoc = readBlipItServiceLoc();
+                        channelsAsString = PanicBlipHttpHelper.getInstance().getAllChannelsAsJson(blipitServiceLoc);
+                        if (channelsAsString == null || channelsAsString.length() == 0) {
                             showChannelsErrorToast();
-                            Log.e(APP_TAG, response.getBlipItError().getMessage());
                         }
                     } catch (Exception e) {
                         showChannelsErrorToast();
-                        Log.e(APP_TAG, "An error occurred while retrieving channels", e);
+                        Log.e(APP_TAG, "An error occurred while retrieving panic channels", e);
                     }
-                    sharedPreferences.edit().putString(PANIC_CHANNELS_KEY, channelObjectsAsString).commit();
-                    updatePanicChannelList(channelObjectsAsString);
+                    sharedPreferences.edit().putString(PANIC_CHANNELS_KEY, channelsAsString).commit();
+                    updatePanicChannelList(channelsAsString);
                 }
             };
             channelsThread.start();
@@ -131,8 +125,8 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
 
     private void updatePanicChannelList(String allChannelsStr) {
         if (allChannelsStr == null || allChannelsStr.length() == 0) return;
-        panicChannels = ChannelUtils.toChannelList(allChannelsStr, Category.PANIC);
-        panicChannelNames = ChannelUtils.toChannelNames(panicChannels);
+        panicChannels = PanicBlipUtils.toChannels(allChannelsStr);
+        panicChannelNames = PanicBlipUtils.toChannelNames(panicChannels);
         runOnUiThread(new Runnable() {
             public void run() {
                 panicChannelList.setAdapter(new ArrayAdapter<String>(PanicBlipActivity.this, android.R.layout.simple_list_item_multiple_choice, panicChannelNames));
@@ -143,7 +137,7 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
     @Override
     protected Dialog onCreateDialog(int id) {
         ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Please wait while we fetch the panic topics...");
+        progressDialog.setMessage("Please wait while we fetch the panic channels...");
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(true);
         progressDialog.setOnCancelListener(this);
@@ -158,13 +152,13 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
         });
     }
 
-    private String readBlipItServiceUrl() {
+    private String readBlipItServiceLoc() {
         String result = null;
         try {
             PackageManager packageManager = getPackageManager();
             ComponentName componentName = new ComponentName(this, PanicBlipActivity.class);
             ActivityInfo activityInfo = packageManager.getActivityInfo(componentName, PackageManager.GET_META_DATA);
-            result = activityInfo.metaData.getString("blipit.service.url");
+            result = activityInfo.metaData.getString("blipit.service.loc");
         } catch (PackageManager.NameNotFoundException e) {
             Log.wtf(APP_TAG, "Unable to retrieve activity metadata for " + PanicBlipActivity.class, e);
         }
@@ -214,13 +208,13 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
 
     private void clearPanic() {
         if (panicNotificationService == null) {
-            Toast.makeText(this, "Unable to clear all issues", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Unable to clear your panic", Toast.LENGTH_LONG).show();
         } else {
             try {
                 panicNotificationService.send(Message.obtain(null, CLEAR_PANIC));
             } catch (RemoteException e) {
-                Log.e(APP_TAG, "Unable to clear all issues", e);
-                Toast.makeText(this, "Unable to clear all issues", Toast.LENGTH_LONG).show();
+                Log.e(APP_TAG, "Unable to clear your panic", e);
+                Toast.makeText(this, "Unable to clear your panic", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -300,7 +294,7 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
     }
 
     public void clearPanicSuccess() {
-        showMessageOnUI("Issue cleared successfully");
+        showMessageOnUI("Panic cleared successfully");
         panicChannelList.clearChoices();
         panicChannelList.invalidateViews();
         clearPanicBtn.setEnabled(false);
@@ -308,22 +302,22 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
     }
 
     public void clearPanicFailure(String errorMessage) {
-        showMessageOnUI("We are unable to clear your issue at this time. Please try again.");
+        showMessageOnUI("We are unable to clear your panic at this time. Please try again.");
         clearPanicBtn.setEnabled(true);
     }
 
     public void reportPanicSuccess() {
-        showMessageOnUI("Issue reported successfully");
+        showMessageOnUI("Panic reported successfully");
         clearPanicBtn.setEnabled(true);
     }
 
     public void reportPanicLocUnavailable() {
-        showMessageOnUI("Your issue will be reported as soon as we detect your current location");
+        showMessageOnUI("Your panic will be reported as soon as we detect your current location");
         clearPanicBtn.setEnabled(false);
     }
 
     public void reportPanicFailure(String errorMessage) {
-        showMessageOnUI("We are unable to report your issue at this time. Please try again.");
+        showMessageOnUI("We are unable to report your panic at this time. Please try again.");
         clearPanicBtn.setEnabled(false);
     }
 

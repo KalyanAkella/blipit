@@ -23,9 +23,15 @@ package com.thoughtworks.blipit.panicblip.utils;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Message;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.thoughtworks.blipit.panicblip.types.Channel;
 import com.thoughtworks.contract.GeoLocation;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PanicBlipUtils {
     public static final int MSG_REGISTER_CLIENT = 0;
@@ -61,5 +67,20 @@ public class PanicBlipUtils {
             message.setData(bundle);
         }
         return message;
+    }
+
+    public static List<String> toChannelNames(List<Channel> channels) {
+        List<String> channelNames = new ArrayList<String>();
+        if (channels != null) {
+            for (Channel channel : channels) {
+                channelNames.add(channel.getName());
+            }
+        }
+        return channelNames;
+    }
+
+    public static List<Channel> toChannels(String channelsJson) {
+        Type listOfTokensType = new TypeToken<List<Channel>>() {}.getType();
+        return new Gson().fromJson(channelsJson, listOfTokensType);
     }
 }
