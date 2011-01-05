@@ -1,6 +1,8 @@
 package com.thoughtworks.blipit.panicblip.types;
 
-public class Location {
+import java.io.Serializable;
+
+public class Location implements Serializable {
     private float latitude;
     private float longitude;
 

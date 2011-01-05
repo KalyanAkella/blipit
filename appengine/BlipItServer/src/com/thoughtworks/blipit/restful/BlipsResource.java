@@ -54,7 +54,7 @@ public class BlipsResource extends ServerResource {
             try {
                 persistenceManager = DataStoreHelper.getPersistenceManager();
                 Blip blip = gson.fromJson(new InputStreamReader(entity.getStream()), Blip.class);
-                prepareChannelKeys(blip);
+                prepareKeys(blip);
                 Blip savedBlip = persistenceManager.makePersistent(blip);
                 String json = gson.toJson(savedBlip);
                 return new JsonRepresentation(json);
@@ -65,6 +65,14 @@ public class BlipsResource extends ServerResource {
             }
         }
         return new StringRepresentation("Unsupported media type: " + variant.getMediaType());
+    }
+
+    private void prepareKeys(Blip blip) {
+        Key blipKey = blip.getKey();
+        if (blipKey != null) {
+            blip.setKey(KeyFactory.createKey(Blip.class.getSimpleName(), blipKey.getId()));
+        }
+        prepareChannelKeys(blip);
     }
 
     private void prepareChannelKeys(Blip blip) {

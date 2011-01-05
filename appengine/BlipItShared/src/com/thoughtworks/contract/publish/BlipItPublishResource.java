@@ -36,6 +36,4 @@ public interface BlipItPublishResource {
     @Delete
     BlipItResponse deleteBlip(DeleteBlipRequest deleteBlipRequest);
 
-    @Get
-    GetChannelsResponse getAvailableChannels(Category channelCategory);
 }

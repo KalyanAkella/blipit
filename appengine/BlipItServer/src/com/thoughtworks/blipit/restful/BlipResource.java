@@ -54,6 +54,6 @@ public class BlipResource extends ServerResource {
         } finally {
             if (persistenceManager != null) persistenceManager.close();
         }
-        return new JsonRepresentation(String.format("Blip with ID: %s successfully deleted", blipId));
+        return new JsonRepresentation(String.format("Success"));
     }
 }

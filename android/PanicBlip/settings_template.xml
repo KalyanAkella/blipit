@@ -1,5 +1,4 @@
 <resources>
-    <string name="blipit_service_url">@BLIPIT_SERVICE_URL@</string>
     <string name="blipit_service_loc">@BLIPIT_SERVICE_LOC@</string>
     <string name="time_between_loc_updates_in_millis">@TIME_BETWEEN_LOC_UPDATES_IN_MILLIS@</string>
 </resources>

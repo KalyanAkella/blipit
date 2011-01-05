@@ -1,6 +1,8 @@
 package com.thoughtworks.blipit.panicblip.types;
 
-public class Channel {
+import java.io.Serializable;
+
+public class Channel implements Serializable {
     private Key key;
     private String name;
     private ChannelCategory category;

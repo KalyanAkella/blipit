@@ -10,12 +10,10 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <meta-data android:name="blipit.service.url" android:value="@string/blipit_service_url" />
             <meta-data android:name="blipit.service.loc" android:value="@string/blipit_service_loc" />
         </activity>
 
         <service android:name=".services.PanicNotificationService" android:process=":panicRemote" >
-            <meta-data android:name="blipit.service.url" android:value="@string/blipit_service_url" />
             <meta-data android:name="blipit.service.loc" android:value="@string/blipit_service_loc" />
             <meta-data android:name="time.between.loc.updates.in.millis" android:value="@string/time_between_loc_updates_in_millis" />
         </service>

@@ -27,15 +27,12 @@ import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.blipit.persistence.DataStoreHelper;
 import com.thoughtworks.contract.BlipItResponse;
 import com.thoughtworks.contract.Constants;
-import com.thoughtworks.contract.common.Category;
 import com.thoughtworks.contract.common.Channel;
-import com.thoughtworks.contract.common.GetChannelsResponse;
 import com.thoughtworks.contract.publish.BlipItPublishResource;
 import com.thoughtworks.contract.publish.DeleteBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipRequest;
 import com.thoughtworks.contract.publish.SaveBlipResponse;
 import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
 import javax.jdo.PersistenceManager;
@@ -167,8 +164,4 @@ public class BlipItPublishResourceImpl extends BlipItCommonServerResource implem
         return KeyFactory.stringToKey(channel.getId());
     }
 
-    @Get
-    public GetChannelsResponse getAvailableChannels(Category channelCategory) {
-        return getChannels(channelCategory);
-    }
 }

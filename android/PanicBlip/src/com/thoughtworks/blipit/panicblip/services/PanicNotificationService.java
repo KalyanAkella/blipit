@@ -38,14 +38,10 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import com.thoughtworks.blipit.panicblip.utils.PanicBlipServiceHelper;
+import com.thoughtworks.blipit.panicblip.types.Channel;
+import com.thoughtworks.blipit.panicblip.types.Panic;
+import com.thoughtworks.blipit.panicblip.utils.PanicBlipHttpHelper;
 import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
-import com.thoughtworks.contract.BlipItResponse;
-import com.thoughtworks.contract.common.Channel;
-import com.thoughtworks.contract.publish.BlipItPublishResource;
-import com.thoughtworks.contract.publish.DeleteBlipRequest;
-import com.thoughtworks.contract.publish.SaveBlipRequest;
-import com.thoughtworks.contract.publish.SaveBlipResponse;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -55,27 +51,23 @@ import java.util.List;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.APP_TAG;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.LOCATION_CHANGED;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.areSameStrings;
-import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getGeoLocation;
+import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getLocation;
 import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.getMessage;
-import static com.thoughtworks.contract.Constants.DESC;
-import static com.thoughtworks.contract.Constants.DEVICE_ID;
-import static com.thoughtworks.contract.Constants.PHONE_NUMBER;
-import static com.thoughtworks.contract.Constants.TITLE;
 
 public class PanicNotificationService extends Service {
     private List<Messenger> clients;
-    private String blipItServiceUrl;
+    private String blipItServiceLoc;
     private Messenger panicMessenger;
     private int minTimeForLocUpdates;
     private LocationManager locationManager;
     private PendingIntent pendingIntentForLocUpdates;
     private Looper panicNotificationServiceLooper;
     private PanicNotificationServiceHandler panicNotificationServiceHandler;
-    private SaveBlipRequest panicBlip;
+    private Panic panicBlip;
     private Location currentBestLocation;
 
     public PanicNotificationService() {
-        panicBlip = new SaveBlipRequest();
+        panicBlip = new Panic();
         clients = new ArrayList<Messenger>();
     }
 
@@ -91,12 +83,9 @@ public class PanicNotificationService extends Service {
 
     private void readPhoneState() {
         TelephonyManager telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-        panicBlip.addMetaData(DEVICE_ID, telephonyManager.getDeviceId());
-        panicBlip.addMetaData(PHONE_NUMBER, telephonyManager.getLine1Number());
-        panicBlip.addMetaData(TITLE, "Panic Request");
-        panicBlip.addMetaData(DESC, "Panic Request from " + telephonyManager.getLine1Number());
-        Log.i(APP_TAG, "DeviceID: " + panicBlip.getMetaData().get(DEVICE_ID));
-        Log.i(APP_TAG, "PhoneNumber: " + panicBlip.getMetaData().get(PHONE_NUMBER));
+        panicBlip.setCreatorId(telephonyManager.getDeviceId(), telephonyManager.getLine1Number());
+        panicBlip.setTitle("Panic Request");
+        panicBlip.setDescription("Panic Request from " + telephonyManager.getLine1Number());
     }
 
     private void initHandlerThread() {
@@ -184,8 +173,8 @@ public class PanicNotificationService extends Service {
         return result;
     }
 
-    public void reportPanic(List<Channel> topics) {
-        panicBlip.setChannels(topics);
+    public void reportPanic(List<Channel> channels) {
+        panicBlip.setChannelKeys(channels);
         Location lastKnownLocation = getLastKnownLocation();
         if (lastKnownLocation == null) {
             notifyClients(PanicBlipUtils.REPORT_PANIC_LOC_ERROR, null);
@@ -218,15 +207,12 @@ public class PanicNotificationService extends Service {
 
     private void reportPanic(Location newLocation) {
         try {
-            panicBlip.setUserLocation(getGeoLocation(newLocation));
-            BlipItPublishResource publishResource = PanicBlipServiceHelper.getPublishResource(blipItServiceUrl);
-            SaveBlipResponse saveBlipResponse = publishResource.saveBlip(panicBlip);
-            if (saveBlipResponse.isFailure()) {
-                String errorMessage = saveBlipResponse.getBlipItError().getMessage();
-                notifyClients(PanicBlipUtils.REPORT_PANIC_FAILURE, errorMessage);
-                Log.e(APP_TAG, "Unable to save panic blip. Error from server: " + errorMessage);
+            panicBlip.setGeoPoint(getLocation(newLocation));
+            Panic savedPanic = PanicBlipHttpHelper.getInstance().savePanic(blipItServiceLoc, panicBlip);
+            if (savedPanic == null) {
+                notifyClients(PanicBlipUtils.REPORT_PANIC_FAILURE, null);
             } else {
-                panicBlip.setBlipId(saveBlipResponse.getBlipId());
+                panicBlip = savedPanic;
                 notifyClients(PanicBlipUtils.REPORT_PANIC_SUCCESS, null);
             }
         } catch (Exception e) {
@@ -236,19 +222,14 @@ public class PanicNotificationService extends Service {
     }
 
     public void clearPanic() {
-        if (panicBlip == null || panicBlip.isEmpty()) return;
+        if (panicBlip == null || panicBlip.isEmpty() || !panicBlip.isSaved()) return;
         try {
-            BlipItPublishResource blipItPublishResource = PanicBlipServiceHelper.getPublishResource(blipItServiceUrl);
-            DeleteBlipRequest deleteBlipRequest = new DeleteBlipRequest();
-            deleteBlipRequest.setBlipId(panicBlip.getBlipId());
-            BlipItResponse blipItResponse = blipItPublishResource.deleteBlip(deleteBlipRequest);
-            if (blipItResponse.isFailure()) {
-                String errorMessage = blipItResponse.getBlipItError().getMessage();
-                notifyClients(PanicBlipUtils.CLEAR_PANIC_FAILURE, errorMessage);
-                Log.e(APP_TAG, "Unable to clear panic blip. Error from server: " + errorMessage);
-            } else {
+            boolean deleted = PanicBlipHttpHelper.getInstance().deletePanic(blipItServiceLoc, panicBlip);
+            if (deleted) {
                 notifyClients(PanicBlipUtils.CLEAR_PANIC_SUCCESS, null);
                 stopSelf(); // stop the PanicNotificationService after clearing panic issue
+            } else {
+                notifyClients(PanicBlipUtils.CLEAR_PANIC_FAILURE, null);
             }
         } catch (Exception e) {
             notifyClients(PanicBlipUtils.CLEAR_PANIC_FAILURE, e.getMessage());
@@ -262,7 +243,7 @@ public class PanicNotificationService extends Service {
             ComponentName componentName = new ComponentName(this, PanicNotificationService.class);
             ServiceInfo serviceInfo = packageManager.getServiceInfo(componentName, PackageManager.GET_META_DATA);
             Bundle metaData = serviceInfo.metaData;
-            blipItServiceUrl = metaData.getString("blipit.service.url");
+            blipItServiceLoc = metaData.getString("blipit.service.loc");
             minTimeForLocUpdates = Integer.valueOf(metaData.getString("time.between.loc.updates.in.millis"));
         } catch (PackageManager.NameNotFoundException e) {
             Log.wtf(APP_TAG, "Unable to retrieve service metadata", e);

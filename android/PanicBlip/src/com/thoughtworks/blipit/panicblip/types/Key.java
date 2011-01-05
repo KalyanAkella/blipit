@@ -1,6 +1,8 @@
 package com.thoughtworks.blipit.panicblip.types;
 
-public class Key {
+import java.io.Serializable;
+
+public class Key implements Serializable {
     private String kind;
     private String id;
 

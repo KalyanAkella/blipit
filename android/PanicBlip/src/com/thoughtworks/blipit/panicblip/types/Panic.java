@@ -1,9 +1,13 @@
 package com.thoughtworks.blipit.panicblip.types;
 
+import com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils;
+
+import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-public class Panic {
+public class Panic implements Serializable {
     private Key key;
     private String title;
     private String description;
@@ -70,5 +74,28 @@ public class Panic {
 
     public void setCreatorId(String creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public void setCreatorId(String deviceId, String phoneNumber) {
+        this.creatorId = String.format(PanicBlipUtils.CREATOR_ID, deviceId, phoneNumber);
+    }
+
+    public void clear() {
+        this.channelKeys.clear();
+    }
+
+    public boolean isEmpty() {
+        return channelKeys == null || channelKeys.isEmpty();
+    }
+
+    public boolean isSaved() {
+        return this.key != null;
+    }
+
+    public void setChannelKeys(List<Channel> channels) {
+        clear();
+        for (Channel channel : channels) {
+            this.channelKeys.add(channel.getKey());
+        }
     }
 }

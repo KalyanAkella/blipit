@@ -50,6 +50,7 @@
         <delete dir="build" quiet="true" />
         <delete dir="dist" quiet="true" />
         <delete dir="bin" quiet="true" />
+        <delete dir="libs" quiet="true" />
     </target>
 
     <!-- Creates the output directories if they don't exist yet. -->
