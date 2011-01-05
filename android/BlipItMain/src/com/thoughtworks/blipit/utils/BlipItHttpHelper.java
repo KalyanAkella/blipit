@@ -1,7 +1,7 @@
 package com.thoughtworks.blipit.utils;
 
 import android.util.Log;
-import com.thoughtworks.blipit.types.Ad;
+import com.thoughtworks.blipit.types.Blip;
 import com.thoughtworks.blipit.types.Filter;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -104,8 +104,8 @@ public class BlipItHttpHelper {
         return adsJson;
     }
 
-    public List<Ad> filter(String blipItSvcHost, Filter filter) {
-        List<Ad> ads = null;
+    public List<Blip> filter(String blipItSvcHost, Filter filter) {
+        List<Blip> ads = null;
         Filter savedFilter = saveFilter(blipItSvcHost, filter);
         if (savedFilter != null) {
             String adsAsJson = getAdsAsJson(blipItSvcHost, savedFilter.getKey().getId());

@@ -28,7 +28,7 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.thoughtworks.blipit.types.Ad;
+import com.thoughtworks.blipit.types.Blip;
 import com.thoughtworks.blipit.types.Channel;
 import com.thoughtworks.blipit.types.Filter;
 import com.thoughtworks.blipit.types.Key;
@@ -85,7 +85,7 @@ public class BlipItUtils {
         return new GeoPoint(latitude, longitude);
     }
 
-    public static Message getMessageWithBlips(ArrayList<Ad> ads, int messageId) {
+    public static Message getMessageWithBlips(ArrayList<Blip> ads, int messageId) {
         Message message = Message.obtain(null, messageId);
         Bundle bundle = new Bundle();
         bundle.putSerializable(ADS, ads);
@@ -93,7 +93,7 @@ public class BlipItUtils {
         return message;
     }
 
-    public static OverlayItem getOverlayItem(Ad ad) {
+    public static OverlayItem getOverlayItem(Blip ad) {
         return new OverlayItem(asGeoPoint(ad.getGeoPoint()), ad.getTitle(), ad.getDescription());
     }
 
@@ -128,8 +128,8 @@ public class BlipItUtils {
         return new Gson().fromJson(filterJson, Filter.class);
     }
 
-    public static List<Ad> toAds(String adsJson) {
-        Type listOfTokensType = new TypeToken<List<Ad>>() {}.getType();
+    public static List<Blip> toAds(String adsJson) {
+        Type listOfTokensType = new TypeToken<List<Blip>>() {}.getType();
         return new Gson().fromJson(adsJson, listOfTokensType);
     }
 
@@ -163,8 +163,8 @@ public class BlipItUtils {
         return channelNames;
     }
 
-    public static ArrayList<Ad> asArrayList(List<Ad> ads) {
-        if (ads instanceof ArrayList) return (ArrayList<Ad>) ads;
-        return new ArrayList<Ad>(ads);
+    public static ArrayList<Blip> asArrayList(List<Blip> ads) {
+        if (ads instanceof ArrayList) return (ArrayList<Blip>) ads;
+        return new ArrayList<Blip>(ads);
     }
 }

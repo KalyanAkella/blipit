@@ -36,7 +36,7 @@ import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import com.google.android.maps.GeoPoint;
-import com.thoughtworks.blipit.types.Ad;
+import com.thoughtworks.blipit.types.Blip;
 import com.thoughtworks.blipit.types.Filter;
 import com.thoughtworks.blipit.utils.BlipItHttpHelper;
 import com.thoughtworks.blipit.utils.BlipItUtils;
@@ -124,7 +124,7 @@ public class BlipNotificationService extends IntentService {
         try {
             Filter filter = constructFilter();
             if (filter.isEmpty()) return;
-            List<Ad> ads = BlipItHttpHelper.getInstance().filter(blipItServiceUrl, filter);
+            List<Blip> ads = BlipItHttpHelper.getInstance().filter(blipItServiceUrl, filter);
             if (ads != null) {
                 Message message = getMessageWithBlips(asArrayList(ads), BlipItUtils.MSG_BLIPS_UPDATED);
                 for (Iterator<Messenger> iterator = clients.iterator(); iterator.hasNext();) {
