@@ -1,7 +1,6 @@
 package com.thoughtworks.blipit.panicblip.utils;
 
 import android.util.Log;
-import com.google.gson.Gson;
 import com.thoughtworks.blipit.panicblip.types.Panic;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -35,11 +34,10 @@ import static com.thoughtworks.blipit.panicblip.utils.PanicBlipUtils.APP_TAG;
 
 public class PanicBlipHttpHelper {
     private static PanicBlipHttpHelper instance = new PanicBlipHttpHelper();
-    private static String USER_AGENT = "BlipIt/1.0";
+    private static String USER_AGENT = "PanicBlip/1.0";
     private static String JSON_CONTENT_TYPE = "application/json";
     private static final int BUFFER_SIZE = 8 * 1024;
     private final HttpClient httpClient;
-    private final Gson gson;
 
     public static PanicBlipHttpHelper getInstance() {
         return instance;
@@ -65,7 +63,6 @@ public class PanicBlipHttpHelper {
 
         ClientConnectionManager manager = new ThreadSafeClientConnManager(params, schemeRegistry);
         httpClient = new DefaultHttpClient(manager, params);
-        gson = new Gson();
     }
 
     public String getAllChannelsAsJson(String blipItSvcHost) {

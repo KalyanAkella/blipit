@@ -44,6 +44,7 @@ public class BlipItUtils {
     public static final String RADIUS_PREF_KEY = "radius_pref_key";
     public static final String CHANNEL_PREF_KEY = "channel_pref_key";
     public static final String AD_CHANNELS_KEY = "ad_channels_key";
+    public static final String CREATOR_ID = "%s:%s";
 
     private BlipItUtils() {
     }

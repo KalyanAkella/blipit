@@ -31,27 +31,28 @@ import java.util.List;
 
 public class DistanceFilter implements BlipsFilter {
 
-    private GeoLocation userLocation;
+    private GeoPt userLocation;
     private double preferredDistance;
     private DistanceCalculator distanceCalculator;
 
     public DistanceFilter(GeoLocation userLocation, double preferredDistance) {
-        this.userLocation = userLocation;
-        this.preferredDistance = preferredDistance;
-        distanceCalculator = new DistanceCalculator();
+        this(Utils.asGeoPoint(userLocation), preferredDistance);
     }
 
     public DistanceFilter(GetBlipsRequest getBlipsRequest) {
         this(getBlipsRequest.getUserLocation(), getBlipsRequest.getUserPrefs().getRadius());
     }
 
+    public DistanceFilter(GeoPt geoPoint, double preferredDistance) {
+        this.userLocation = geoPoint;
+        this.preferredDistance = preferredDistance;
+        distanceCalculator = new DistanceCalculator();
+    }
+
     public void doFilter(List<Blip> blips) {
         List<Blip> blipsOutsideDistanceLimit = new ArrayList<Blip>();
         for (Blip alert : blips) {
-            GeoPt blipLocation = alert.getGeoPoint();
-            GeoPt userLocation = Utils.asGeoPoint(this.userLocation);
-//            double distanceFromUser = distanceCalculator.computeDistance1(userLocation, blipLocation);
-            double distanceFromUser = distanceCalculator.computeDistance2(userLocation, blipLocation);
+            double distanceFromUser = distanceCalculator.computeDistance2(this.userLocation, alert.getGeoPoint());
             if(distanceFromUser > preferredDistance) blipsOutsideDistanceLimit.add(alert);
         }
         blips.removeAll(blipsOutsideDistanceLimit);

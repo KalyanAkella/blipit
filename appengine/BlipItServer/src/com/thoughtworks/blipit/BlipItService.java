@@ -24,6 +24,8 @@ import com.thoughtworks.blipit.restful.BlipResource;
 import com.thoughtworks.blipit.restful.BlipsResource;
 import com.thoughtworks.blipit.restful.ChannelResource;
 import com.thoughtworks.blipit.restful.ChannelsResource;
+import com.thoughtworks.blipit.restful.FilterResource;
+import com.thoughtworks.blipit.restful.FiltersResource;
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
@@ -38,6 +40,8 @@ public class BlipItService extends Application {
         router.attach("/{category}/channel/{channel_id}", ChannelResource.class);
         router.attach("/{category}/blip", BlipsResource.class);
         router.attach("/{category}/blip/{blip_id}", BlipResource.class);
+        router.attach("/{category}/filter", FiltersResource.class);
+        router.attach("/{category}/filter/{filter_id}", FilterResource.class);
         return router;
     }
 }

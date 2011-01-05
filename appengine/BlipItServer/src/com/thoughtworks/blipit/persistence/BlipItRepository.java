@@ -25,6 +25,7 @@ import com.google.appengine.api.datastore.Key;
 import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.blipit.domain.Channel;
+import com.thoughtworks.blipit.domain.Filter;
 
 import javax.jdo.Query;
 import java.util.HashSet;
@@ -35,18 +36,7 @@ public class BlipItRepository {
     public void filterBlipsByChannels(final Set<Key> channelKeys, Utils.ResultHandler<Blip> handler) {
         DataStoreHelper.retrieveAllAndProcess(
                 Blip.class,
-                new Utils.QueryHandler() {
-                    public void prepare(Query query) {
-                        query.declareParameters("java.util.Set channelKeys");
-                        query.setFilter("channelKeys.contains(this.channelKeys)");
-//                        query.declareVariables("com.google.appengine.api.datastore.Key channelKey");
-//                        query.setFilter("this.channelKeys.contains(channelKey) && channelKeys.contains(channelKey)");
-                    }
-
-                    public Object[] parameters() {
-                        return new Object[]{channelKeys};
-                    }
-                },
+                getQueryHandlerForChannels(channelKeys),
                 handler);
     }
 
@@ -77,12 +67,16 @@ public class BlipItRepository {
     }
 
     public List<Blip> retrieveBlipsByCategory(Category blipCategory) {
-        List<Channel> channels = retrieveChannelsByCategory(blipCategory);
-        final Set<Key> channelKeys = new HashSet<Key>();
-        for (Channel channel : channels) {
-            channelKeys.add(channel.getKey());
-        }
-        return DataStoreHelper.retrieveAll(Blip.class, new Utils.QueryHandler() {
+        final Set<Key> channelKeys = getChannelKeys(blipCategory);
+        return DataStoreHelper.retrieveAll(Blip.class, getQueryHandlerForChannels(channelKeys));
+    }
+
+    public List<Blip> retrieveBlipsByChannels(final Set<Key> channelKeys) {
+        return DataStoreHelper.retrieveAll(Blip.class, getQueryHandlerForChannels(channelKeys));
+    }
+
+    private Utils.QueryHandler getQueryHandlerForChannels(final Set<Key> channelKeys) {
+        return new Utils.QueryHandler() {
             public void prepare(Query query) {
                 query.declareParameters("java.util.Set channelKeys");
                 query.setFilter("channelKeys.contains(this.channelKeys)");
@@ -91,6 +85,20 @@ public class BlipItRepository {
             public Object[] parameters() {
                 return new Object[]{channelKeys};
             }
-        });
+        };
+    }
+
+    public List<Filter> retrieveFiltersByCategory(Category blipCategory) {
+        final Set<Key> channelKeys = getChannelKeys(blipCategory);
+        return DataStoreHelper.retrieveAll(Filter.class, getQueryHandlerForChannels(channelKeys));
+    }
+
+    private Set<Key> getChannelKeys(Category blipCategory) {
+        List<Channel> channels = retrieveChannelsByCategory(blipCategory);
+        final Set<Key> channelKeys = new HashSet<Key>();
+        for (Channel channel : channels) {
+            channelKeys.add(channel.getKey());
+        }
+        return channelKeys;
     }
 }

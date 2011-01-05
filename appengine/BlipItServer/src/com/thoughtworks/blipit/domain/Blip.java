@@ -23,6 +23,7 @@ package com.thoughtworks.blipit.domain;
 import com.google.appengine.api.datastore.GeoPt;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.contract.GeoLocation;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -152,5 +153,22 @@ public class Blip {
         setGeoPoint(givenBlip.geoPoint);
         setChannelKeys(givenBlip.channelKeys);
         setCreatorId(givenBlip.creatorId);
+    }
+
+    public void prepareChannelKeys() {
+        Set<Key> channelKeys = new HashSet<Key>();
+        if (Utils.isNotEmpty(this.channelKeys)) {
+            for (Key channelKey : this.channelKeys) {
+                channelKeys.add(KeyFactory.createKey(Channel.class.getSimpleName(), channelKey.getId()));
+            }
+        }
+        this.channelKeys = channelKeys;
+    }
+
+    public void prepareKeys() {
+        if (key != null) {
+            this.key = KeyFactory.createKey(Blip.class.getSimpleName(), key.getId());
+        }
+        prepareChannelKeys();
     }
 }
