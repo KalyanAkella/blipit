@@ -3,10 +3,10 @@ package com.thoughtworks.blipit.restful;
 import com.google.appengine.api.datastore.Category;
 import com.google.gson.Gson;
 import com.thoughtworks.blipit.Utils;
+import com.thoughtworks.blipit.domain.CategoryEnum;
 import com.thoughtworks.blipit.domain.Filter;
 import com.thoughtworks.blipit.persistence.BlipItRepository;
 import com.thoughtworks.blipit.persistence.DataStoreHelper;
-import com.thoughtworks.blipit.domain.CategoryEnum;
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
@@ -17,7 +17,6 @@ import org.restlet.resource.ServerResource;
 
 import javax.jdo.PersistenceManager;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 public class FiltersResource extends ServerResource {
@@ -50,7 +49,7 @@ public class FiltersResource extends ServerResource {
         if (Utils.isJSONMediaType(variant)) {
             try {
                 persistenceManager = DataStoreHelper.getPersistenceManager();
-                Filter filter = gson.fromJson(new InputStreamReader(entity.getStream()), Filter.class);
+                Filter filter = gson.fromJson(entity.getText(), Filter.class);
                 filter.prepareKeys();
                 String json = gson.toJson(persistenceManager.makePersistent(filter));
                 return new JsonRepresentation(json);

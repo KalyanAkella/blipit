@@ -40,4 +40,18 @@ public class BlipsResourceStub extends BlipsResource {
         }
         return result;
     }
+
+    public Blip performPost(Blip blip) throws JSONException, IOException {
+        doInit();
+        String blipJson = gson.toJson(blip);
+        Representation representation = super.post(new JsonRepresentation(blipJson), new Variant(MediaType.APPLICATION_JSON));
+        Blip result = null;
+        if (representation instanceof JsonRepresentation) {
+            JsonRepresentation jsonRepresentation = (JsonRepresentation) representation;
+            String jsonStr = jsonRepresentation.getText();
+            System.out.println(jsonStr);
+            result = gson.fromJson(jsonStr, new TypeToken<Blip>(){}.getType());
+        }
+        return result;
+    }
 }

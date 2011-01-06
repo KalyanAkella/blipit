@@ -54,6 +54,7 @@ public class TestData {
     public static class PanicBlips {
         public static final Blip PANIC1 = new Blip("Panic1 Title", "Panic1 Desc", new GeoPt(12.99800466383297f, 77.55291799658964f));
         public static final Blip PANIC2 = new Blip("Panic2 Title", "Panic2 Desc", new GeoPt(12.973881024116972f, 77.62282172793577f));
+        public static final Blip PANIC3 = new Blip("Panic3 Title", "Panic3 Desc", new GeoPt(12.935131942393395f, 77.58542100543211f));
     }
 
     public static class Locations {

@@ -4,9 +4,9 @@ import com.google.appengine.api.datastore.Category;
 import com.google.gson.Gson;
 import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.blipit.domain.Blip;
+import com.thoughtworks.blipit.domain.CategoryEnum;
 import com.thoughtworks.blipit.persistence.BlipItRepository;
 import com.thoughtworks.blipit.persistence.DataStoreHelper;
-import com.thoughtworks.blipit.domain.CategoryEnum;
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
@@ -18,7 +18,6 @@ import org.restlet.resource.ServerResource;
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 public class BlipsResource extends ServerResource {
@@ -51,7 +50,7 @@ public class BlipsResource extends ServerResource {
         if (Utils.isJSONMediaType(variant)) {
             try {
                 persistenceManager = DataStoreHelper.getPersistenceManager();
-                Blip blip = gson.fromJson(new InputStreamReader(entity.getStream()), Blip.class);
+                Blip blip = gson.fromJson(entity.getText(), Blip.class);
                 blip.prepareKeys();
                 if (isPanicFlow()) blip = loadBlipIfRequired(blip, persistenceManager);
                 String json = gson.toJson(persistenceManager.makePersistent(blip));

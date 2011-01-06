@@ -18,6 +18,9 @@ import static org.junit.Assert.assertThat;
 
 public class BlipsResourceTest extends AbstractDataStoreStubTest {
 
+    private Set<Key> movieChannelKeys;
+    private Set<Key> panicChannelKeys;
+
     @Before
     public void setUp() throws Exception {
         dataStoreStub.makePersistent(TestData.AdChannels.MOVIE);
@@ -26,9 +29,9 @@ public class BlipsResourceTest extends AbstractDataStoreStubTest {
         dataStoreStub.makePersistent(TestData.PanicChannels.EARTHQUAKE);
         dataStoreStub.makePersistent(TestData.PanicChannels.FIRE);
 
-        Set<Key> movieChannelKeys = makeSet(TestData.AdChannels.MOVIE.getKey());
+        movieChannelKeys = makeSet(TestData.AdChannels.MOVIE.getKey());
         Set<Key> foodChannelKeys = makeSet(TestData.AdChannels.FOOD.getKey());
-        Set<Key> panicChannelKeys = makeSet(TestData.PanicChannels.ACCIDENT.getKey(), TestData.PanicChannels.FIRE.getKey());
+        panicChannelKeys = makeSet(TestData.PanicChannels.ACCIDENT.getKey(), TestData.PanicChannels.FIRE.getKey());
         dataStoreStub.makePersistent(TestData.AdBlips.NAVARANG.setChannelKeys(movieChannelKeys));
         dataStoreStub.makePersistent(TestData.AdBlips.FAMELIDO.setChannelKeys(movieChannelKeys));
         dataStoreStub.makePersistent(TestData.AdBlips.MTR.setChannelKeys(foodChannelKeys));
@@ -57,7 +60,50 @@ public class BlipsResourceTest extends AbstractDataStoreStubTest {
         assertBlip(blips.get(2), TestData.AdBlips.MTR);
     }
 
+    @Test
+    public void shouldSaveAdBlip() throws Exception {
+        BlipsResourceStub blipsResourceStub = new BlipsResourceStub("ad");
+        Blip pvrBlip = TestData.AdBlips.PVR.setChannelKeys(movieChannelKeys);
+        Blip savedBlip = blipsResourceStub.performPost(pvrBlip);
+
+        assertBlip(savedBlip, pvrBlip);
+    }
+
+    @Test
+    public void shouldSavePanicBlip() throws Exception {
+        BlipsResourceStub blipsResourceStub = new BlipsResourceStub("panic");
+        Blip panicBlip = TestData.PanicBlips.PANIC2.setChannelKeys(panicChannelKeys);
+        Blip savedBlip = blipsResourceStub.performPost(panicBlip);
+
+        assertBlip(savedBlip, panicBlip);
+    }
+
+    @Test
+    public void shouldSavePanicBlipOnlyOncePerCreator() throws Exception {
+        BlipsResourceStub blipsResourceStub = new BlipsResourceStub("panic");
+        int initialCountOfPanicBlips = blipsResourceStub.performGet().size();
+
+        Blip panicBlip = TestData.PanicBlips.PANIC2;
+        panicBlip.setCreatorId("Creator");
+        panicBlip.setChannelKeys(panicChannelKeys);
+
+        Blip savedBlip = blipsResourceStub.performPost(panicBlip);
+        assertBlip(savedBlip, panicBlip);
+
+        panicBlip.setTitle("New Panic Title");
+        savedBlip = blipsResourceStub.performPost(panicBlip);
+        assertBlip(savedBlip, panicBlip);
+
+        panicBlip.setDescription("New Panic Desc");
+        savedBlip = blipsResourceStub.performPost(panicBlip);
+        assertBlip(savedBlip, panicBlip);
+
+        int finalCountOfPanicBlips = blipsResourceStub.performGet().size();
+        assertThat(finalCountOfPanicBlips, is(initialCountOfPanicBlips + 1));
+    }
+
     private void assertBlip(Blip actualBlip, Blip expectedBlip) {
+        assertThat(actualBlip, is(not(nullValue())));
         assertThat(actualBlip.getTitle(), is(expectedBlip.getTitle()));
         assertThat(actualBlip.getDescription(), is(expectedBlip.getDescription()));
     }
