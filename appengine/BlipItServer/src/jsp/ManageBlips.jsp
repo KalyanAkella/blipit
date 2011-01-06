@@ -82,9 +82,9 @@
         %>
                 <tr class="<%= evenOdd%>">
                     <td>
-                        <input id="key<%= index%>" type="checkbox" name="key<%= index%>" value="<%= blip.getKeyAsString()%>" onclick="updateDeleteButtonAndCheckbox();"/>
+                        <input id="key<%= index%>" type="checkbox" name="key<%= index%>" value="<%= blip.getKey().toString()%>" onclick="updateDeleteButtonAndCheckbox();"/>
                     </td>
-                    <td><%= blip.getKeyAsString()%></td>
+                    <td><%= blip.getKey().toString()%></td>
                     <td><%= blip.getTitle()%></td>
                     <td><%= blip.getDescription()%></td>
                     <td><%= blip.getGeoPoint()%></td>
@@ -129,7 +129,7 @@
             if (Utils.isNotEmpty(channels)) {
                 for (Channel channel : channels) {
         %>
-            <option value="<%= channel.getKeyAsString()%>"><%= channel.getName()%></option>
+            <option value="<%= channel.getKey().toString()%>"><%= channel.getName()%></option>
         <%
                 }
             }

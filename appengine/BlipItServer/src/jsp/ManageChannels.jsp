@@ -30,9 +30,9 @@
         %>
                 <tr class="<%= evenOdd%>">
                     <td>
-                        <input id="key<%= index%>" type="checkbox" name="key<%= index%>" value="<%= channel.getKeyAsString()%>" onclick="updateDeleteButtonAndCheckbox();"/>
+                        <input id="key<%= index%>" type="checkbox" name="key<%= index%>" value="<%= channel.getKey().toString()%>" onclick="updateDeleteButtonAndCheckbox();"/>
                     </td>
-                    <td><%= channel.getKeyAsString()%></td>
+                    <td><%= channel.getKey().toString()%></td>
                     <td><%= channel.getName()%></td>
                     <td><%= channel.getCategory().getCategory()%></td>
                 </tr>

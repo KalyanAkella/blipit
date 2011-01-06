@@ -106,10 +106,6 @@ public class Blip {
         return this;
     }
 
-    public String getKeyAsString() {
-        return KeyFactory.keyToString(key);
-    }
-
     public String getCreatorId() {
         return creatorId;
     }

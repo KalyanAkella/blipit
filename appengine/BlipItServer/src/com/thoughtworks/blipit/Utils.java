@@ -21,6 +21,8 @@
 package com.thoughtworks.blipit;
 
 import com.google.appengine.api.datastore.Category;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.domain.CategoryEnum;
 import org.datanucleus.util.StringUtils;
 import org.restlet.data.MediaType;
@@ -70,24 +72,16 @@ public class Utils {
         return variant.getMediaType().equals(MediaType.APPLICATION_JSON);
     }
 
-    public static interface ResultHandler<T> {
-        void onSuccess(T arg);
-
-        void onError(Throwable throwable);
+    public static <T> Key constructKey(Class<T> clazz, String keyStr) {
+        int firstIndex = keyStr.indexOf("(");
+        int lastIndex = keyStr.indexOf(")");
+        Long id = Long.valueOf(keyStr.substring(firstIndex + 1, lastIndex));
+        return KeyFactory.createKey(clazz.getSimpleName(), id);
     }
 
     public static interface QueryHandler {
         void prepare(Query query);
 
         Object[] parameters();
-    }
-
-    public static class DefaultQueryHandler implements QueryHandler {
-        public void prepare(Query query) {
-        }
-
-        public Object[] parameters() {
-            return new Object[0];
-        }
     }
 }

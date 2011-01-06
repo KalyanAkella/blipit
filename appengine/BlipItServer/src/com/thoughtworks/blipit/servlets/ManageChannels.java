@@ -21,11 +21,10 @@
 package com.thoughtworks.blipit.servlets;
 
 import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
 import com.thoughtworks.blipit.Utils;
+import com.thoughtworks.blipit.domain.CategoryEnum;
 import com.thoughtworks.blipit.domain.Channel;
 import com.thoughtworks.blipit.persistence.DataStoreHelper;
-import com.thoughtworks.blipit.domain.CategoryEnum;
 
 import javax.jdo.PersistenceManager;
 import javax.servlet.ServletException;
@@ -34,12 +33,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 import static com.thoughtworks.blipit.Utils.isValidManageAction;
 
 public class ManageChannels extends HttpServlet {
-    private static final Logger logger = Logger.getLogger(ManageChannels.class.getName());
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -74,7 +71,7 @@ public class ManageChannels extends HttpServlet {
                 String parameterName = (String) parameterNames.nextElement();
                 if (parameterName.matches("key[0-9]+")) {
                     String channelKeyStr = request.getParameter(parameterName);
-                    Key key = KeyFactory.stringToKey(channelKeyStr);
+                    Key key = Utils.constructKey(Channel.class, channelKeyStr);
                     Channel channel = persistenceManager.getObjectById(Channel.class, key);
                     persistenceManager.deletePersistent(channel);
                 }
