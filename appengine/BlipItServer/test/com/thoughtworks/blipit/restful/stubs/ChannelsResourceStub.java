@@ -1,8 +1,8 @@
 package com.thoughtworks.blipit.restful.stubs;
 
 import com.google.gson.reflect.TypeToken;
-import com.thoughtworks.blipit.domain.Blip;
-import com.thoughtworks.blipit.restful.BlipsResource;
+import com.thoughtworks.blipit.domain.Channel;
+import com.thoughtworks.blipit.restful.ChannelsResource;
 import org.json.JSONException;
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
@@ -14,10 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BlipsResourceStub extends BlipsResource {
+public class ChannelsResourceStub extends ChannelsResource {
     private String category;
 
-    public BlipsResourceStub(String category) {
+    public ChannelsResourceStub(String category) {
         this.category = category;
     }
 
@@ -28,29 +28,15 @@ public class BlipsResourceStub extends BlipsResource {
         return attributes;
     }
 
-    public List<Blip> performGet() throws JSONException, IOException {
+    public List<Channel> performGet() throws JSONException, IOException {
         doInit();
         Representation representation = super.get(new Variant(MediaType.APPLICATION_JSON));
-        List<Blip> result = null;
+        List<Channel> result = null;
         if (representation instanceof JsonRepresentation) {
             JsonRepresentation jsonRepresentation = (JsonRepresentation) representation;
             String jsonStr = jsonRepresentation.getText();
             System.out.println(jsonStr);
-            result = gson.fromJson(jsonStr, new TypeToken<List<Blip>>(){}.getType());
-        }
-        return result;
-    }
-
-    public Blip performPost(Blip blip) throws JSONException, IOException {
-        doInit();
-        String blipJson = gson.toJson(blip);
-        Representation representation = super.post(new JsonRepresentation(blipJson), new Variant(MediaType.APPLICATION_JSON));
-        Blip result = null;
-        if (representation instanceof JsonRepresentation) {
-            JsonRepresentation jsonRepresentation = (JsonRepresentation) representation;
-            String jsonStr = jsonRepresentation.getText();
-            System.out.println(jsonStr);
-            result = gson.fromJson(jsonStr, new TypeToken<Blip>(){}.getType());
+            result = gson.fromJson(jsonStr, new TypeToken<List<Channel>>() {}.getType());
         }
         return result;
     }

@@ -102,9 +102,4 @@ public class BlipsResourceTest extends AbstractDataStoreStubTest {
         assertThat(finalCountOfPanicBlips, is(initialCountOfPanicBlips + 1));
     }
 
-    private void assertBlip(Blip actualBlip, Blip expectedBlip) {
-        assertThat(actualBlip, is(not(nullValue())));
-        assertThat(actualBlip.getTitle(), is(expectedBlip.getTitle()));
-        assertThat(actualBlip.getDescription(), is(expectedBlip.getDescription()));
-    }
 }

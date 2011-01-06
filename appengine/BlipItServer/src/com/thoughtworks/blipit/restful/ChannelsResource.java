@@ -18,12 +18,14 @@ import java.util.List;
 public class ChannelsResource extends ServerResource {
     private String category;
     private BlipItRepository blipItRepository;
+    protected Gson gson;
 
     @Override
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         this.category = (String) getRequestAttributes().get("category");
-        blipItRepository = new BlipItRepository();
+        this.blipItRepository = new BlipItRepository();
+        this.gson = new Gson();
     }
 
     // TODO: Send ErrorRepresentation in case of errors
@@ -31,7 +33,7 @@ public class ChannelsResource extends ServerResource {
     protected Representation get(Variant variant) throws ResourceException {
         CategoryEnum channelCategory = CategoryEnum.valueOf(category.toUpperCase());
         List<Channel> channels = blipItRepository.retrieveChannelsByCategory(Utils.convert(channelCategory));
-        String json = new Gson().toJson(channels);
+        String json = gson.toJson(channels);
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON))
             return new JsonRepresentation(json);
         return new StringRepresentation(json);

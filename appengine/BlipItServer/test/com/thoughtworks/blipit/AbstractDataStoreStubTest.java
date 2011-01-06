@@ -23,12 +23,18 @@ package com.thoughtworks.blipit;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+import com.thoughtworks.blipit.domain.Blip;
 import org.junit.After;
 import org.junit.Before;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 public abstract class AbstractDataStoreStubTest {
 
@@ -51,5 +57,11 @@ public abstract class AbstractDataStoreStubTest {
         Set<Key> keySet = new HashSet<Key>();
         keySet.addAll(Arrays.asList(keys));
         return keySet;
+    }
+
+    protected void assertBlip(Blip actualBlip, Blip expectedBlip) {
+        assertThat(actualBlip, is(not(nullValue())));
+        assertThat(actualBlip.getTitle(), is(expectedBlip.getTitle()));
+        assertThat(actualBlip.getDescription(), is(expectedBlip.getDescription()));
     }
 }

@@ -30,8 +30,8 @@ public class BlipsResource extends ServerResource {
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         this.categoryStr = ((String) getRequestAttributes().get("category")).toLowerCase();
-        blipItRepository = new BlipItRepository();
-        gson = new Gson();
+        this.blipItRepository = new BlipItRepository();
+        this.gson = new Gson();
     }
 
     // TODO: Send error representation on errors

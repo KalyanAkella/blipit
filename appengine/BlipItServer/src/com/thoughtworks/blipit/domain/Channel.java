@@ -76,10 +76,6 @@ public class Channel implements Serializable, Comparable<Channel> {
         this.category = category;
     }
 
-    public String getKeyAsString() {
-        return KeyFactory.keyToString(key);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
