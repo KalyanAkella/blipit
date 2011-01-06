@@ -26,6 +26,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.blipit.domain.Channel;
+import com.thoughtworks.blipit.domain.Filter;
 
 import javax.jdo.annotations.Persistent;
 import java.lang.reflect.Field;
@@ -63,5 +64,9 @@ public class DataStoreStub {
 
     public void makePersistent(Channel channel) {
         channel.setKey(setupEntityAsPersisted(channel));
+    }
+
+    public void makePersistent(Filter filter) {
+        filter.setKey(setupEntityAsPersisted(filter));
     }
 }

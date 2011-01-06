@@ -23,14 +23,14 @@ public class FiltersResource extends ServerResource {
 
     private String categoryStr;
     private BlipItRepository blipItRepository;
-    private Gson gson;
+    protected Gson gson;
 
     @Override
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
         this.categoryStr = ((String) getRequestAttributes().get("category")).toLowerCase();
-        blipItRepository = new BlipItRepository();
-        gson = new Gson();
+        this.blipItRepository = new BlipItRepository();
+        this.gson = new Gson();
     }
 
     // TODO: Send error representation on errors
