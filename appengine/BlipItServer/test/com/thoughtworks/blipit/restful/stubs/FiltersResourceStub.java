@@ -11,6 +11,7 @@ import org.restlet.representation.Variant;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FiltersResourceStub extends FiltersResource {
@@ -25,6 +26,19 @@ public class FiltersResourceStub extends FiltersResource {
         Map<String, Object> attributes = new HashMap<String, Object>();
         attributes.put("category", category);
         return attributes;
+    }
+
+    public List<Filter> performGet() throws IOException {
+        doInit();
+        Representation representation = super.get(new Variant(MediaType.APPLICATION_JSON));
+        List<Filter> result = null;
+        if (representation instanceof JsonRepresentation) {
+            JsonRepresentation jsonRepresentation = (JsonRepresentation) representation;
+            String jsonStr = jsonRepresentation.getText();
+            System.out.println(jsonStr);
+            result = gson.fromJson(jsonStr, new TypeToken<List<Filter>>(){}.getType());
+        }
+        return result;
     }
 
     public Filter performPost(Filter filter) throws JSONException, IOException {

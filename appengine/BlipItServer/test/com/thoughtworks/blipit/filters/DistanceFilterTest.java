@@ -21,7 +21,7 @@
 package com.thoughtworks.blipit.filters;
 
 import com.google.appengine.api.datastore.GeoPt;
-import com.thoughtworks.blipit.AbstractDataStoreStubTest;
+import com.thoughtworks.blipit.AbstractResourceTest;
 import com.thoughtworks.blipit.domain.Blip;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class DistanceFilterTest extends AbstractDataStoreStubTest {
+public class DistanceFilterTest extends AbstractResourceTest {
 
     private static final int PREFERRED_DISTANCE_IN_METERS = 2000;
     public DistanceFilter distanceFilter;

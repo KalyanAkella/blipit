@@ -1,6 +1,6 @@
 package com.thoughtworks.blipit.restful;
 
-import com.thoughtworks.blipit.AbstractDataStoreStubTest;
+import com.thoughtworks.blipit.AbstractResourceTest;
 import com.thoughtworks.blipit.TestData;
 import com.thoughtworks.blipit.domain.Channel;
 import com.thoughtworks.blipit.restful.stubs.ChannelsResourceStub;
@@ -14,7 +14,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class ChannelsResourceTest extends AbstractDataStoreStubTest {
+public class ChannelsResourceTest extends AbstractResourceTest {
     @Before
     public void setUp() throws Exception {
         dataStoreStub.makePersistent(TestData.AdChannels.MOVIE);

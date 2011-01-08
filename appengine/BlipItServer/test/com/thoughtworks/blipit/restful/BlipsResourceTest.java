@@ -1,7 +1,7 @@
 package com.thoughtworks.blipit.restful;
 
 import com.google.appengine.api.datastore.Key;
-import com.thoughtworks.blipit.AbstractDataStoreStubTest;
+import com.thoughtworks.blipit.AbstractResourceTest;
 import com.thoughtworks.blipit.TestData;
 import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.blipit.restful.stubs.BlipsResourceStub;
@@ -16,7 +16,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-public class BlipsResourceTest extends AbstractDataStoreStubTest {
+public class BlipsResourceTest extends AbstractResourceTest {
 
     private Set<Key> movieChannelKeys;
     private Set<Key> panicChannelKeys;

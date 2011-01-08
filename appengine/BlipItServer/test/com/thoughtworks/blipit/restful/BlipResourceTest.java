@@ -1,7 +1,7 @@
 package com.thoughtworks.blipit.restful;
 
 import com.google.appengine.api.datastore.Key;
-import com.thoughtworks.blipit.AbstractDataStoreStubTest;
+import com.thoughtworks.blipit.AbstractResourceTest;
 import com.thoughtworks.blipit.TestData;
 import com.thoughtworks.blipit.domain.Blip;
 import com.thoughtworks.blipit.restful.stubs.BlipResourceStub;
@@ -15,7 +15,7 @@ import java.util.Set;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class BlipResourceTest extends AbstractDataStoreStubTest {
+public class BlipResourceTest extends AbstractResourceTest {
 
     @Before
     public void setUp() throws Exception {
