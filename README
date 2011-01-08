@@ -1,1 +1,19 @@
-BlipIt!
+Welcome to the BlipIt Open Source Project.
+
+For information about the project, look at our project page at
+http://code.google.com/p/blipit/ and our mailing list at 
+http://groups.google.com/group/blipit
+
+You need Ant to build this project. Following are the important targets:
+
+run.server - Compiles and deploys the BlipIt server application. Additionally
+starts the app-engine server on port http 8080.
+
+install.main - Compiles and deploys the BlipItMain android application. The 
+android emulator instance must be running prior to invoking this target. Ensure
+that only one instance of the emulator is running.
+
+install.pb - Compiles and deploys the PanicBlip android application. The 
+android emulator instance must be running prior to invoking this target. Ensure
+that only one instance of the emulator is running.
+
