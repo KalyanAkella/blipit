@@ -36,6 +36,9 @@ import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -80,30 +83,34 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
     @Override
     protected void onStart() {
         super.onStart();
-        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String allChannelsStr = sharedPreferences.getString(PANIC_CHANNELS_KEY, null);
         if (allChannelsStr == null || allChannelsStr.length() == 0) {
-            showDialog(0);
-            channelsThread = new Thread() {
-                @Override
-                public void run() {
-                    String channelsAsString = "";
-                    try {
-                        String blipitServiceLoc = readBlipItServiceLoc();
-                        channelsAsString = PanicBlipHttpHelper.getInstance().getAllChannelsAsJson(blipitServiceLoc);
-                        if (channelsAsString == null || channelsAsString.length() == 0) {
-                            showChannelsErrorToast();
-                        }
-                    } catch (Exception e) {
+            loadAndUpdatePanicChannels(sharedPreferences);
+        } else updatePanicChannels(allChannelsStr);
+    }
+
+    private void loadAndUpdatePanicChannels(final SharedPreferences sharedPreferences) {
+        showDialog(0);
+        channelsThread = new Thread() {
+            @Override
+            public void run() {
+                String channelsAsString = "";
+                try {
+                    String blipitServiceLoc = readBlipItServiceLoc();
+                    channelsAsString = PanicBlipHttpHelper.getInstance().getAllChannelsAsJson(blipitServiceLoc);
+                    if (channelsAsString == null || channelsAsString.length() == 0) {
                         showChannelsErrorToast();
-                        Log.e(APP_TAG, "An error occurred while retrieving panic channels", e);
                     }
-                    sharedPreferences.edit().putString(PANIC_CHANNELS_KEY, channelsAsString).commit();
-                    updatePanicChannelList(channelsAsString);
+                } catch (Exception e) {
+                    showChannelsErrorToast();
+                    Log.e(APP_TAG, "An error occurred while retrieving panic channels", e);
                 }
-            };
-            channelsThread.start();
-        } else updatePanicChannelList(allChannelsStr);
+                sharedPreferences.edit().putString(PANIC_CHANNELS_KEY, channelsAsString).commit();
+                updatePanicChannels(channelsAsString);
+            }
+        };
+        channelsThread.start();
     }
 
     @Override
@@ -123,7 +130,7 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
         panicChannelList.setOnItemClickListener(this);
     }
 
-    private void updatePanicChannelList(String allChannelsStr) {
+    private void updatePanicChannels(String allChannelsStr) {
         if (allChannelsStr == null || allChannelsStr.length() == 0) return;
         panicChannels = PanicBlipUtils.toChannels(allChannelsStr);
         panicChannelNames = PanicBlipUtils.toChannelNames(panicChannels);
@@ -323,5 +330,21 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
 
     private void showMessageOnUI(final String message) {
         Toast.makeText(PanicBlipActivity.this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.reload_channels_item) {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            loadAndUpdatePanicChannels(sharedPreferences);
+        }
+        return true;
     }
 }
