@@ -28,10 +28,8 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -62,11 +60,6 @@ public class BlipItPrefActivity extends PreferenceActivity implements SharedPref
         if (allChannelsStr == null || allChannelsStr.length() == 0) {
             loadChannels(sharedPreferences);
         }
-    }
-
-    @Override
-    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
 
     private String readBlipItServiceLoc() {
@@ -138,13 +131,13 @@ public class BlipItPrefActivity extends PreferenceActivity implements SharedPref
                 String channelsAsString = "";
                 try {
                     String blipitServiceLoc = readBlipItServiceLoc();
-                    channelsAsString = BlipItHttpHelper.getInstance().getAllChannelsAsJson(blipitServiceLoc);
+                    channelsAsString = BlipItHttpHelper.getInstance().getAllChannelsAsJson(blipitServiceLoc, "ad");
                     if (channelsAsString == null || channelsAsString.length() == 0) {
                         showChannelsErrorToast();
                     }
                 } catch (Exception e) {
                     showChannelsErrorToast();
-                    Log.e(APP_TAG, "An error occurred while retrieving ad channels", e);
+                    Log.e(APP_TAG, "An error occurred while retrieving channels", e);
                 }
                 sharedPreferences.edit().putString(AD_CHANNELS_KEY, channelsAsString).commit();
             }

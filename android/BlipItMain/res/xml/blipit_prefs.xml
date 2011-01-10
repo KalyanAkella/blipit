@@ -16,4 +16,9 @@
             android:summary="@string/summary_channel_preference"
             android:dialogTitle="@string/dialog_title_channel_preference" />
 
+    <CheckBoxPreference
+            android:key="show_panic_pref_key"
+            android:title="@string/title_show_panic_preference"
+            android:summary="@string/summary_show_panic_preference" />
+
 </PreferenceScreen>

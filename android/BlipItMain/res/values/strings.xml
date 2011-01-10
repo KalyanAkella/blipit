@@ -20,4 +20,6 @@
     <string name="radius_preference_success">Your radius preference has been saved.</string>
     <string name="radius_preference_failure">Radius cannot be greater than 10 KM. Reverting to default value of 2 KM.</string>
     <string name="reload_channels">Reload channels</string>
+    <string name="title_show_panic_preference">Show panic blips</string>
+    <string name="summary_show_panic_preference">Show blips from panic channels. These blips are shown only if the panic channels are selected.</string>
 </resources>

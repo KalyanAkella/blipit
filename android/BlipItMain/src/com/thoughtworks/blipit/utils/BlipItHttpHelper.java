@@ -86,11 +86,11 @@ public class BlipItHttpHelper {
         httpClient = new DefaultHttpClient(manager, params);
     }
 
-    public String getAllChannelsAsJson(String blipItSvcHost) {
+    public String getAllChannelsAsJson(String blipItSvcHost, String category) {
         HttpEntity httpEntity = null;
         String channelsJson = null;
         try {
-            String blipItSvcUrl = String.format("http://%s/blipit/ad/channel", blipItSvcHost);
+            String blipItSvcUrl = String.format("http://%s/blipit/%s/channel", blipItSvcHost, category);
             HttpGet httpGet = new HttpGet(blipItSvcUrl);
             httpGet.addHeader("Content-Type", JSON_CONTENT_TYPE);
             HttpResponse httpResponse = httpClient.execute(httpGet);
