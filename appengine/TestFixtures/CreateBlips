@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/ManageBlipIt.jsp?category=channels" />
+<title>CreateBlips</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">CreateBlips</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>manage_blips_link</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.title</td>
+	<td>panicblip1</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.desc</td>
+	<td>panicblip2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.desc</td>
+	<td>panicblip1</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>blip.channels</td>
+	<td>label=panic1</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>blip.channels</td>
+	<td>label=panic3</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>blip.channels</td>
+	<td>label=panic5</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.loc.lat</td>
+	<td>12.99800466383297</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.loc.long</td>
+	<td>77.55291799658964</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.title</td>
+	<td>panicblip2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.desc</td>
+	<td>panicblip2</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>blip.channels</td>
+	<td>label=panic2</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>blip.channels</td>
+	<td>label=panic4</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.loc.lat</td>
+	<td>12.973881024116972</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.loc.long</td>
+	<td>77.62282172793577</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.title</td>
+	<td>NAVARANG</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.title</td>
+	<td>Navarang</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.desc</td>
+	<td>Kannada Movie</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>blip.channels</td>
+	<td>label=ad1</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>blip.channels</td>
+	<td>label=ad3</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.loc.lat</td>
+	<td>12.99800466383297</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.loc.long</td>
+	<td>77.55291799658964</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.title</td>
+	<td>MTR</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.desc</td>
+	<td>Karnataka ethnic food</td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>blip.channels</td>
+	<td>label=ad2</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.loc.lat</td>
+	<td>12.955009113220616</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>blip.loc.long</td>
+	<td>77.58542100543211</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Add']</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
