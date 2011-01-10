@@ -335,7 +335,7 @@ public class PanicBlipActivity extends Activity implements View.OnClickListener,
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu, menu);
+        menuInflater.inflate(R.menu.panic_blip_menu, menu);
         return true;
     }
 
