@@ -81,6 +81,19 @@ public class BlipsResourceTest extends AbstractResourceTest {
     }
 
     @Test
+    public void shouldGetAllBlipsForPanicAndAdCategory() throws Exception {
+        BlipsResourceStub blipsResourceStub = new BlipsResourceStub("panic+ad");
+        List<Blip> blips = blipsResourceStub.performGet();
+
+        assertThat(blips, is(not(nullValue())));
+        assertThat(blips.size(), is(4));
+        assertBlip(blips.get(0), TestData.AdBlips.NAVARANG);
+        assertBlip(blips.get(1), TestData.AdBlips.FAMELIDO);
+        assertBlip(blips.get(2), TestData.PanicBlips.PANIC1);
+        assertBlip(blips.get(3), TestData.AdBlips.MTR);
+    }
+
+    @Test
     public void shouldSaveAdBlip() throws Exception {
         BlipsResourceStub blipsResourceStub = new BlipsResourceStub("ad");
         Blip pvrBlip = TestData.AdBlips.PVR.setChannelKeys(movieChannelKeys);

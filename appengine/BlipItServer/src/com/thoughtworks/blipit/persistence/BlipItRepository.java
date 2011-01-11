@@ -34,21 +34,21 @@ import java.util.Set;
 
 public class BlipItRepository {
 
-    public List<Channel> retrieveChannelsByCategory(final Category channelCategory) {
+    public List<Channel> retrieveChannelsByCategories(final Set<Category> channelCategorySet) {
         return DataStoreHelper.retrieveAll(Channel.class, new Utils.QueryHandler() {
             public void prepare(Query query) {
-                query.declareParameters("com.google.appengine.api.datastore.Category channelCategory");
-                query.setFilter("this.category == channelCategory");
+                query.declareParameters("java.util.Set channelCategorySet");
+                query.setFilter("channelCategorySet.contains(this.category)");
             }
 
             public Object[] parameters() {
-                return new Object[] {channelCategory};
+                return new Object[] {channelCategorySet};
             }
         });
     }
 
-    public List<Blip> retrieveBlipsByCategory(Category blipCategory) {
-        final Set<Key> channelKeys = getChannelKeys(blipCategory);
+    public List<Blip> retrieveBlipsByCategories(Set<Category> blipCategories) {
+        final Set<Key> channelKeys = getChannelKeys(blipCategories);
         return DataStoreHelper.retrieveAll(Blip.class, getQueryHandlerForChannels(channelKeys));
     }
 
@@ -69,13 +69,13 @@ public class BlipItRepository {
         };
     }
 
-    public List<Filter> retrieveFiltersByCategory(Category blipCategory) {
-        final Set<Key> channelKeys = getChannelKeys(blipCategory);
+    public List<Filter> retrieveFiltersByCategories(Set<Category> filterCategories) {
+        final Set<Key> channelKeys = getChannelKeys(filterCategories);
         return DataStoreHelper.retrieveAll(Filter.class, getQueryHandlerForChannels(channelKeys));
     }
 
-    private Set<Key> getChannelKeys(Category blipCategory) {
-        List<Channel> channels = retrieveChannelsByCategory(blipCategory);
+    private Set<Key> getChannelKeys(Set<Category> blipCategories) {
+        List<Channel> channels = retrieveChannelsByCategories(blipCategories);
         final Set<Key> channelKeys = new HashSet<Key>();
         for (Channel channel : channels) {
             channelKeys.add(channel.getKey());

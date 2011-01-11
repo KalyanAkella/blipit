@@ -31,9 +31,13 @@ import org.restlet.representation.Variant;
 import javax.jdo.Query;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Utils {
+    public static final String CATEGORY_SEPARATOR = "\\+";
+
     public static List<String> splitByComma(String stringWithCommas) {
         if (StringUtils.isEmpty(stringWithCommas)) return null;
         String[] strings = stringWithCommas.split("[\\s]*,[\\s]*");
@@ -77,6 +81,17 @@ public class Utils {
         int lastIndex = keyStr.indexOf(")");
         Long id = Long.valueOf(keyStr.substring(firstIndex + 1, lastIndex));
         return KeyFactory.createKey(clazz.getSimpleName(), id);
+    }
+
+    public static Set<Category> constructCategorySet(String categoryStr) {
+        Set<Category> categories = new HashSet<Category>();
+        if (categoryStr != null) {
+            String[] strings = categoryStr.split(CATEGORY_SEPARATOR);
+            for (String string : strings) {
+                categories.add(convert(CategoryEnum.valueOf(string.toUpperCase())));
+            }
+        }
+        return categories;
     }
 
     public static interface QueryHandler {

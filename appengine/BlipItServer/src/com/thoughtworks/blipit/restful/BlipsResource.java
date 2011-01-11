@@ -39,17 +39,20 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+
+import static com.thoughtworks.blipit.Utils.constructCategorySet;
 
 public class BlipsResource extends ServerResource {
 
-    private String categoryStr;
+    private Set<Category> categorySet;
     private BlipItRepository blipItRepository;
     protected Gson gson;
 
     @Override
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        this.categoryStr = ((String) getRequestAttributes().get("category")).toLowerCase();
+        this.categorySet = constructCategorySet((String) getRequestAttributes().get("category"));
         this.blipItRepository = new BlipItRepository();
         this.gson = new Gson();
     }
@@ -57,8 +60,7 @@ public class BlipsResource extends ServerResource {
     // TODO: Send error representation on errors
     @Override
     protected Representation get(Variant variant) throws ResourceException {
-        Category category = Utils.convert(CategoryEnum.valueOf(categoryStr.toUpperCase()));
-        List<Blip> blips = blipItRepository.retrieveBlipsByCategory(category);
+        List<Blip> blips = blipItRepository.retrieveBlipsByCategories(categorySet);
         String json = gson.toJson(blips);
         return Utils.isJSONMediaType(variant) ? new JsonRepresentation(json) : new StringRepresentation(json);
     }
@@ -94,7 +96,7 @@ public class BlipsResource extends ServerResource {
     }
 
     private boolean isPanicFlow() {
-        return "panic".equals(categoryStr);
+        return categorySet.contains(new Category(CategoryEnum.PANIC.name()));
     }
 
     private Blip loadBlipByCreatorId(String creatorId, PersistenceManager persistenceManager) {

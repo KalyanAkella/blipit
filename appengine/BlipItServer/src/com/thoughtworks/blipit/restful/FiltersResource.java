@@ -23,7 +23,6 @@ package com.thoughtworks.blipit.restful;
 import com.google.appengine.api.datastore.Category;
 import com.google.gson.Gson;
 import com.thoughtworks.blipit.Utils;
-import com.thoughtworks.blipit.domain.CategoryEnum;
 import com.thoughtworks.blipit.domain.Filter;
 import com.thoughtworks.blipit.persistence.BlipItRepository;
 import com.thoughtworks.blipit.persistence.DataStoreHelper;
@@ -38,17 +37,20 @@ import org.restlet.resource.ServerResource;
 import javax.jdo.PersistenceManager;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+
+import static com.thoughtworks.blipit.Utils.constructCategorySet;
 
 public class FiltersResource extends ServerResource {
 
-    private String categoryStr;
+    private Set<Category> categorySet;
     private BlipItRepository blipItRepository;
     protected Gson gson;
 
     @Override
     protected void doInit() throws ResourceException {
         this.getVariants().add(new Variant(MediaType.APPLICATION_JSON));
-        this.categoryStr = ((String) getRequestAttributes().get("category")).toLowerCase();
+        this.categorySet = constructCategorySet((String) getRequestAttributes().get("category"));
         this.blipItRepository = new BlipItRepository();
         this.gson = new Gson();
     }
@@ -56,8 +58,7 @@ public class FiltersResource extends ServerResource {
     // TODO: Send error representation on errors
     @Override
     protected Representation get(Variant variant) throws ResourceException {
-        Category category = Utils.convert(CategoryEnum.valueOf(categoryStr.toUpperCase()));
-        List<Filter> filters = blipItRepository.retrieveFiltersByCategory(category);
+        List<Filter> filters = blipItRepository.retrieveFiltersByCategories(categorySet);
         String json = gson.toJson(filters);
         return Utils.isJSONMediaType(variant) ? new JsonRepresentation(json) : new StringRepresentation(json);
     }
