@@ -23,24 +23,14 @@ package com.thoughtworks.blipit.types;
 import java.io.Serializable;
 
 public class Key implements Serializable {
-    private String kind;
     private String id;
 
     public Key() {
-        this(null, null);
+        this(null);
     }
 
-    public Key(String kind, String id) {
-        this.kind = kind;
+    public Key(String id) {
         this.id = id;
-    }
-
-    public String getKind() {
-        return kind;
-    }
-
-    public void setKind(String kind) {
-        this.kind = kind;
     }
 
     public String getId() {
