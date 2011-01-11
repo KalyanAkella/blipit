@@ -37,6 +37,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import com.thoughtworks.blipit.R;
 import com.thoughtworks.blipit.utils.BlipItHttpHelper;
+import com.thoughtworks.blipit.utils.BlipItUtils;
 
 import static com.thoughtworks.blipit.utils.BlipItUtils.AD_CHANNELS_KEY;
 import static com.thoughtworks.blipit.utils.BlipItUtils.APP_TAG;
@@ -63,7 +64,7 @@ public class BlipItPrefActivity extends PreferenceActivity implements SharedPref
     }
 
     private String readBlipItServiceLoc() {
-        String result =  null;
+        String result = null;
         try {
             PackageManager packageManager = getPackageManager();
             ComponentName componentName = new ComponentName(this, BlipItPrefActivity.class);
@@ -131,7 +132,7 @@ public class BlipItPrefActivity extends PreferenceActivity implements SharedPref
                 String channelsAsString = "";
                 try {
                     String blipitServiceLoc = readBlipItServiceLoc();
-                    channelsAsString = BlipItHttpHelper.getInstance().getAllChannelsAsJson(blipitServiceLoc, "ad");
+                    channelsAsString = BlipItHttpHelper.getInstance().getAllChannelsAsJson(blipitServiceLoc, getCategory());
                     if (channelsAsString == null || channelsAsString.length() == 0) {
                         showChannelsErrorToast();
                     }
@@ -143,6 +144,12 @@ public class BlipItPrefActivity extends PreferenceActivity implements SharedPref
             }
         };
         channelsThread.start();
+    }
+
+    private String getCategory() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean showPanicBlips = sharedPreferences.getBoolean(BlipItUtils.SHOW_PANIC_PREF_KEY, false);
+        return showPanicBlips ? "panic+ad" : "ad";
     }
 
     @Override
