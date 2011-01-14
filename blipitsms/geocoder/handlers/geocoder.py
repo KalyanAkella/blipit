@@ -5,7 +5,7 @@
 from rapidsms.contrib.handlers.handlers.keyword import KeywordHandler
 import urllib2, urllib
 import json
-from geocoder.blip import  Channel, GeoPoint, Blip, BlipItPost
+from blipitsms.geocoder.blip import Channel, GeoPoint, Blip, BlipItPost
 
 class GeoCoderHandler(KeywordHandler):
     """
@@ -27,12 +27,13 @@ class GeoCoderHandler(KeywordHandler):
             latitude = json_data['results'][0]['geometry']['location']['lat']
             longitude = json_data['results'][0]['geometry']['location']['lng']
             self.respond("lat is : %f and longitude is : %f" % (latitude,longitude))
-			c1 = Channel(3001)
-			c2 = Channel(4001)
-			g1 = GeoPoint(latitude, longitude)
-			b = Blip([c1,c2], "PANIC sms", g1, "PANIC sms")
-			blipitPost = BlipItPost(b)
-			blipitPost.post()
+            creatorId = self.msg.connection.identity
+            c1 = Channel(3001)
+            c2 = Channel(4001)
+            g1 = GeoPoint(latitude, longitude)
+            b = Blip([c1,c2], "PANIC sms", g1, "PANIC sms", creatorId)
+            blipitPost = BlipItPost(b)
+            blipitPost.post()
             return
             
         self.respond("Sorry we do not understand your address!")
