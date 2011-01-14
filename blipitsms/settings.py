@@ -75,7 +75,26 @@ INSTALLED_APPS = [
     "rapidsms.contrib.scheduler",
     "rapidsms.contrib.echo",
     "geocoder",
+    "djcelery",
 ]
+
+import djcelery
+djcelery.setup_loader()
+
+BROKER_HOST = "Diptanu-Choudhurys-MacBook-Pro.local"
+BROKER_PORT = 5672
+BROKER_USER = "diptanuc"
+BROKER_PASSWORD = "test123"
+BROKER_VHOST = "blipit"
+
+from datetime import timedelta
+
+CELERYBEAT_SCHEDULE = {
+    "runs-every-30-seconds": {
+        "task": "geocoder.tasks.scan_channels",
+        "schedule": timedelta(seconds=30)
+    },
+}
 
 
 # this rapidsms-specific setting defines which views are linked by the
