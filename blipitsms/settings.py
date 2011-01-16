@@ -41,7 +41,6 @@ INSTALLED_BACKENDS = {
     }
 }
 
-
 # to help you get started quickly, many django/rapidsms apps are enabled
 # by default. you may wish to remove some and/or add your own.
 INSTALLED_APPS = [
@@ -96,6 +95,9 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
+BLIPIT_SVC_URL = "http://blipitsvc.appspot.com/blipit/panic/channel"
+
+GEOCODER_SVC_URL = "http://maps.googleapis.com/maps/api/geocode/json?sensor=true&address="
 
 # this rapidsms-specific setting defines which views are linked by the
 # tabbed navigation. when adding an app to INSTALLED_APPS, you may wish
