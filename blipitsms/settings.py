@@ -95,9 +95,13 @@ CELERYBEAT_SCHEDULE = {
     },
 }
 
-BLIPIT_SVC_URL = "http://blipitsvc.appspot.com/blipit/panic/channel"
+BLIPIT_SVC_URL = "http://blipitsvc.appspot.com/blipit/"
 
 GEOCODER_SVC_URL = "http://maps.googleapis.com/maps/api/geocode/json?sensor=true&address="
+
+BLIPIT_SVC_CHANNELS_URL = BLIPIT_SVC_URL + "panic/channel"
+
+BLIPIT_SVC_PANIC_URL = BLIPIT_SVC_URL + "panic/blip"
 
 # this rapidsms-specific setting defines which views are linked by the
 # tabbed navigation. when adding an app to INSTALLED_APPS, you may wish

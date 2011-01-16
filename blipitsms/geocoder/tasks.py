@@ -7,7 +7,7 @@ from blip import Blip, BlipItPost, GeoPoint
 
 @task
 def scan_channels():
-    req = urllib2.urlopen(settings.BLIPIT_SVC_URL)
+    req = urllib2.urlopen(settings.BLIPIT_SVC_CHANNELS_URL)
     json_data = json.loads(req.read())
     for channel in json_data:
         channel_id = channel['key']['id']

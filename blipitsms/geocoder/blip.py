@@ -19,10 +19,11 @@ class Blip(dict):
 		self['creatorId'] = creatorId
 
 import urllib2, json
+from django.conf import settings
 		
 class BlipItPost:
 	
-	url = "http://blipitsvc.appspot.com/blipit/panic/blip"
+	url = settings.BLIPIT_SVC_PANIC_URL
 	
 	def __init__(self, blip):
 		self.blip = blip
