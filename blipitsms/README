@@ -1,0 +1,72 @@
+Welcome to BlipitSMS
+
+INSTALL
+
+Requirements
+* Python 2.6
+* Virtualenv
+* pip
+* RapidSMS
+* celery
+* django-celery
+* RabbitMQ
+
+Step 1
+Download and install RabitMQ, if you are on OSX use homebrew (brew install rabbitmq)
+
+a. Start the RabbitMQ server by -
+	sudo rabbitmq-server
+	
+b. See the status -
+	sudo rabbitmqctl status
+	Status of node 'rabbit@Diptanu-Choudhurys-MacBook-Pro' ...
+	[{running_applications,[{rabbit,"RabbitMQ","2.2.0"},
+	                        {os_mon,"CPO  CXC 138 46","2.2.5"},
+	                        {sasl,"SASL  CXC 138 11","2.1.9.2"},
+	                        {mnesia,"MNESIA  CXC 138 12","4.4.16"},
+	                        {stdlib,"ERTS  CXC 138 10","1.17.2"},
+	                        {kernel,"ERTS  CXC 138 10","2.14.2"}]},
+	 {nodes,[{disc,['rabbit@Diptanu-Choudhurys-MacBook-Pro']}]},
+	 {running_nodes,['rabbit@Diptanu-Choudhurys-MacBook-Pro']}]
+	...done.
+	
+	Note the hostname of the node, in this case it is Diptanu-Choudhurys-MacBook-Pro.local
+	
+c. Add a user
+	sudo rabbitmqctl add_user myuser mypassword
+	
+d. Add vhost
+	rabbitmqctl add_vhost myvhost
+
+e. rabbitmqctl set_permissions -p myvhost myuser ".*" ".*" ".*"
+
+f. Add the relevant details in settings.py of blipitsms
+
+BROKER_HOST = "Diptanu-Choudhurys-MacBook-Pro.local"
+BROKER_PORT = 5672
+BROKER_USER = "diptanuc"
+BROKER_PASSWORD = "test123"
+BROKER_VHOST = "blipit"
+
+Step 2
+
+Create a virtualenv with the following command - 
+virtualenv blipitenv --no-site-packages
+
+Step 3
+
+Install pip
+sudo easy_intsall pip
+
+Step 4
+
+Install the dependencies of blipitsms using pip
+
+pip install -r requirements.txt
+
+Step 5
+
+Activate the virtualenv
+
+source path/to/blipitenv/bin/activate
+

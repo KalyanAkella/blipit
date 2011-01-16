@@ -29,6 +29,6 @@ class BlipItPost:
 		
 	def post(self):
 		json_data = json.dumps(self.blip)
-		request = urllib2.Request(self.url, json_data)
-		response = urllib2.urlopen(request)
+                request = urllib2.Request(self.url, json_data)
+                response = urllib2.urlopen(request)
 		return

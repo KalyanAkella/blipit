@@ -22,7 +22,6 @@ def send(phone_number, address, channel_list, msg):
     url_request = urllib2.urlopen(url)
     response = url_request.read()
     geocoder_result = json.loads(response)
-    print msg
     if geocoder_result['status'] == u'OK':
         latitude = geocoder_result['results'][0]['geometry']['location']['lat']
         longitude = geocoder_result['results'][0]['geometry']['location']['lng']

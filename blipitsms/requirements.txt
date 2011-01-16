@@ -1,0 +1,16 @@
+Django==1.2.4
+RapidSMS==0.9.6a
+amqplib==0.6.1
+anyjson==0.3
+carrot==0.10.7
+celery==2.1.4
+django-celery==2.1.4
+django-nose==0.1.2
+django-picklefield==0.1.9
+djappsettings==0.1.0
+djtables==0.1.1
+importlib==1.0.2
+nose==1.0.0
+pyparsing==1.5.5
+python-dateutil==1.5
+wsgiref==0.1.2
