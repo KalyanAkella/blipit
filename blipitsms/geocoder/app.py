@@ -16,7 +16,7 @@ class App(AppBase):
         
         print channel_list
         if len(channel_list) is not 0:
-            tasks.send.delay(msg.connection.identity, msg_txt[1], channel_list, msg)
+            tasks.send(msg.connection.identity, msg_txt[1], channel_list, msg)
             msg.respond("We are processing your request")
             return
         
