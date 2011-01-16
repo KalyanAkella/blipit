@@ -22,8 +22,10 @@ package com.thoughtworks.blipit.restful;
 
 import com.google.appengine.api.datastore.Category;
 import com.google.gson.Gson;
+import com.thoughtworks.blipit.Utils;
 import com.thoughtworks.blipit.domain.Channel;
 import com.thoughtworks.blipit.persistence.BlipItRepository;
+import com.thoughtworks.blipit.persistence.DataStoreHelper;
 import org.restlet.data.MediaType;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
@@ -32,6 +34,8 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
+import javax.jdo.PersistenceManager;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -59,5 +63,24 @@ public class ChannelsResource extends ServerResource {
         if (variant.getMediaType().equals(MediaType.APPLICATION_JSON))
             return new JsonRepresentation(json);
         return new StringRepresentation(json);
+    }
+
+    // TODO: Send error representation on errors
+    @Override
+    protected Representation post(Representation entity, Variant variant) throws ResourceException {
+        PersistenceManager persistenceManager = null;
+        if (Utils.isJSONMediaType(variant)) {
+            try {
+                persistenceManager = DataStoreHelper.getPersistenceManager();
+                Channel channel = gson.fromJson(entity.getText(), Channel.class);
+                String json = gson.toJson(persistenceManager.makePersistent(channel));
+                return new JsonRepresentation(json);
+            } catch (IOException e) {
+                return new StringRepresentation(e.getMessage());
+            } finally {
+                if (persistenceManager != null) persistenceManager.close();
+            }
+        }
+        return new StringRepresentation("Unsupported media type: " + variant.getMediaType());
     }
 }

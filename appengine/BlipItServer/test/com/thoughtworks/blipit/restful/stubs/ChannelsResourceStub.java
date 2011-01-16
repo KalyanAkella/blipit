@@ -60,4 +60,18 @@ public class ChannelsResourceStub extends ChannelsResource {
         }
         return result;
     }
+
+    public Channel performPost(Channel channel) throws JSONException, IOException {
+        doInit();
+        String channelJson = gson.toJson(channel);
+        Representation representation = super.post(new JsonRepresentation(channelJson), new Variant(MediaType.APPLICATION_JSON));
+        Channel result = null;
+        if (representation instanceof JsonRepresentation) {
+            JsonRepresentation jsonRepresentation = (JsonRepresentation) representation;
+            String jsonStr = jsonRepresentation.getText();
+            System.out.println(jsonStr);
+            result = gson.fromJson(jsonStr, new TypeToken<Channel>(){}.getType());
+        }
+        return result;
+    }
 }

@@ -33,6 +33,7 @@ public class TestData {
         private static Category category = Utils.convert(CategoryEnum.AD);
         public static final Channel MOVIE = new Channel(null, "Movies", category);
         public static final Channel FOOD = new Channel(null, "Food", category);
+        public static final Channel RETAIL = new Channel(null, "Retail", category);
     }
 
     public static class PanicChannels {

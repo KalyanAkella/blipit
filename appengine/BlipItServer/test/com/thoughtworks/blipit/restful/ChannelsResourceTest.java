@@ -81,6 +81,28 @@ public class ChannelsResourceTest extends AbstractResourceTest {
         assertChannel(channels.get(4), TestData.PanicChannels.FIRE);
     }
 
+    @Test
+    public void shouldSavePanicChannel() throws Exception {
+        ChannelsResourceStub channelsResourceStub = new ChannelsResourceStub("panic");
+        Channel panicChannel = TestData.PanicChannels.TSUNAMI;
+        Channel savedChannel = channelsResourceStub.performPost(panicChannel);
+
+        assertThat(panicChannel.getKey(), is(nullValue()));
+        assertChannel(savedChannel, panicChannel);
+        assertThat(savedChannel.getKey(), is(not(nullValue())));
+    }
+    
+    @Test
+    public void shouldSaveAdChannel() throws Exception {
+        ChannelsResourceStub channelsResourceStub = new ChannelsResourceStub("ad");
+        Channel adChannel = TestData.AdChannels.RETAIL;
+        Channel savedChannel = channelsResourceStub.performPost(adChannel);
+
+        assertThat(adChannel.getKey(), is(nullValue()));
+        assertChannel(savedChannel, adChannel);
+        assertThat(savedChannel.getKey(), is(not(nullValue())));
+    }
+
     private void assertChannel(Channel actualChannel, Channel expectedChannel) {
         assertThat(actualChannel, is(not(nullValue())));
         assertThat(actualChannel.getName(), is(expectedChannel.getName()));
