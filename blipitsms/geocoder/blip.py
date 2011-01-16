@@ -8,6 +8,8 @@ class GeoPoint(dict):
 	def __init__(self, latitude, longitude):
 		self['latitude'] = latitude
 		self['longitude'] = longitude
+
+import json
 	
 class Blip(dict):
 	
@@ -18,7 +20,10 @@ class Blip(dict):
 		self['title'] = title
 		self['creatorId'] = creatorId
 
-import urllib2, json
+        def get_json(self):
+                return json.dumps(self)
+
+import urllib2
 from django.conf import settings
 		
 class BlipItPost:
@@ -29,7 +34,6 @@ class BlipItPost:
 		self.blip = blip
 		
 	def post(self):
-		json_data = json.dumps(self.blip)
-                request = urllib2.Request(self.url, json_data)
+                request = urllib2.Request(self.url, self.blip.get_json())
                 response = urllib2.urlopen(request)
 		return

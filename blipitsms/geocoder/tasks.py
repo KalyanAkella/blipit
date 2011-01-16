@@ -18,7 +18,7 @@ def scan_channels(urlopen = urllib2.urlopen(settings.BLIPIT_SVC_CHANNELS_URL)):
 
 
 @task
-def send(phone_number, address, channel_list, msg):
+def send(phone_number, address, channel_list):
     url = settings.GEOCODER_SVC_URL + urllib.quote_plus(address)
     url_request = urllib2.urlopen(url)
     response = url_request.read()
@@ -29,9 +29,9 @@ def send(phone_number, address, channel_list, msg):
         blip = Blip(channel_list, "PANIC SMS", GeoPoint(latitude, longitude), "PANIC SMS", phone_number)
         blipItPost = BlipItPost(blip)
         blipItPost.post()
-        msg.respond("We have added your request to our queue")
-        return
+        
+        return True
 
-    msg.respond("Sorry the Geo-Coding service has failed.")
+    return False
                   
 

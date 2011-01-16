@@ -13,8 +13,11 @@ class App(AppBase):
             channel_list.append(blip.Channel(channel.channel_id))
         
         if len(channel_list) is not 0:
-            tasks.send(msg.connection.identity, msg_txt[1].replace(","," "), channel_list, msg)
-            msg.respond("We are processing your request")
+            result = tasks.send(msg.connection.identity, msg_txt[1].replace(","," "), channel_list, msg)
+            if result:
+                msg.respond("We have added your request to our queue")
+            else:
+                msg.respond("Sorry the Geo-Coding service has failed.")
             return
         
         msg.respond("Sorry, we do not have a channel called %s" % (msg_txt[0],))
