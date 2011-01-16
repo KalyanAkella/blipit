@@ -30,3 +30,14 @@ class GeoCoderTest(unittest.TestCase):
         channel_list = [Channel(12), Channel(13)]
         result = tasks.send(123, addr, channel_list)
         self.assertEqual(result,False)
+
+
+from rapidsms.tests.scripted import TestScript
+
+class TestInteraction(TestScript):
+    
+    def testPanic(self):
+        self.assertInteraction("""
+8005551212 > WATER 1600 Amphitheatre Parkway,Mountain+View,CA
+8005551212 < Sorry, we do not have a channel called WATER
+""")
