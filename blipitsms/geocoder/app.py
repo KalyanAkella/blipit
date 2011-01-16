@@ -13,7 +13,7 @@ class App(AppBase):
             channel_list.append(blip.Channel(channel.channel_id))
         
         if len(channel_list) is not 0:
-            result = tasks.send(msg.connection.identity, msg_txt[1].replace(","," "), channel_list, msg)
+            result = tasks.send(msg.connection.identity, msg_txt[1].replace(","," "), channel_list)
             if result:
                 msg.respond("We have added your request to our queue")
             else:
