@@ -10,6 +10,7 @@ django-picklefield==0.1.9
 djappsettings==0.1.0
 djtables==0.1.1
 importlib==1.0.2
+mock==0.7.0b4
 nose==1.0.0
 pyparsing==1.5.5
 python-dateutil==1.5
