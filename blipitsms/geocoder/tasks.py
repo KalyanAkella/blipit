@@ -6,14 +6,15 @@ from django.conf import settings
 from blip import Blip, BlipItPost, GeoPoint
 
 @task
-def scan_channels():
-    req = urllib2.urlopen(settings.BLIPIT_SVC_CHANNELS_URL)
-    json_data = json.loads(req.read())
+def scan_channels(urlopen = urllib2.urlopen(settings.BLIPIT_SVC_CHANNELS_URL)):
+    json_data = json.loads(urlopen.read())
     for channel in json_data:
         channel_id = channel['key']['id']
         channel_name = channel['name']
         if len(Channel.objects.filter(channel_name = channel_name)) is 0:
             Channel(channel_id = channel_id, channel_name = channel_name).save()
+            
+    return Channel.objects
 
 
 @task
