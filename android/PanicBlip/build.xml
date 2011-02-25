@@ -32,6 +32,9 @@
          application and should be checked into Version Control Systems. -->
     <property file="default.properties" />
 
+    <property name="external.libs.dir" value="libs" />
+    <property name="external.libs.absolute.dir" location="${external.libs.dir}"/>
+
     <!-- Custom Android task to deal with the project target, and import the
          proper rules.
          This requires ant 1.6.0 or above. -->
