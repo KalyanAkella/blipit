@@ -45,6 +45,15 @@
         classname="com.android.ant.SetupTask"
         classpathref="android.antlibs" />
 
+    <path id="telnet.libs">
+        <pathelement path="../../lib/ant/ant-commons-net.jar"/>
+        <pathelement path="../../lib/ant/commons-net-2.2.jar"/>
+    </path>
+
+    <taskdef name="telnet"
+             classname="org.apache.tools.ant.taskdefs.optional.net.TelnetTask"
+             classpathref="telnet.libs" />
+
     <target name="clean">
         <echo>Cleaning output directories...</echo>
         <delete dir="build" quiet="true" />
