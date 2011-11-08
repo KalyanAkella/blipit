@@ -59,7 +59,8 @@ public class BalloonMyLocationOverlay extends MyLocationOverlay {
     private void enableMyLocation(int minTimeForLocUpdates) {
         LocationManager locationManager = (LocationManager) blipItActivity.getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeForLocUpdates, 0, this);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTimeForLocUpdates, 0, this);
+        // FIXME: uncomment the following line when this android issue gets fixed: http://code.google.com/p/android/issues/detail?id=19857
+//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTimeForLocUpdates, 0, this);
     }
 
     @Override
